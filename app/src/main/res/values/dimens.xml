@@ -1,0 +1,12 @@
+<resources>
+    <dimen name="activity_horizontal_margin">8dp</dimen>
+    <dimen name="activity_vertical_margin">8dp</dimen>
+    <dimen name="card_height">150dp</dimen>
+    <dimen name="bottom_bar_elevation">8dp</dimen>
+    <dimen name="fab_margin">16dp</dimen>
+
+    <dimen name="app_bar_height">450dp</dimen>
+    <dimen name="ingredient_app_bar_height">300dp</dimen>
+    <dimen name="expanded_toolbar_title_margin_start">36dp</dimen>
+
+</resources>

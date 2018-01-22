@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:id="@+id/image_ingredient_item"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:layout_margin="8dp"
+        android:src="@drawable/alco"/>
+
+    <TextView
+        android:id="@+id/tv_ingredient_item"
+        android:layout_toRightOf="@+id/image_ingredient_item"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:singleLine="true"
+        android:ellipsize="end"
+        android:textSize="24sp"
+        android:textColor="#000000"
+        android:text="Some ingredient"/>
+
+    <View
+        android:layout_height="1dp"
+        android:layout_width="match_parent"
+        android:layout_below="@+id/image_ingredient_item"
+        android:background="#22000000"/>
+
+</RelativeLayout>

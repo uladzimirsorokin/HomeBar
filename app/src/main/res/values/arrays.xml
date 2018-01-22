@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="glass_id">
+        <item>any</item>
+        <item>champagne-glass</item>
+        <item>cocktail-glass</item>
+        <item>highball-glass</item>
+        <item>rocks-glass</item>
+        <item>shot-glass</item>
+        <item>wine-glass</item>
+    </string-array>
+
+    <string-array name="glass_name">
+        <item>Любой</item>
+        <item>Бокал для шампанского</item>
+        <item>Бокал для коктейля</item>
+        <item>Хайболл</item>
+        <item>Стакан рокс</item>
+        <item>Шот</item>
+        <item>Винный бокал</item>
+    </string-array>
+
+    <string-array name="colors_name">
+        <item>any</item>
+        <item>red</item>
+        <item>pink</item>
+        <item>yellow</item>
+        <item>brown</item>
+        <item>blue</item>
+        <item>green</item>
+        <item>purple</item>
+        <item>white</item>
+    </string-array>
+
+    <integer-array name="colors">
+        <item>-2</item>
+        <item>0xFFFF0000</item>
+        <item>0xFFFFC0CB</item>
+        <item>0xFFFFFF00</item>
+        <item>0xFFA52A2A</item>
+        <item>0xFF0000FF</item>
+        <item>0xFF00FF00</item>
+        <item>0xFF800080</item>
+        <item>0xFFFFFFFF</item>
+    </integer-array>
+
+    <string-array name="taste_id">
+        <item>any</item>
+        <item>berry</item>
+        <item>bitter</item>
+        <item>fresh</item>
+        <item>fruity</item>
+        <item>herb</item>
+        <item>sour</item>
+        <item>spicy</item>
+        <item>spirits-palpable</item>
+        <item>sweet</item>
+    </string-array>
+
+    <string-array name="taste_name">
+        <item>любой</item>
+        <item>Ягодный</item>
+        <item>Горький</item>
+        <item>Свежий</item>
+        <item>Фруктовый</item>
+        <item>Травяной</item>
+        <item>Кислый</item>
+        <item>Пряный</item>
+        <item>С выраженным вкусом спирта</item>
+        <item>Сладкий</item>
+    </string-array>
+
+    <string-array name="ingridient_type">
+        <item>any</item>
+        <item>brandy</item>
+        <item>gin</item>
+        <item>rum</item>
+        <item>tequila</item>
+        <item>vodka</item>
+        <item>whisky</item>
+    </string-array>
+
+    <string-array name="ingridient_name">
+        <item>любой</item>
+        <item>бренди</item>
+        <item>джин</item>
+        <item>ром</item>
+        <item>текила</item>
+        <item>водка</item>
+        <item>виски</item>
+    </string-array>
+
+</resources>
+

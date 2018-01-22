@@ -1,3 +1,32 @@
 <resources>
-    <string name="app_name">HomeBarAssistant</string>
+    <string name="app_name">CocktailLab</string>
+    <string name="error_network">Server error</string>
+    <string name="error_network_connection">No network connection</string>
+    <string name="error_unknown">Unknown error</string>
+    <string name="cocktail_name">Название коктейля</string>
+    <string name="glass_type">Тип стакана:</string>
+    <string name="taste_type">Вкус:</string>
+    <string name="ingridient_type">Ингридиент:</string>
+    <string name="carbonated">Газированный</string>
+    <string name="alcoholic">Алкогольный</string>
+    <string name="cocktail_rating">Рейтинг:</string>
+    <string name="dialog_color_title">Цвет</string>
+    <string name="skill_novice">Новичек</string>
+    <string name="skill_middle">Средний</string>
+    <string name="skill_master">Продвинутый</string>
+    <string name="skill_level">Выберите уровень мастерства:</string>
+    <string name="cocktail_color">Цвет коктейля</string>
+    <string name="skill_level_string">Уровень мастерства:</string>
+    <string name="not_released_yet">в процессе разработки</string>
+    <string name="ingredients_toolbar_title">Мои ингридиенты</string>
+    <string name="drinks_toolbar_title">Мои коктейли</string>
+    <string name="search_result_toolbar_title">Результаты поиска</string>
+    <string name="ingredients_list_toolbar_title">Мои ингридиенты</string>
+    <string name="et_singledrink_ingredients">Ingridients</string>
+    <string name="et_singledrink_preparation">Preparation</string>
+    <string name="tv_singledrink_notes">Заметки</string>
+    <string name="search_drink_fragment_title">Поиск</string>
+    <string name="ingredient_description_title">Описание</string>
+
+
 </resources>

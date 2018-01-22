@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<tabs>
+    <tab
+        id="@+id/tab_search"
+        icon="@drawable/search"
+        title="Search"
+        barColorWhenSelected="#5075dd" />
+    <tab
+        id="@+id/tab_drinks"
+        icon="@drawable/cocktail"
+        title="Drinks"
+        barColorWhenSelected="#184de2" />
+    <tab
+        id="@+id/tab_ingredients"
+        icon="@drawable/bottles"
+        title="Ingredients"
+        barColorWhenSelected="#14285e" />
+</tabs>
