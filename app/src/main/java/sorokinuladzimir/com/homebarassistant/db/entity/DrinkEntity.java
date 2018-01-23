@@ -1,5 +1,6 @@
 package sorokinuladzimir.com.homebarassistant.db.entity;
 
+import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
@@ -9,9 +10,12 @@ import java.util.ArrayList;
  * Created by 1 on 10/18/2016.
  */
 
-public class Drink implements Serializable {
+public class DrinkEntity implements Serializable {
 
-    private String id;
+    public int drinkId;
+
+    @SerializedName("id")
+    private String imageId;
     private String name;
 
     @SerializedName("descriptionPlain")
@@ -25,35 +29,15 @@ public class Drink implements Serializable {
     @SerializedName("servedIn")
     private Glass servedIn;
 
-    private ArrayList<Ingredient> ingredients;
+    private ArrayList<IngredientEntity> ingredients;
     private ArrayList<Taste> tastes;
 
-    private String notes;
-    private ArrayList<Integer> linkedDrinks;
-
-
     public String getId() {
-        return id;
+        return imageId;
     }
 
     public void setId(String id) {
-        this.id = id;
-    }
-
-    public String getNotes() {
-        return notes;
-    }
-
-    public void setNotes(String notes) {
-        this.notes = notes;
-    }
-
-    public ArrayList<Integer> getLinkedDrinks() {
-        return linkedDrinks;
-    }
-
-    public void setLinkedDrinks(ArrayList<Integer> linkedDrinks) {
-        this.linkedDrinks = linkedDrinks;
+        this.imageId = id;
     }
 
     public String getName() {
@@ -84,7 +68,7 @@ public class Drink implements Serializable {
         return servedIn;
     }
 
-    public ArrayList<Ingredient> getIngredients() {
+    public ArrayList<IngredientEntity> getIngredients() {
         return ingredients;
     }
 
@@ -120,7 +104,7 @@ public class Drink implements Serializable {
         this.servedIn = servedIn;
     }
 
-    public void setIngredients(ArrayList<Ingredient> ingredients) {
+    public void setIngredients(ArrayList<IngredientEntity> ingredients) {
         this.ingredients = ingredients;
     }
 

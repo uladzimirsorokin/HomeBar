@@ -28,7 +28,7 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import sorokinuladzimir.com.homebarassistant.Constants;
 import sorokinuladzimir.com.homebarassistant.R;
-import sorokinuladzimir.com.homebarassistant.db.entity.Drink;
+import sorokinuladzimir.com.homebarassistant.db.entity.DrinkEntity;
 import sorokinuladzimir.com.homebarassistant.net.AbsolutDrinksApi;
 import sorokinuladzimir.com.homebarassistant.net.AbsolutDrinksResult;
 import sorokinuladzimir.com.homebarassistant.ui.adapters.DrinkCardItemAdapter;
@@ -45,7 +45,7 @@ public class FoundDrinksFragment extends Fragment {
     private static final String EXTRA_NAME = "extra_name";
     private static final String EXTRA_BUNDLE = "extra_bundle";
 
-    private ArrayList<Drink> mCocktailList;
+    private ArrayList<DrinkEntity> mCocktailList;
     private DrinkCardItemAdapter mAdapter;
     private ActionBar mToolbar;
     private FloatingActionButton mFab;
@@ -56,7 +56,7 @@ public class FoundDrinksFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fr_drinks_list, container, false);
 
         if(savedInstanceState != null) {
-            mCocktailList = (ArrayList<Drink>) savedInstanceState.getSerializable("cocktailList");
+            mCocktailList = (ArrayList<DrinkEntity>) savedInstanceState.getSerializable("cocktailList");
         }
 
         initFAB(rootView);
@@ -102,7 +102,7 @@ public class FoundDrinksFragment extends Fragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         mAdapter = new DrinkCardItemAdapter(new DrinkCardItemAdapter.OnItemClickListener() {
             @Override
-            public void onItemClick(Drink drink) {
+            public void onItemClick(DrinkEntity drink) {
                 Bundle bundle = new Bundle();
                 bundle.putSerializable(Constants.Extra.COCKTAIL, drink);
                 ((RouterProvider)getParentFragment()).getRouter().navigateTo(Screens.SINGLE_DRINK, bundle);
@@ -154,7 +154,7 @@ public class FoundDrinksFragment extends Fragment {
                 public void onResponse(Call<AbsolutDrinksResult> call, Response<AbsolutDrinksResult> response) {
                     // The network call was a success and we got a response
                     // TODO: use the repository list and display it
-                    ArrayList<Drink> cocktails = response.body().getResult();
+                    ArrayList<DrinkEntity> cocktails = response.body().getResult();
                     mCocktailList = cocktails;
 
                     if(mCocktailList != null){

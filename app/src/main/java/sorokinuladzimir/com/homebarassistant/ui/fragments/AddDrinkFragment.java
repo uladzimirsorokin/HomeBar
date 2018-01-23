@@ -18,7 +18,7 @@ import java.util.List;
 
 import sorokinuladzimir.com.homebarassistant.Constants;
 import sorokinuladzimir.com.homebarassistant.R;
-import sorokinuladzimir.com.homebarassistant.db.entity.Drink;
+import sorokinuladzimir.com.homebarassistant.db.entity.DrinkEntity;
 import sorokinuladzimir.com.homebarassistant.db.entity.Glass;
 import sorokinuladzimir.com.homebarassistant.ui.adapters.AddDrinkGlassAdapter;
 import sorokinuladzimir.com.homebarassistant.ui.subnavigation.BackButtonListener;
@@ -35,7 +35,7 @@ public class AddDrinkFragment extends Fragment implements BackButtonListener {
     private static final String EXTRA_DRINK = "extra_drink";
 
     private ActionBar mToolbar;
-    private Drink mDrink;
+    private DrinkEntity mDrink;
 
     String[] glassNames = { "Шот", "Олд фешн", "Харрикейн", "Коллинз",
             "Маргаритка", "Коктейльный бокал", "Снифтер" };
@@ -46,10 +46,10 @@ public class AddDrinkFragment extends Fragment implements BackButtonListener {
         View rootView = inflater.inflate(R.layout.fr_add_drink, container, false);
 
         if(savedInstanceState != null) {
-            mDrink = (Drink) savedInstanceState.getSerializable(Constants.Extra.COCKTAIL);
+            mDrink = (DrinkEntity) savedInstanceState.getSerializable(Constants.Extra.COCKTAIL);
         }
 
-        Drink drink = (Drink) getArguments().getSerializable(EXTRA_DRINK);
+        DrinkEntity drink = (DrinkEntity) getArguments().getSerializable(EXTRA_DRINK);
 
         if(drink != null){
             mDrink = drink;
@@ -97,7 +97,7 @@ public class AddDrinkFragment extends Fragment implements BackButtonListener {
         return rootView;
     }
 
-    public static AddDrinkFragment getNewInstance(String name, Drink drink) {
+    public static AddDrinkFragment getNewInstance(String name, DrinkEntity drink) {
         AddDrinkFragment fragment = new AddDrinkFragment();
 
         Bundle arguments = new Bundle();

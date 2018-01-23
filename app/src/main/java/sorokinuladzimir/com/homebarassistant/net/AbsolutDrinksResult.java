@@ -2,18 +2,18 @@ package sorokinuladzimir.com.homebarassistant.net;
 
 import java.util.ArrayList;
 
-import sorokinuladzimir.com.homebarassistant.db.entity.Drink;
+import sorokinuladzimir.com.homebarassistant.db.entity.DrinkEntity;
 
 /**
  * Created by sorok on 27.09.2017.
  */
 
 public class AbsolutDrinksResult {
-    private ArrayList<Drink> result;
+    private ArrayList<DrinkEntity> result;
     private int totalResult;
     private String next;
 
-    public ArrayList<Drink> getResult() {
+    public ArrayList<DrinkEntity> getResult() {
         return result;
     }
 
@@ -25,7 +25,7 @@ public class AbsolutDrinksResult {
         return next;
     }
 
-    public void setResult(ArrayList<Drink> result) {
+    public void setResult(ArrayList<DrinkEntity> result) {
         this.result = result;
     }
 

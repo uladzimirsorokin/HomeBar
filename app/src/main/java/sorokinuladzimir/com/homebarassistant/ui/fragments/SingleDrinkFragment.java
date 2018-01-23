@@ -34,8 +34,8 @@ import java.io.IOException;
 
 import sorokinuladzimir.com.homebarassistant.Constants;
 import sorokinuladzimir.com.homebarassistant.R;
-import sorokinuladzimir.com.homebarassistant.db.entity.Drink;
-import sorokinuladzimir.com.homebarassistant.db.entity.Ingredient;
+import sorokinuladzimir.com.homebarassistant.db.entity.DrinkEntity;
+import sorokinuladzimir.com.homebarassistant.db.entity.IngredientEntity;
 import sorokinuladzimir.com.homebarassistant.ui.adapters.SingleDrinkIngredientItemAdapter;
 import sorokinuladzimir.com.homebarassistant.ui.subnavigation.BackButtonListener;
 import sorokinuladzimir.com.homebarassistant.ui.subnavigation.RouterProvider;
@@ -49,7 +49,7 @@ public class SingleDrinkFragment extends Fragment implements BackButtonListener 
     private static final String EXTRA_NAME = "extra_name";
     private static final String EXTRA_BUNDLE = "extra_bundle";
 
-    private Drink mCocktail;
+    private DrinkEntity mCocktail;
     private ImageView mDrinkImage;
     private ActionBar mToolbar;
     private SingleDrinkIngredientItemAdapter mAdapter;
@@ -63,12 +63,12 @@ public class SingleDrinkFragment extends Fragment implements BackButtonListener 
         View rootView = inflater.inflate(R.layout.fr_single_drink, container, false);
 
         if(savedInstanceState != null) {
-            mCocktail = (Drink) savedInstanceState.getSerializable(Constants.Extra.COCKTAIL);
+            mCocktail = (DrinkEntity) savedInstanceState.getSerializable(Constants.Extra.COCKTAIL);
         }
 
         Bundle args = getArguments().getBundle(EXTRA_BUNDLE);
         if((args != null) && !args.isEmpty()){
-            mCocktail = (Drink) args.getSerializable(Constants.Extra.COCKTAIL);
+            mCocktail = (DrinkEntity) args.getSerializable(Constants.Extra.COCKTAIL);
             args.clear();
         }
 
@@ -165,7 +165,7 @@ public class SingleDrinkFragment extends Fragment implements BackButtonListener 
         rvIngredients.setLayoutManager(new LinearLayoutManager(getContext()));
         mAdapter = new SingleDrinkIngredientItemAdapter(new SingleDrinkIngredientItemAdapter.OnItemClickListener() {
             @Override
-            public void onItemClick(Ingredient item) {
+            public void onItemClick(IngredientEntity item) {
                 Toast.makeText(getContext(),item.getName(), Toast.LENGTH_LONG).show();
             }
         });

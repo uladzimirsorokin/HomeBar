@@ -13,7 +13,7 @@ import com.bumptech.glide.request.RequestOptions;
 import java.util.ArrayList;
 
 import sorokinuladzimir.com.homebarassistant.R;
-import sorokinuladzimir.com.homebarassistant.db.entity.Ingredient;
+import sorokinuladzimir.com.homebarassistant.db.entity.IngredientEntity;
 
 
 public class IngredientsListItemAdapter extends RecyclerView.Adapter<IngredientsListItemAdapter.IngredientViewHolder> {
@@ -23,10 +23,10 @@ public class IngredientsListItemAdapter extends RecyclerView.Adapter<Ingredients
     }
 
     public interface OnItemClickListener {
-        void onItemClick(Ingredient item);
+        void onItemClick(IngredientEntity item);
     }
 
-    private ArrayList<Ingredient> mData = new ArrayList();
+    private ArrayList<IngredientEntity> mData = new ArrayList();
     private final OnItemClickListener listener;
     
     @Override
@@ -45,7 +45,7 @@ public class IngredientsListItemAdapter extends RecyclerView.Adapter<Ingredients
         return mData.size();
     }
 
-    public void setData(ArrayList<Ingredient> ingredients) {
+    public void setData(ArrayList<IngredientEntity> ingredients) {
         mData.clear();
         mData.addAll(ingredients);
         notifyDataSetChanged();
@@ -62,7 +62,7 @@ public class IngredientsListItemAdapter extends RecyclerView.Adapter<Ingredients
             ingredientImage = itemView.findViewById(R.id.image_ingredient_item);
         }
 
-        public void bind(final Ingredient item, final OnItemClickListener listener) {
+        public void bind(final IngredientEntity item, final OnItemClickListener listener) {
 
             if(item.getName() != null)ingredientName.setText(item.getName());
 

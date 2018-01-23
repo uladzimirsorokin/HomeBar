@@ -14,7 +14,7 @@ import java.util.ArrayList;
 
 import sorokinuladzimir.com.homebarassistant.Constants;
 import sorokinuladzimir.com.homebarassistant.R;
-import sorokinuladzimir.com.homebarassistant.db.entity.Drink;
+import sorokinuladzimir.com.homebarassistant.db.entity.DrinkEntity;
 import sorokinuladzimir.com.homebarassistant.db.entity.Taste;
 
 
@@ -29,10 +29,10 @@ public class DrinkCardItemAdapter extends RecyclerView.Adapter<DrinkCardItemAdap
     }
 
     public interface OnItemClickListener {
-        void onItemClick(Drink item);
+        void onItemClick(DrinkEntity item);
     }
 
-    private ArrayList<Drink> mData = new ArrayList();
+    private ArrayList<DrinkEntity> mData = new ArrayList();
     private final OnItemClickListener listener;
     
     @Override
@@ -51,7 +51,7 @@ public class DrinkCardItemAdapter extends RecyclerView.Adapter<DrinkCardItemAdap
         return mData.size();
     }
 
-    public void setData(ArrayList<Drink> cocktails) {
+    public void setData(ArrayList<DrinkEntity> cocktails) {
         mData.clear();
         mData.addAll(cocktails);
         notifyDataSetChanged();
@@ -73,7 +73,7 @@ public class DrinkCardItemAdapter extends RecyclerView.Adapter<DrinkCardItemAdap
             rating = itemView.findViewById(R.id.card_rating_bar);
         }
 
-        public void bind(final Drink drinkItem, final OnItemClickListener listener) {
+        public void bind(final DrinkEntity drinkItem, final OnItemClickListener listener) {
 
             Glide.with(cardImage.getContext())
                     .load(Constants.Uri.ABSOLUT_DRINKS_IMAGE_ROOT + drinkItem.getId() + ".png")

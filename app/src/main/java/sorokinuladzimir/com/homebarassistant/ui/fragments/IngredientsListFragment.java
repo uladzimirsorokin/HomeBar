@@ -18,7 +18,7 @@ import java.util.ArrayList;
 
 import sorokinuladzimir.com.homebarassistant.Constants;
 import sorokinuladzimir.com.homebarassistant.R;
-import sorokinuladzimir.com.homebarassistant.db.entity.Ingredient;
+import sorokinuladzimir.com.homebarassistant.db.entity.IngredientEntity;
 import sorokinuladzimir.com.homebarassistant.ui.adapters.IngredientsListItemAdapter;
 
 
@@ -29,7 +29,7 @@ import sorokinuladzimir.com.homebarassistant.ui.adapters.IngredientsListItemAdap
 public class IngredientsListFragment extends Fragment {
 
     private static final String EXTRA_NAME = "ilf_extra_name";
-    private ArrayList<Ingredient> mIngredientList;
+    private ArrayList<IngredientEntity> mIngredientList;
     private IngredientsListItemAdapter mAdapter;
     private ActionBar mToolbar;
     private FloatingActionButton mFab;
@@ -40,15 +40,15 @@ public class IngredientsListFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fr_drinks_list, container, false);
 
         if(savedInstanceState != null) {
-            mIngredientList = (ArrayList<Ingredient>) savedInstanceState.getSerializable("ingredientsList");
+            mIngredientList = (ArrayList<IngredientEntity>) savedInstanceState.getSerializable("ingredientsList");
         }
 
         initFAB(rootView);
         initToolbar(rootView);
 
-        mIngredientList = new ArrayList<Ingredient>();
+        mIngredientList = new ArrayList<IngredientEntity>();
         for (int i = 0; i < 20; i++) {
-            Ingredient ingredient = new Ingredient();
+            IngredientEntity ingredient = new IngredientEntity();
             ingredient.setName("Vodochka so wkvarochkoi ololololo"+i);
             ingredient.setUrl("https://www.absolut.com/globalassets/images/products/absolut-raspberri/absolut-raspberri-listing.png");
             mIngredientList.add(ingredient);
@@ -94,7 +94,7 @@ public class IngredientsListFragment extends Fragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         mAdapter = new IngredientsListItemAdapter(new IngredientsListItemAdapter.OnItemClickListener() {
             @Override
-            public void onItemClick(Ingredient ingredient) {
+            public void onItemClick(IngredientEntity ingredient) {
                 Bundle bundle = new Bundle();
                 bundle.putSerializable(Constants.Extra.INGREDIENT, ingredient);
                 //((RouterProvider)getParentFragment()).getRouter().navigateTo(Screens.SINGLE_DRINK, bundle);
