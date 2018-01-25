@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import sorokinuladzimir.com.homebarassistant.R;
-import sorokinuladzimir.com.homebarassistant.db.entity.Glass;
+import sorokinuladzimir.com.homebarassistant.net.entity.Glass;
 
 
 /**
@@ -53,8 +53,8 @@ public class AddDrinkGlassAdapter extends ArrayAdapter<Glass> {
         ImageView icon = row.findViewById(R.id.icon);
         TextView glassName = row.findViewById(R.id.glassName);
 
-        icon.setImageResource(mGlasses.get(position).getImage());
-        glassName.setText(mGlasses.get(position).getName());
+        icon.setImageResource(mGlasses.get(position).image);
+        glassName.setText(mGlasses.get(position).name);
 
         return row;
     }

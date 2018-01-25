@@ -2,7 +2,7 @@ package sorokinuladzimir.com.homebarassistant.net;
 
 import java.util.ArrayList;
 
-import sorokinuladzimir.com.homebarassistant.db.entity.DrinkEntity;
+import sorokinuladzimir.com.homebarassistant.net.entity.DrinkEntity;
 
 /**
  * Created by sorok on 27.09.2017.

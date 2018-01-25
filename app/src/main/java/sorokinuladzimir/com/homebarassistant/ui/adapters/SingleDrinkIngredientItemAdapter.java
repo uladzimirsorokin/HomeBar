@@ -13,7 +13,7 @@ import com.bumptech.glide.request.RequestOptions;
 import java.util.ArrayList;
 
 import sorokinuladzimir.com.homebarassistant.R;
-import sorokinuladzimir.com.homebarassistant.db.entity.IngredientEntity;
+import sorokinuladzimir.com.homebarassistant.net.entity.IngredientEntity;
 
 
 public class SingleDrinkIngredientItemAdapter extends RecyclerView.Adapter<SingleDrinkIngredientItemAdapter.IngredientViewHolder> {
@@ -64,11 +64,11 @@ public class SingleDrinkIngredientItemAdapter extends RecyclerView.Adapter<Singl
 
         public void bind(final IngredientEntity item, final OnItemClickListener listener) {
 
-            if(item.getName() != null)ingredientName.setText(item.getName());
+            if(item.name != null)ingredientName.setText(item.name);
 
-            if(item.getUrl() != null){
+            if(item.url != null){
                 Glide.with(ingredientImage.getContext())
-                        .load(item.getUrl())
+                        .load(item.url)
                         .apply(RequestOptions.centerCropTransform())
                         .into(ingredientImage);
             }

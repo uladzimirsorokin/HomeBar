@@ -18,8 +18,8 @@ import java.util.List;
 
 import sorokinuladzimir.com.homebarassistant.Constants;
 import sorokinuladzimir.com.homebarassistant.R;
-import sorokinuladzimir.com.homebarassistant.db.entity.DrinkEntity;
-import sorokinuladzimir.com.homebarassistant.db.entity.Glass;
+import sorokinuladzimir.com.homebarassistant.net.entity.DrinkEntity;
+import sorokinuladzimir.com.homebarassistant.net.entity.Glass;
 import sorokinuladzimir.com.homebarassistant.ui.adapters.AddDrinkGlassAdapter;
 import sorokinuladzimir.com.homebarassistant.ui.subnavigation.BackButtonListener;
 import sorokinuladzimir.com.homebarassistant.ui.subnavigation.RouterProvider;
@@ -60,14 +60,14 @@ public class AddDrinkFragment extends Fragment implements BackButtonListener {
 
         List glasses = new ArrayList<Glass>();
         Glass glass1 = new Glass();
-        glass1.setName("Old fashioned");
-        glass1.setImage(R.drawable.bottles);
+        glass1.name = "Old fashioned";
+        glass1.image = R.drawable.bottles;
         Glass glass2 = new Glass();
-        glass2.setName("Collins");
-        glass2.setImage(R.drawable.cocktail);
+        glass2.name = "Collins";
+        glass2.image = R.drawable.cocktail;
         Glass glass3 = new Glass();
-        glass3.setName("Rocks");
-        glass3.setImage(R.drawable.alco);
+        glass3.name = "Rocks";
+        glass3.image = R.drawable.alco;
         glasses.add(glass1);
         glasses.add(glass1);
         glasses.add(glass2);
@@ -116,7 +116,7 @@ public class AddDrinkFragment extends Fragment implements BackButtonListener {
         if(mToolbar != null)
             mToolbar.setDisplayHomeAsUpEnabled(true);
         mToolbar.setTitle("Новый коктейль");
-        if(mDrink != null) mToolbar.setTitle(mDrink.getName());
+        if(mDrink != null) mToolbar.setTitle(mDrink.name);
     }
 
     @Override

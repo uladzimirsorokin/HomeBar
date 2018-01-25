@@ -14,27 +14,27 @@ import java.util.ArrayList;
 
 import sorokinuladzimir.com.homebarassistant.Constants;
 import sorokinuladzimir.com.homebarassistant.R;
+import sorokinuladzimir.com.homebarassistant.db.entity.Drink;
 import sorokinuladzimir.com.homebarassistant.db.entity.Taste;
-import sorokinuladzimir.com.homebarassistant.net.entity.DrinkEntity;
 
 
 /**
  * Created by 1 on 10/12/2016.
  */
 
-public class DrinkCardItemAdapter extends RecyclerView.Adapter<DrinkCardItemAdapter.CardViewHolder> {
+public class LocalDrinksListAdapter extends RecyclerView.Adapter<LocalDrinksListAdapter.CardViewHolder> {
 
-    public DrinkCardItemAdapter(OnItemClickListener listener) {
+    public LocalDrinksListAdapter(OnItemClickListener listener) {
         this.listener = listener;
     }
 
     public interface OnItemClickListener {
-        void onItemClick(DrinkEntity item);
+        void onItemClick(Drink item);
     }
 
-    private ArrayList<DrinkEntity> mData = new ArrayList();
+    private ArrayList<Drink> mData = new ArrayList();
     private final OnItemClickListener listener;
-    
+
     @Override
     public CardViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         return new CardViewHolder(LayoutInflater.from(parent.getContext())
@@ -43,7 +43,7 @@ public class DrinkCardItemAdapter extends RecyclerView.Adapter<DrinkCardItemAdap
 
     @Override
     public void onBindViewHolder(CardViewHolder holder, int position) {
-        holder.bind(mData.get(position),listener);
+        holder.bind(mData.get(position), listener);
     }
 
     @Override
@@ -51,7 +51,7 @@ public class DrinkCardItemAdapter extends RecyclerView.Adapter<DrinkCardItemAdap
         return mData.size();
     }
 
-    public void setData(ArrayList<DrinkEntity> cocktails) {
+    public void setData(ArrayList<Drink> cocktails) {
         mData.clear();
         mData.addAll(cocktails);
         notifyDataSetChanged();
@@ -73,10 +73,10 @@ public class DrinkCardItemAdapter extends RecyclerView.Adapter<DrinkCardItemAdap
             rating = itemView.findViewById(R.id.card_rating_bar);
         }
 
-        public void bind(final DrinkEntity drinkItem, final OnItemClickListener listener) {
+        public void bind(final Drink drinkItem, final OnItemClickListener listener) {
 
             Glide.with(cardImage.getContext())
-                    .load(Constants.Uri.ABSOLUT_DRINKS_IMAGE_ROOT + drinkItem.id + ".png")
+                    .load(Constants.Uri.ABSOLUT_DRINKS_IMAGE_ROOT + drinkItem.image + ".png")
                     .into(cardImage);
 
 
@@ -92,7 +92,7 @@ public class DrinkCardItemAdapter extends RecyclerView.Adapter<DrinkCardItemAdap
                 subtitle.setText(tastesStr);
             }
 
-            rating.setProgress(drinkItem.rating / 10);
+            rating.setProgress(90 / 10);
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override

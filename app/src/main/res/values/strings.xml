@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">CocktailLab</string>
+    <string name="app_name">Home Bar</string>
     <string name="error_network">Server error</string>
     <string name="error_network_connection">No network connection</string>
     <string name="error_unknown">Unknown error</string>

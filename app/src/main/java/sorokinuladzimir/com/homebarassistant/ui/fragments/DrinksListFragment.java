@@ -1,16 +1,32 @@
 package sorokinuladzimir.com.homebarassistant.ui.fragments;
 
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import sorokinuladzimir.com.homebarassistant.Constants;
 import sorokinuladzimir.com.homebarassistant.R;
+import sorokinuladzimir.com.homebarassistant.db.entity.Drink;
+import sorokinuladzimir.com.homebarassistant.net.entity.DrinkEntity;
+import sorokinuladzimir.com.homebarassistant.ui.adapters.DrinkCardItemAdapter;
+import sorokinuladzimir.com.homebarassistant.ui.adapters.LocalDrinksListAdapter;
+import sorokinuladzimir.com.homebarassistant.ui.subnavigation.LocalCiceroneHolder;
 import sorokinuladzimir.com.homebarassistant.ui.subnavigation.RouterProvider;
+import sorokinuladzimir.com.homebarassistant.viewmodel.DrinkListViewModel;
 
 
 /**
@@ -21,6 +37,8 @@ public class DrinksListFragment extends Fragment {
 
     private static final String EXTRA_NAME = "dlf_extra_name";
     private FloatingActionButton mFab;
+    private LocalDrinksListAdapter mAdapter;
+    private DrinkListViewModel mViewModel;
 
     @Nullable
     @Override
@@ -28,10 +46,43 @@ public class DrinksListFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fr_drinks_list, container, false);
 
         initFAB(rootView);
+        initRecyclerView(rootView);
+
+        mViewModel = ViewModelProviders.of(getActivity()).get(DrinkListViewModel.class);
+        subscribeUi(mViewModel);
 
         return rootView;
     }
 
+
+    private void subscribeUi(DrinkListViewModel viewModel) {
+        // Update the list when the data changes
+        viewModel.getDrinks().observe(this, new Observer<List<Drink>>() {
+            @Override
+            public void onChanged(@Nullable List<Drink> drinks) {
+                if (drinks != null) {
+                    ArrayList<Drink> newDrinks = new ArrayList<>();
+                    newDrinks.addAll(drinks);
+                    mAdapter.setData(newDrinks);
+                    mAdapter.notifyDataSetChanged();
+                } else {
+
+                }
+            }
+
+
+        });
+    }
+
+    private void initRecyclerView(View rootView) {
+        final RecyclerView recyclerView = rootView.findViewById(R.id.recycler_view);
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        mAdapter = new LocalDrinksListAdapter(drink -> {
+            Toast.makeText(getContext(), drink.name, Toast.LENGTH_SHORT).show();
+        });
+        recyclerView.setAdapter(mAdapter);
+    }
 
     public static DrinksListFragment getNewInstance(String name) {
         DrinksListFragment fragment = new DrinksListFragment();

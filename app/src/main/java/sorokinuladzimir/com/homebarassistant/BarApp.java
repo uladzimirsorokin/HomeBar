@@ -5,20 +5,25 @@ import android.app.Application;
 import ru.terrakok.cicerone.Cicerone;
 import ru.terrakok.cicerone.NavigatorHolder;
 import ru.terrakok.cicerone.Router;
+import sorokinuladzimir.com.homebarassistant.db.CocktailsDatabase;
+
 
 /**
  * Created by sorok on 17.10.2017.
  */
 
 public class BarApp extends Application {
-    public static BarApp INSTANCE;
+
+    private static BarApp sInstance;
     private Cicerone<Router> cicerone;
+    private AppExecutors mAppExecutors;
 
     @Override
     public void onCreate() {
         super.onCreate();
-        INSTANCE = this;
+        sInstance = this;
         cicerone = Cicerone.create();
+        mAppExecutors = new AppExecutors();
     }
 
     public NavigatorHolder getNavigatorHolder() {
@@ -28,4 +33,17 @@ public class BarApp extends Application {
     public Router getRouter() {
         return cicerone.getRouter();
     }
+
+    public static BarApp getInstance() {
+        return sInstance;
+    }
+
+    public CocktailsDatabase getDatabase() {
+        return CocktailsDatabase.getInstance(this, mAppExecutors);
+    }
+
+    public DataRepository getRepository() {
+        return DataRepository.getInstance(getDatabase(),mAppExecutors);
+    }
+
 }

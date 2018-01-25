@@ -82,13 +82,13 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        BarApp.INSTANCE.getNavigatorHolder().setNavigator(navigator);
+        BarApp.getInstance().getNavigatorHolder().setNavigator(navigator);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        BarApp.INSTANCE.getNavigatorHolder().removeNavigator();
+        BarApp.getInstance().getNavigatorHolder().removeNavigator();
     }
 
     private void initBottomNavigation(){
@@ -110,13 +110,13 @@ public class MainActivity extends AppCompatActivity {
             public boolean onTabSelected(int position, boolean wasSelected) {
                 switch (position){
                     case 0:
-                        BarApp.INSTANCE.getRouter().replaceScreen(Screens.SEARCH);
+                        BarApp.getInstance().getRouter().replaceScreen(Screens.SEARCH);
                         break;
                     case 1:
-                        BarApp.INSTANCE.getRouter().replaceScreen(Screens.DRINKS);
+                        BarApp.getInstance().getRouter().replaceScreen(Screens.DRINKS);
                         break;
                     case 2:
-                        BarApp.INSTANCE.getRouter().replaceScreen(Screens.INGREDIENTS);
+                        BarApp.getInstance().getRouter().replaceScreen(Screens.INGREDIENTS);
                         break;
                 }
 
@@ -138,7 +138,7 @@ public class MainActivity extends AppCompatActivity {
                 && ((BackButtonListener) fragment).onBackPressed()) {
             return;
         } else {
-            BarApp.INSTANCE.getRouter().exit();
+            BarApp.getInstance().getRouter().exit();
         }
     }
 

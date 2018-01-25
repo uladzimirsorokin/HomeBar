@@ -32,10 +32,12 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+import sorokinuladzimir.com.homebarassistant.BarApp;
 import sorokinuladzimir.com.homebarassistant.Constants;
 import sorokinuladzimir.com.homebarassistant.R;
-import sorokinuladzimir.com.homebarassistant.db.entity.DrinkEntity;
-import sorokinuladzimir.com.homebarassistant.db.entity.IngredientEntity;
+import sorokinuladzimir.com.homebarassistant.db.entity.Drink;
+import sorokinuladzimir.com.homebarassistant.net.entity.DrinkEntity;
+import sorokinuladzimir.com.homebarassistant.net.entity.IngredientEntity;
 import sorokinuladzimir.com.homebarassistant.ui.adapters.SingleDrinkIngredientItemAdapter;
 import sorokinuladzimir.com.homebarassistant.ui.subnavigation.BackButtonListener;
 import sorokinuladzimir.com.homebarassistant.ui.subnavigation.RouterProvider;
@@ -108,7 +110,7 @@ public class SingleDrinkFragment extends Fragment implements BackButtonListener 
                 .into(mDrinkImage);*/
 
         Glide.with(getContext())
-                .load(Constants.Uri.ABSOLUT_DRINKS_IMAGE_ROOT + mCocktail.getId() + ".png")
+                .load(Constants.Uri.ABSOLUT_DRINKS_IMAGE_ROOT + mCocktail.id + ".png")
                 .into(new SimpleTarget<Drawable>() {
 
                           @Override
@@ -117,7 +119,7 @@ public class SingleDrinkFragment extends Fragment implements BackButtonListener 
                                 mDrinkImage.setImageBitmap(bitmap);
                                 mDrinkImage.setDrawingCacheEnabled(true);
 
-                                String filename = mCocktail.getId() + ".png";
+                                String filename = mCocktail.id + ".png";
                                 String root = getContext().getFilesDir().getPath();
                                 File myDir = new File(root + "/CocktailsLab");
                                 if (! myDir.exists()){
@@ -166,16 +168,16 @@ public class SingleDrinkFragment extends Fragment implements BackButtonListener 
         mAdapter = new SingleDrinkIngredientItemAdapter(new SingleDrinkIngredientItemAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(IngredientEntity item) {
-                Toast.makeText(getContext(),item.getName(), Toast.LENGTH_LONG).show();
+                Toast.makeText(getContext(),item.name, Toast.LENGTH_LONG).show();
             }
         });
 
-        mAdapter.setData(mCocktail.getIngredients());
+        mAdapter.setData(mCocktail.ingredients);
         rvIngredients.setAdapter(mAdapter);
 
         mDescriptionText = rootView.findViewById(R.id.tv_singledrink_descriptionPlain);
-        mDescriptionText.setText(mCocktail.getDescription());
-        mCollapsingToolbarLayout.setTitle(mCocktail.getName());
+        mDescriptionText.setText(mCocktail.description);
+        mCollapsingToolbarLayout.setTitle(mCocktail.name);
     }
 
     private void initFAB(View view){
@@ -183,11 +185,17 @@ public class SingleDrinkFragment extends Fragment implements BackButtonListener 
         mFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(getContext(),"Добавлен в мои коктейли", Toast.LENGTH_SHORT).show();
+                /*Toast.makeText(getContext(),"Добавлен в мои коктейли", Toast.LENGTH_SHORT).show();
                 Glide.with(getContext())
                         .load(getContext().getFilesDir().getPath()+"/CocktailsLab/vodka-bramble.png")
-                        .into(mDrinkImage);
+                        .into(mDrinkImage);*/
                 //((RouterProvider)getParentFragment()).getRouter().navigateTo(Screens.ADD_DRINK, mCocktail);
+                Drink drink = new Drink();
+                drink.image = mCocktail.id;
+                drink.name = mCocktail.name;
+                drink.tastes = mCocktail.tastes;
+
+                BarApp.getInstance().getRepository().insertDrink(drink);
                 mFab.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_done));
                 mFab.setEnabled(false);
             }

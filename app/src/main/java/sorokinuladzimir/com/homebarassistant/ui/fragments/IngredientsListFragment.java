@@ -18,7 +18,7 @@ import java.util.ArrayList;
 
 import sorokinuladzimir.com.homebarassistant.Constants;
 import sorokinuladzimir.com.homebarassistant.R;
-import sorokinuladzimir.com.homebarassistant.db.entity.IngredientEntity;
+import sorokinuladzimir.com.homebarassistant.net.entity.IngredientEntity;
 import sorokinuladzimir.com.homebarassistant.ui.adapters.IngredientsListItemAdapter;
 
 
@@ -49,8 +49,8 @@ public class IngredientsListFragment extends Fragment {
         mIngredientList = new ArrayList<IngredientEntity>();
         for (int i = 0; i < 20; i++) {
             IngredientEntity ingredient = new IngredientEntity();
-            ingredient.setName("Vodochka so wkvarochkoi ololololo"+i);
-            ingredient.setUrl("https://www.absolut.com/globalassets/images/products/absolut-raspberri/absolut-raspberri-listing.png");
+            ingredient.name = "Vodochka so wkvarochkoi ololololo"+i;
+            ingredient.url = "https://www.absolut.com/globalassets/images/products/absolut-raspberri/absolut-raspberri-listing.png";
             mIngredientList.add(ingredient);
         }
 

@@ -13,7 +13,7 @@ import ru.terrakok.cicerone.Router;
 import ru.terrakok.cicerone.android.SupportFragmentNavigator;
 import sorokinuladzimir.com.homebarassistant.BarApp;
 import sorokinuladzimir.com.homebarassistant.R;
-import sorokinuladzimir.com.homebarassistant.db.entity.DrinkEntity;
+import sorokinuladzimir.com.homebarassistant.net.entity.DrinkEntity;
 import sorokinuladzimir.com.homebarassistant.ui.subnavigation.BackButtonListener;
 import sorokinuladzimir.com.homebarassistant.ui.subnavigation.LocalCiceroneHolder;
 import sorokinuladzimir.com.homebarassistant.ui.subnavigation.RouterProvider;
@@ -136,7 +136,7 @@ public class TabContainerFragment extends Fragment implements RouterProvider, Ba
                 && ((BackButtonListener) fragment).onBackPressed()) {
             return true;
         } else {
-            BarApp.INSTANCE.getRouter().exit();
+            BarApp.getInstance().getRouter().exit();
             return true;
         }
     }

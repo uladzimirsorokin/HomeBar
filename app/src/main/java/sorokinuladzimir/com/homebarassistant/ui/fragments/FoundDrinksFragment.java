@@ -28,7 +28,7 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import sorokinuladzimir.com.homebarassistant.Constants;
 import sorokinuladzimir.com.homebarassistant.R;
-import sorokinuladzimir.com.homebarassistant.db.entity.DrinkEntity;
+import sorokinuladzimir.com.homebarassistant.net.entity.DrinkEntity;
 import sorokinuladzimir.com.homebarassistant.net.AbsolutDrinksApi;
 import sorokinuladzimir.com.homebarassistant.net.AbsolutDrinksResult;
 import sorokinuladzimir.com.homebarassistant.ui.adapters.DrinkCardItemAdapter;
