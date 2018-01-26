@@ -21,11 +21,14 @@ import android.arch.persistence.room.Delete;
 import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.Query;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import ru.terrakok.cicerone.commands.Replace;
 import sorokinuladzimir.com.homebarassistant.db.entity.Ingredient;
 
 import static android.arch.persistence.room.OnConflictStrategy.IGNORE;
+import static android.arch.persistence.room.OnConflictStrategy.REPLACE;
 
 @Dao
 public interface IngredientDao {
@@ -43,6 +46,9 @@ public interface IngredientDao {
 
     @Insert(onConflict = IGNORE)
     void insertOrReplaceIngredient(Ingredient... ingredient);
+
+    @Insert(onConflict = REPLACE)
+    Long[] insertOrReplaceIngredient(List<Ingredient> ingredients);
 
     @Delete
     void deleteIngredients(Ingredient ingredient1, Ingredient ingredient2);

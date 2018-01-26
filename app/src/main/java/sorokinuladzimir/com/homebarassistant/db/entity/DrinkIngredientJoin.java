@@ -17,15 +17,15 @@ import android.arch.persistence.room.PrimaryKey;
 public class DrinkIngredientJoin {
 
     @PrimaryKey(autoGenerate = true)
-    public int id;
+    public Long id;
 
-    public int amount;
+    public Long amount;
 
     public String unit;
 
     @ColumnInfo(name="drink_id")
-    public int drinkId;
+    public Long drinkId;
 
     @ColumnInfo(name="ingredient_id")
-    public int ingredientId;
+    public Long ingredientId;
 }

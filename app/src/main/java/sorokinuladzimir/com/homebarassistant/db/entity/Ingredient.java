@@ -7,7 +7,7 @@ import android.arch.persistence.room.PrimaryKey;
 public class Ingredient {
 
     @PrimaryKey(autoGenerate = true)
-    public int id;
+    public Long id;
 
     public String name;
 

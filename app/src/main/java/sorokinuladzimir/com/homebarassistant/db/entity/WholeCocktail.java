@@ -4,7 +4,7 @@ import android.arch.persistence.room.ColumnInfo;
 
 public class WholeCocktail {
 
-    public int id;
+    public Long id;
 
     @ColumnInfo(name="ingredient")
     public String ingredientName;

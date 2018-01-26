@@ -63,6 +63,12 @@ public interface CocktailDao {
     @Insert()
     void insertDrinkIngredient(DrinkIngredientJoin drinkIngredient);
 
+    @Insert()
+    void insertDrinkIngredients(DrinkIngredientJoin... drinkIngredient);
+
+    @Insert()
+    void insertDrinkIngredients(List<DrinkIngredientJoin> drinkIngredient);
+
     @Query("DELETE FROM DrinkIngredientJoin")
     void deleteAll();
 }

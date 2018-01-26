@@ -4,6 +4,7 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -31,11 +32,16 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import sorokinuladzimir.com.homebarassistant.BarApp;
 import sorokinuladzimir.com.homebarassistant.Constants;
 import sorokinuladzimir.com.homebarassistant.R;
 import sorokinuladzimir.com.homebarassistant.db.entity.Drink;
+import sorokinuladzimir.com.homebarassistant.db.entity.DrinkIngredientJoin;
+import sorokinuladzimir.com.homebarassistant.db.entity.Ingredient;
+import sorokinuladzimir.com.homebarassistant.db.mapper.DrinkEntityToDrinkMapper;
 import sorokinuladzimir.com.homebarassistant.net.entity.DrinkEntity;
 import sorokinuladzimir.com.homebarassistant.net.entity.IngredientEntity;
 import sorokinuladzimir.com.homebarassistant.ui.adapters.SingleDrinkIngredientItemAdapter;
@@ -48,6 +54,8 @@ import sorokinuladzimir.com.homebarassistant.ui.subnavigation.RouterProvider;
 
 public class SingleDrinkFragment extends Fragment implements BackButtonListener {
 
+    private final String TAG = "SingleDrinkFragment";
+
     private static final String EXTRA_NAME = "extra_name";
     private static final String EXTRA_BUNDLE = "extra_bundle";
 
@@ -58,6 +66,7 @@ public class SingleDrinkFragment extends Fragment implements BackButtonListener 
     private TextView mDescriptionText;
     private CollapsingToolbarLayout mCollapsingToolbarLayout;
     private FloatingActionButton mFab;
+    private Bitmap mBitmap;
 
     @Nullable
     @Override
@@ -101,13 +110,29 @@ public class SingleDrinkFragment extends Fragment implements BackButtonListener 
             mToolbar.setDisplayHomeAsUpEnabled(true);
     }
 
+    /* Checks if external storage is available for read and write */
+    public boolean isExternalStorageWritable() {
+        String state = Environment.getExternalStorageState();
+        if (Environment.MEDIA_MOUNTED.equals(state)) {
+            return true;
+        }
+        return false;
+    }
+
+    public File getAlbumStorageDir(String albumName) {
+        // Get the directory for the user's public pictures directory.
+        File file = new File(Environment.getExternalStoragePublicDirectory(
+                Environment.DIRECTORY_PICTURES), albumName);
+        if (!file.mkdirs()) {
+            Log.e(TAG, "Directory not created");
+        }
+        return file;
+    }
+
     private void initViews(View rootView) {
         mCollapsingToolbarLayout = rootView.findViewById(R.id.collapsingToolbarLayout);
 
         mDrinkImage = rootView.findViewById(R.id.image_singledrink);
-        /*Glide.with(getContext())
-                .load(Constants.Uri.ABSOLUT_DRINKS_IMAGE_ROOT + mCocktail.getId() + ".png")
-                .into(mDrinkImage);*/
 
         Glide.with(getContext())
                 .load(Constants.Uri.ABSOLUT_DRINKS_IMAGE_ROOT + mCocktail.id + ".png")
@@ -115,35 +140,10 @@ public class SingleDrinkFragment extends Fragment implements BackButtonListener 
 
                           @Override
                           public void onResourceReady(Drawable resource, Transition<? super Drawable> transition) {
-                                Bitmap bitmap = ((BitmapDrawable)resource).getBitmap();
-                                mDrinkImage.setImageBitmap(bitmap);
-                                mDrinkImage.setDrawingCacheEnabled(true);
 
-                                String filename = mCocktail.id + ".png";
-                                String root = getContext().getFilesDir().getPath();
-                                File myDir = new File(root + "/CocktailsLab");
-                                if (! myDir.exists()){
-                                    myDir.mkdirs();
-                                }
-
-                              File imageFile = new File(myDir, filename);
-
-                              try {
-                                  FileOutputStream fos = new FileOutputStream(imageFile);
-                                  bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos);
-                                  fos.close();
-                                  Log.d("shit happens", "File created1" + imageFile.getPath());
-                                  Log.d("shit happens2", "File created2" + imageFile.getPath());
-                                  Log.d("shit happens3", "File created3" + imageFile.getPath());
-                                  Log.d("shit happens4", "File created4" + imageFile.getPath());
-                                  Log.d("shit happens5", "File created5" + imageFile.getPath());
-                                  Log.d("shit happens6", "File created6" + imageFile.getPath());
-                              } catch (FileNotFoundException e) {
-                                  Log.d("shit happens", "File not found: " + e.getMessage());
-                              } catch (IOException e) {
-                                  Log.d("shit happens", "Error accessing file: " + e.getMessage());
-                              }
-
+                              mBitmap = ((BitmapDrawable)resource).getBitmap();
+                              mDrinkImage.setImageBitmap(mBitmap);
+                              mDrinkImage.setDrawingCacheEnabled(true);
                           }
                 });
 
@@ -165,12 +165,7 @@ public class SingleDrinkFragment extends Fragment implements BackButtonListener 
         final RecyclerView rvIngredients = rootView.findViewById(R.id.recycler_singledrink_ingredients);
         rvIngredients.setHasFixedSize(true);
         rvIngredients.setLayoutManager(new LinearLayoutManager(getContext()));
-        mAdapter = new SingleDrinkIngredientItemAdapter(new SingleDrinkIngredientItemAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(IngredientEntity item) {
-                Toast.makeText(getContext(),item.name, Toast.LENGTH_LONG).show();
-            }
-        });
+        mAdapter = new SingleDrinkIngredientItemAdapter(ingredientItem -> Toast.makeText(getContext(), ingredientItem.name, Toast.LENGTH_LONG).show());
 
         mAdapter.setData(mCocktail.ingredients);
         rvIngredients.setAdapter(mAdapter);
@@ -182,24 +177,54 @@ public class SingleDrinkFragment extends Fragment implements BackButtonListener 
 
     private void initFAB(View view){
         mFab = view.findViewById(R.id.single_drink_fab);
-        mFab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                /*Toast.makeText(getContext(),"Добавлен в мои коктейли", Toast.LENGTH_SHORT).show();
-                Glide.with(getContext())
-                        .load(getContext().getFilesDir().getPath()+"/CocktailsLab/vodka-bramble.png")
-                        .into(mDrinkImage);*/
-                //((RouterProvider)getParentFragment()).getRouter().navigateTo(Screens.ADD_DRINK, mCocktail);
-                Drink drink = new Drink();
-                drink.image = mCocktail.id;
-                drink.name = mCocktail.name;
-                drink.tastes = mCocktail.tastes;
-
-                BarApp.getInstance().getRepository().insertDrink(drink);
-                mFab.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_done));
-                mFab.setEnabled(false);
-            }
+        mFab.setOnClickListener(view1 -> {
+            //((RouterProvider)getParentFragment()).getRouter().navigateTo(Screens.ADD_DRINK, mCocktail);
+            addDrinkToDb(mCocktail, mBitmap);
+            mFab.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_done));
+            mFab.setEnabled(false);
         });
+    }
+
+    private void addDrinkToDb(DrinkEntity cocktail, Bitmap bitmap){
+
+        //Save image to albums
+        String filename = cocktail.id + ".png";
+
+        if(isExternalStorageWritable()){
+            File albumDir = getAlbumStorageDir("HomeBar");
+            File imageFile = new File(albumDir, filename);
+
+            try {
+                FileOutputStream fos = new FileOutputStream(imageFile);
+                bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos);
+                fos.close();
+                Log.d(TAG, "File created1" + imageFile.getPath());
+                cocktail.id = imageFile.getAbsolutePath();
+                imageFile.exists();
+            } catch (FileNotFoundException e) {
+                Log.d(TAG, "File not found: " + e.getMessage());
+            } catch (IOException e) {
+                Log.d(TAG, "Error accessing file: " + e.getMessage());
+            }
+        }
+
+        //Save raw ingredients without matching with existing and drinks to db
+        Drink drink = DrinkEntityToDrinkMapper.getInstance().reverseMap(cocktail);
+        Long drinkId = BarApp.getInstance().getRepository().insertDrink(drink);
+
+        Long[] ingredientIds = BarApp.getInstance().getRepository().insertIngredients(drink.ingredients);
+
+        List<DrinkIngredientJoin> list = new ArrayList<>();
+        for (Long ingredientId: ingredientIds) {
+            DrinkIngredientJoin item = new DrinkIngredientJoin();
+            item.ingredientId = ingredientId;
+            item.drinkId = drinkId;
+            item.amount = 0L;
+            item.unit = "Номер в списке " + list.size();
+            list.add(item);
+        }
+
+        BarApp.getInstance().getRepository().insertDrinkIngredientJoin(list);
     }
 
     @Override

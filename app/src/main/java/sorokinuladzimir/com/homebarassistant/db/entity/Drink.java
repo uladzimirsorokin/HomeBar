@@ -7,6 +7,7 @@ import android.arch.persistence.room.PrimaryKey;
 import android.arch.persistence.room.TypeConverters;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import sorokinuladzimir.com.homebarassistant.db.converter.TasteConverter;
 
@@ -15,7 +16,7 @@ import sorokinuladzimir.com.homebarassistant.db.converter.TasteConverter;
 public class Drink {
 
     @PrimaryKey(autoGenerate = true)
-    public int id;
+    public Long id;
 
     public String name;
 
@@ -25,8 +26,10 @@ public class Drink {
 
     public String image;
 
+    @Ignore
+    public List<Ingredient> ingredients;
+
     @Embedded
     public Glass glass;
-
 
 }

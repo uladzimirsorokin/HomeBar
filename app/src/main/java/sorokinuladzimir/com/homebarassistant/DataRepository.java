@@ -6,9 +6,13 @@ import android.arch.lifecycle.Observer;
 import android.support.annotation.Nullable;
 
 import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.FutureTask;
 
 import sorokinuladzimir.com.homebarassistant.db.CocktailsDatabase;
 import sorokinuladzimir.com.homebarassistant.db.entity.Drink;
+import sorokinuladzimir.com.homebarassistant.db.entity.DrinkIngredientJoin;
 import sorokinuladzimir.com.homebarassistant.db.entity.Ingredient;
 import sorokinuladzimir.com.homebarassistant.db.entity.WholeCocktail;
 
@@ -66,16 +70,43 @@ public class DataRepository {
         return mDatabase.getIngredientDao().loadAllIngredients();
     }
 
-    public void insertDrink(final Drink drink) {
-
-        mExecutors.diskIO().execute(new Runnable() {
-            @Override
-            public void run() {
-                mDatabase.getDrinkDao().insertDrink(drink);
-            }
-        });
-
+    public Long insertDrink(final Drink drink) {
+        Long id = -1L;
+        FutureTask<Long> future =
+                new FutureTask<>(() -> mDatabase.getDrinkDao().insertDrink(drink));
+        mExecutors.diskIO().execute(future);
+        try {
+            return future.get();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+        return id;
     }
+
+    public void insertDrinkIngredientJoin(final List<DrinkIngredientJoin> items) {
+        mExecutors.diskIO().execute(() -> mDatabase.getCocktailDao().insertDrinkIngredients(items));
+    }
+
+    public Long[] insertIngredients(final List<Ingredient> ingredients) {
+        FutureTask<Long[]> future =
+                new FutureTask<>(new Callable<Long[]>() {
+                    public Long[] call() {
+                        return mDatabase.getIngredientDao().insertOrReplaceIngredient(ingredients);
+                    }});
+        mExecutors.diskIO().execute(future);
+        try {
+            return future.get();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+        return new Long[]{};
+    }
+
+
 
     public LiveData<List<WholeCocktail>> loadIngredients(final int drinkId) {
         return mDatabase.getCocktailDao().findAllIngredientsByDrinkId(drinkId);

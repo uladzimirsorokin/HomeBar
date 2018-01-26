@@ -76,7 +76,7 @@ public class LocalDrinksListAdapter extends RecyclerView.Adapter<LocalDrinksList
         public void bind(final Drink drinkItem, final OnItemClickListener listener) {
 
             Glide.with(cardImage.getContext())
-                    .load(Constants.Uri.ABSOLUT_DRINKS_IMAGE_ROOT + drinkItem.image + ".png")
+                    .load(drinkItem.image)
                     .into(cardImage);
 
 

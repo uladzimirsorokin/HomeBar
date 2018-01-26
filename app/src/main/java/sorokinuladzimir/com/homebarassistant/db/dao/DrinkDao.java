@@ -44,7 +44,7 @@ public interface DrinkDao {
     LiveData<List<Drink>> loadAllDrinks();
 
     @Insert(onConflict = IGNORE)
-    void insertDrink(Drink drink);
+    Long insertDrink(Drink drink);
 
     @Update(onConflict = REPLACE)
     void updateDrink(Drink book);
