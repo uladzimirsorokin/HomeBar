@@ -8,8 +8,11 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,6 +42,7 @@ public class DrinksListFragment extends Fragment {
     private FloatingActionButton mFab;
     private LocalDrinksListAdapter mAdapter;
     private DrinkListViewModel mViewModel;
+    private ActionBar mToolbar;
 
     @Nullable
     @Override
@@ -47,6 +51,7 @@ public class DrinksListFragment extends Fragment {
 
         initFAB(rootView);
         initRecyclerView(rootView);
+        initToolbar(rootView);
 
         mViewModel = ViewModelProviders.of(getActivity()).get(DrinkListViewModel.class);
         subscribeUi(mViewModel);
@@ -57,20 +62,15 @@ public class DrinksListFragment extends Fragment {
 
     private void subscribeUi(DrinkListViewModel viewModel) {
         // Update the list when the data changes
-        viewModel.getDrinks().observe(this, new Observer<List<Drink>>() {
-            @Override
-            public void onChanged(@Nullable List<Drink> drinks) {
-                if (drinks != null) {
-                    ArrayList<Drink> newDrinks = new ArrayList<>();
-                    newDrinks.addAll(drinks);
-                    mAdapter.setData(newDrinks);
-                    mAdapter.notifyDataSetChanged();
-                } else {
+        viewModel.getDrinks().observe(this, drinks -> {
+            if (drinks != null) {
+                ArrayList<Drink> newDrinks = new ArrayList<>();
+                newDrinks.addAll(drinks);
+                mAdapter.setData(newDrinks);
+                mAdapter.notifyDataSetChanged();
+            } else {
 
-                }
             }
-
-
         });
     }
 
@@ -79,7 +79,7 @@ public class DrinksListFragment extends Fragment {
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         mAdapter = new LocalDrinksListAdapter(drink -> {
-            Toast.makeText(getContext(), drink.name, Toast.LENGTH_SHORT).show();
+            ((RouterProvider)getParentFragment()).getRouter().navigateTo(Screens.LOCAL_DRINK, drink.id);
         });
         recyclerView.setAdapter(mAdapter);
     }
@@ -94,15 +94,17 @@ public class DrinksListFragment extends Fragment {
         return fragment;
     }
 
+    private void initToolbar(View view) {
+        Toolbar toolbar = view.findViewById(R.id.toolbar);
+        ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
+        mToolbar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+        mToolbar.setTitle(R.string.drinks_list_fragment_title);
+    }
+
     private void initFAB(View view){
         mFab = view.findViewById(R.id.fab);
         mFab.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_add));
-        mFab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                ((RouterProvider)getParentFragment()).getRouter().navigateTo(Screens.ADD_DRINK, null);
-            }
-        });
+        mFab.setOnClickListener(view1 -> ((RouterProvider)getParentFragment()).getRouter().navigateTo(Screens.ADD_DRINK, null));
     }
 
 

@@ -97,12 +97,12 @@ public class AddDrinkFragment extends Fragment implements BackButtonListener {
         return rootView;
     }
 
-    public static AddDrinkFragment getNewInstance(String name, DrinkEntity drink) {
+    public static AddDrinkFragment getNewInstance(String name, Bundle drink) {
         AddDrinkFragment fragment = new AddDrinkFragment();
 
         Bundle arguments = new Bundle();
         arguments.putString(EXTRA_NAME, name);
-        arguments.putSerializable(EXTRA_DRINK, drink);
+        arguments.putBundle(EXTRA_DRINK, drink);
         fragment.setArguments(arguments);
 
         return fragment;

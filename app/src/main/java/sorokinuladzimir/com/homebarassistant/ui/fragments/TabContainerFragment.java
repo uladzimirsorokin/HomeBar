@@ -1,5 +1,6 @@
 package sorokinuladzimir.com.homebarassistant.ui.fragments;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -51,7 +52,7 @@ public class TabContainerFragment extends Fragment implements RouterProvider, Ba
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fr_tab_container, container, false);
-
+        Context context = getContext();
         return rootView;
     }
 
@@ -103,7 +104,9 @@ public class TabContainerFragment extends Fragment implements RouterProvider, Ba
                         case Screens.SINGLE_DRINK:
                             return SingleDrinkFragment.getNewInstance(getContainerName(),(Bundle) data);
                         case Screens.ADD_DRINK:
-                            return AddDrinkFragment.getNewInstance(getContainerName(),(DrinkEntity) data);
+                            return AddDrinkFragment.getNewInstance(getContainerName(),(Bundle) data);
+                        case Screens.LOCAL_DRINK:
+                            return LocalDrinkFragment.getNewInstance(getContainerName(), (Long) data);
                         default:
                             return null;
                     }

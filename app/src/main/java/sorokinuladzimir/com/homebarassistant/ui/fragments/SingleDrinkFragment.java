@@ -51,6 +51,7 @@ import sorokinuladzimir.com.homebarassistant.ui.subnavigation.RouterProvider;
 /**
  * Created by sorok on 18.10.2017.
  */
+//TODO: need viewmodel to interact with repositiry to get net drink or smth like that
 
 public class SingleDrinkFragment extends Fragment implements BackButtonListener {
 
@@ -185,6 +186,7 @@ public class SingleDrinkFragment extends Fragment implements BackButtonListener 
         });
     }
 
+    //TODO: add image on diskIO thread, move method to repository
     private void addDrinkToDb(DrinkEntity cocktail, Bitmap bitmap){
 
         //Save image to albums

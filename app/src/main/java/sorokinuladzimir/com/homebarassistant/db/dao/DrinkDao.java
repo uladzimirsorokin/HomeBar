@@ -38,7 +38,10 @@ import static android.arch.persistence.room.OnConflictStrategy.REPLACE;
 public interface DrinkDao {
 
     @Query("SELECT * FROM Drink WHERE id = :id")
-    LiveData<Drink> loadDrinkById(int id);
+    LiveData<Drink> loadDrinkById(Long id);
+
+    @Query("SELECT * FROM Drink WHERE id = :id")
+    Drink getDrink(Long id);
 
     @Query("SELECT * FROM Drink")
     LiveData<List<Drink>> loadAllDrinks();

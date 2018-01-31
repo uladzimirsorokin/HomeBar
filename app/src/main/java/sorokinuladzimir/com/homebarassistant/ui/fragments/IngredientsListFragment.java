@@ -16,8 +16,10 @@ import android.view.ViewGroup;
 
 import java.util.ArrayList;
 
+import sorokinuladzimir.com.homebarassistant.BarApp;
 import sorokinuladzimir.com.homebarassistant.Constants;
 import sorokinuladzimir.com.homebarassistant.R;
+import sorokinuladzimir.com.homebarassistant.db.entity.Ingredient;
 import sorokinuladzimir.com.homebarassistant.net.entity.IngredientEntity;
 import sorokinuladzimir.com.homebarassistant.ui.adapters.IngredientsListItemAdapter;
 
@@ -29,7 +31,7 @@ import sorokinuladzimir.com.homebarassistant.ui.adapters.IngredientsListItemAdap
 public class IngredientsListFragment extends Fragment {
 
     private static final String EXTRA_NAME = "ilf_extra_name";
-    private ArrayList<IngredientEntity> mIngredientList;
+    private ArrayList<Ingredient> mIngredientList = new ArrayList<>();
     private IngredientsListItemAdapter mAdapter;
     private ActionBar mToolbar;
     private FloatingActionButton mFab;
@@ -39,20 +41,7 @@ public class IngredientsListFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fr_drinks_list, container, false);
 
-        if(savedInstanceState != null) {
-            mIngredientList = (ArrayList<IngredientEntity>) savedInstanceState.getSerializable("ingredientsList");
-        }
-
-        initFAB(rootView);
-        initToolbar(rootView);
-
-        mIngredientList = new ArrayList<IngredientEntity>();
-        for (int i = 0; i < 20; i++) {
-            IngredientEntity ingredient = new IngredientEntity();
-            ingredient.name = "Vodochka so wkvarochkoi ololololo"+i;
-            ingredient.url = "https://www.absolut.com/globalassets/images/products/absolut-raspberri/absolut-raspberri-listing.png";
-            mIngredientList.add(ingredient);
-        }
+        mIngredientList.addAll(BarApp.getInstance().getRepository().loadIngredients());
 
         initRecyclerView(rootView);
 
@@ -94,9 +83,8 @@ public class IngredientsListFragment extends Fragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         mAdapter = new IngredientsListItemAdapter(new IngredientsListItemAdapter.OnItemClickListener() {
             @Override
-            public void onItemClick(IngredientEntity ingredient) {
-                Bundle bundle = new Bundle();
-                bundle.putSerializable(Constants.Extra.INGREDIENT, ingredient);
+            public void onItemClick(Ingredient ingredient) {
+
                 //((RouterProvider)getParentFragment()).getRouter().navigateTo(Screens.SINGLE_DRINK, bundle);
             }
         });
@@ -105,12 +93,6 @@ public class IngredientsListFragment extends Fragment {
             mAdapter.setData(mIngredientList);
         }
         recyclerView.setAdapter(mAdapter);
-    }
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putSerializable("ingredientsList", mIngredientList);
     }
 
 }

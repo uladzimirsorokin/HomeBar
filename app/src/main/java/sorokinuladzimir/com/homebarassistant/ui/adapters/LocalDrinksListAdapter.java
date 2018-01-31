@@ -9,6 +9,8 @@ import android.widget.RatingBar;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.RequestOptions;
 
 import java.util.ArrayList;
 
@@ -77,6 +79,8 @@ public class LocalDrinksListAdapter extends RecyclerView.Adapter<LocalDrinksList
 
             Glide.with(cardImage.getContext())
                     .load(drinkItem.image)
+                    .apply(RequestOptions.diskCacheStrategyOf(DiskCacheStrategy.ALL))
+                    .apply(RequestOptions.noAnimation())
                     .into(cardImage);
 
 

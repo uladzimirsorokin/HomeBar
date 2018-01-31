@@ -58,7 +58,14 @@ public interface CocktailDao {
             "INNER JOIN Ingredient ON DrinkIngredientJoin.ingredient_id = Ingredient.id " +
             "INNER JOIN Drink ON DrinkIngredientJoin.drink_id = Drink.id " +
             "WHERE drink_id Like :drinkID")
-    LiveData<List<WholeCocktail>> findAllIngredientsByDrinkId(int drinkID);
+    LiveData<List<WholeCocktail>> findAllIngredientsByDrinkId(Long drinkID);
+
+    @Query("SELECT DrinkIngredientJoin.id, Ingredient.name as ingredient, Drink.name as drink, DrinkIngredientJoin.amount, DrinkIngredientJoin.unit " +
+            "FROM DrinkIngredientJoin " +
+            "INNER JOIN Ingredient ON DrinkIngredientJoin.ingredient_id = Ingredient.id " +
+            "INNER JOIN Drink ON DrinkIngredientJoin.drink_id = Drink.id " +
+            "WHERE drink_id Like :drinkID")
+    List<WholeCocktail> getWholeCocktailIngr(Long drinkID);
 
     @Insert()
     void insertDrinkIngredient(DrinkIngredientJoin drinkIngredient);

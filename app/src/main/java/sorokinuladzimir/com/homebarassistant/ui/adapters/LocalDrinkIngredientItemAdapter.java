@@ -11,29 +11,30 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import sorokinuladzimir.com.homebarassistant.R;
-import sorokinuladzimir.com.homebarassistant.db.entity.Ingredient;
-import sorokinuladzimir.com.homebarassistant.net.entity.IngredientEntity;
+import sorokinuladzimir.com.homebarassistant.db.entity.WholeCocktail;
 
 
-public class IngredientsListItemAdapter extends RecyclerView.Adapter<IngredientsListItemAdapter.IngredientViewHolder> {
 
-    public IngredientsListItemAdapter(OnItemClickListener listener) {
+public class LocalDrinkIngredientItemAdapter extends RecyclerView.Adapter<LocalDrinkIngredientItemAdapter.IngredientViewHolder> {
+
+    public LocalDrinkIngredientItemAdapter(OnItemClickListener listener) {
         this.listener = listener;
     }
 
     public interface OnItemClickListener {
-        void onItemClick(Ingredient item);
+        void onItemClick(WholeCocktail item);
     }
 
-    private ArrayList<Ingredient> mData = new ArrayList();
+    private List<WholeCocktail> mData = new ArrayList();
     private final OnItemClickListener listener;
     
     @Override
     public IngredientViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         return new IngredientViewHolder(LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.ingredients_list_single_ingredient_item,parent,false));
+                .inflate(R.layout.single_drink_ingredient_item,parent,false));
     }
 
     @Override
@@ -46,7 +47,7 @@ public class IngredientsListItemAdapter extends RecyclerView.Adapter<Ingredients
         return mData.size();
     }
 
-    public void setData(ArrayList<Ingredient> ingredients) {
+    public void setData(List<WholeCocktail> ingredients) {
         mData.clear();
         mData.addAll(ingredients);
         notifyDataSetChanged();
@@ -59,18 +60,17 @@ public class IngredientsListItemAdapter extends RecyclerView.Adapter<Ingredients
 
         public IngredientViewHolder(View itemView) {
             super(itemView);
-            ingredientName = itemView.findViewById(R.id.tv_ingredient_item);
-            ingredientImage = itemView.findViewById(R.id.image_ingredient_item);
+            ingredientName = itemView.findViewById(R.id.tv_singledrink_ingredient);
+            ingredientImage = itemView.findViewById(R.id.image_singledrink_ingredient_item);
         }
 
-        public void bind(final Ingredient item, final OnItemClickListener listener) {
+        public void bind(final WholeCocktail item, final OnItemClickListener listener) {
 
-            if(item.name != null)ingredientName.setText(item.name);
+            if(item.ingredientName != null)ingredientName.setText(item.ingredientName);
 
-            if(item.image != null){
+            if(item.drinkName != null){
                 Glide.with(ingredientImage.getContext())
-                        .load(item.image)
-                        .apply(RequestOptions.centerCropTransform())
+                        .load(R.drawable.bottles)
                         .into(ingredientImage);
             }
 
