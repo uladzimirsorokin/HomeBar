@@ -16,6 +16,10 @@ public class Constants {
         public static final String ABSOLUT_API_SECRET_KEY = "7013678e724a477d8115a877ef62dabf";
     }
 
+    public static class Strings {
+        public static final String ALBUM_NAME = "HomeBar";
+    }
+
     public static class Values {
         public static final int DEFAULT_ITEM_AMOUNT = 10;
     }

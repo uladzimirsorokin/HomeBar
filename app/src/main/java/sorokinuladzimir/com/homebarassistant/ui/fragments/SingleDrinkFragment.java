@@ -148,21 +148,6 @@ public class SingleDrinkFragment extends Fragment implements BackButtonListener 
                           }
                 });
 
-
-        /*//mToolbar.setTitle(mCocktail.getName());
-        String mColor = mCocktail.getColor().toLowerCase();
-        if ((mColor != "any") && (mColor != "white")){
-            String[] colors = getResources().getStringArray(R.array.colors_name);
-            int colorId = 0;
-            for (int i = 0; i < colors.length; i++) {
-                if(colors[i].equals(mColor)) {
-                    colorId = i;
-                }
-            }
-
-            //if(colorId > 0) mToolbar.setBackgroundDrawable(new ColorDrawable(getResources().getIntArray(R.array.colors)[colorId]));
-        }*/
-
         final RecyclerView rvIngredients = rootView.findViewById(R.id.recycler_singledrink_ingredients);
         rvIngredients.setHasFixedSize(true);
         rvIngredients.setLayoutManager(new LinearLayoutManager(getContext()));

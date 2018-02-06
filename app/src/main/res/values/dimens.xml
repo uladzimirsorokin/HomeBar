@@ -9,4 +9,6 @@
     <dimen name="ingredient_app_bar_height">300dp</dimen>
     <dimen name="expanded_toolbar_title_margin_start">36dp</dimen>
 
+    <dimen name="list_subheader_height">48dp</dimen>
+
 </resources>

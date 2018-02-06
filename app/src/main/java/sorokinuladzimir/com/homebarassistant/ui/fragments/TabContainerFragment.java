@@ -107,6 +107,10 @@ public class TabContainerFragment extends Fragment implements RouterProvider, Ba
                             return AddDrinkFragment.getNewInstance(getContainerName(),(Bundle) data);
                         case Screens.LOCAL_DRINK:
                             return LocalDrinkFragment.getNewInstance(getContainerName(), (Long) data);
+                        case Screens.LOCAL_INGREDIENT:
+                            return IngredientFragment.getNewInstance(getContainerName(), (Long) data);
+                        case Screens.ADD_INGREDIENT:
+                            return AddIngredientFragment.getNewInstance(getContainerName(), (Long) data);
                         default:
                             return null;
                     }

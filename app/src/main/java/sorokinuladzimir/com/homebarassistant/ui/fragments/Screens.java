@@ -14,6 +14,7 @@ public class Screens {
     public static final String SEARCH_DRINKS = "search drinks screen";
     public static final String SINGLE_DRINK = "single drink screen";
     public static final String LOCAL_DRINK = "local drink screen";
+    public static final String LOCAL_INGREDIENT = "local ingredient screen";
     public static final String SINGLE_DRINK_MAIN = "single drink main screen";
     public static final String ADD_DRINK = "add drink screen";
     public static final String ADD_INGREDIENT = "add ingredient screen";

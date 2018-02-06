@@ -1,5 +1,7 @@
 package sorokinuladzimir.com.homebarassistant.ui.fragments;
 
+import android.arch.lifecycle.ViewModelProviders;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -14,14 +16,19 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.aurelhubert.ahbottomnavigation.AHBottomNavigation;
+
 import java.util.ArrayList;
 
 import sorokinuladzimir.com.homebarassistant.BarApp;
 import sorokinuladzimir.com.homebarassistant.Constants;
 import sorokinuladzimir.com.homebarassistant.R;
+import sorokinuladzimir.com.homebarassistant.db.entity.Drink;
 import sorokinuladzimir.com.homebarassistant.db.entity.Ingredient;
 import sorokinuladzimir.com.homebarassistant.net.entity.IngredientEntity;
 import sorokinuladzimir.com.homebarassistant.ui.adapters.IngredientsListItemAdapter;
+import sorokinuladzimir.com.homebarassistant.ui.subnavigation.RouterProvider;
+import sorokinuladzimir.com.homebarassistant.viewmodel.IngredientListViewModel;
 
 
 /**
@@ -31,23 +38,39 @@ import sorokinuladzimir.com.homebarassistant.ui.adapters.IngredientsListItemAdap
 public class IngredientsListFragment extends Fragment {
 
     private static final String EXTRA_NAME = "ilf_extra_name";
-    private ArrayList<Ingredient> mIngredientList = new ArrayList<>();
+
     private IngredientsListItemAdapter mAdapter;
     private ActionBar mToolbar;
     private FloatingActionButton mFab;
+    private IngredientListViewModel mViewModel;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fr_drinks_list, container, false);
 
-        mIngredientList.addAll(BarApp.getInstance().getRepository().loadIngredients());
-
+        initFAB(rootView);
         initRecyclerView(rootView);
+        initToolbar(rootView);
+
+
+        mViewModel = ViewModelProviders.of(this).get(IngredientListViewModel.class);
+        subscribeUi(mViewModel);
 
         return rootView;
     }
 
+
+    private void subscribeUi(IngredientListViewModel model) {
+
+        model.getIngredients().observe(this, ingredients -> {
+            if (ingredients != null) {
+                mAdapter.setData(ingredients);
+            } else {
+
+            }
+        });
+    }
 
     public static IngredientsListFragment getNewInstance(String name) {
         IngredientsListFragment fragment = new IngredientsListFragment();
@@ -62,11 +85,8 @@ public class IngredientsListFragment extends Fragment {
     private void initFAB(View view){
         mFab = view.findViewById(R.id.fab);
         mFab.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_add));
-        mFab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //((RouterProvider)getParentFragment()).getRouter().navigateTo(Screens.SEARCH_DRINKS);
-            }
+        mFab.setOnClickListener(view1 -> {
+            ((RouterProvider)getParentFragment()).getRouter().navigateTo(Screens.ADD_INGREDIENT,null);
         });
     }
 
@@ -81,17 +101,8 @@ public class IngredientsListFragment extends Fragment {
         final RecyclerView recyclerView = rootView.findViewById(R.id.recycler_view);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        mAdapter = new IngredientsListItemAdapter(new IngredientsListItemAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(Ingredient ingredient) {
-
-                //((RouterProvider)getParentFragment()).getRouter().navigateTo(Screens.SINGLE_DRINK, bundle);
-            }
-        });
-
-        if(mIngredientList != null){
-            mAdapter.setData(mIngredientList);
-        }
+        mAdapter = new IngredientsListItemAdapter(ingredient ->
+                ((RouterProvider)getParentFragment()).getRouter().navigateTo(Screens.LOCAL_INGREDIENT, ingredient.id));
         recyclerView.setAdapter(mAdapter);
     }
 

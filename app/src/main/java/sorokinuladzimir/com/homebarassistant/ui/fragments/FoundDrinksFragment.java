@@ -60,8 +60,8 @@ public class FoundDrinksFragment extends Fragment {
         }
 
         initFAB(rootView);
-        initToolbar(rootView);
         loadDrinks();
+        initToolbar(rootView);
         initRecyclerView(rootView);
 
         return rootView;
@@ -93,7 +93,7 @@ public class FoundDrinksFragment extends Fragment {
         Toolbar toolbar = view.findViewById(R.id.toolbar);
         ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
         mToolbar = ((AppCompatActivity) getActivity()).getSupportActionBar();
-        mToolbar.setTitle(R.string.search_result_toolbar_title);
+        mToolbar.setTitle(R.string.search_cocktails_toolbar_title);
     }
 
     private void initRecyclerView(View rootView) {

@@ -67,7 +67,6 @@ public class DrinksListFragment extends Fragment {
                 ArrayList<Drink> newDrinks = new ArrayList<>();
                 newDrinks.addAll(drinks);
                 mAdapter.setData(newDrinks);
-                mAdapter.notifyDataSetChanged();
             } else {
 
             }
@@ -104,7 +103,8 @@ public class DrinksListFragment extends Fragment {
     private void initFAB(View view){
         mFab = view.findViewById(R.id.fab);
         mFab.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_add));
-        mFab.setOnClickListener(view1 -> ((RouterProvider)getParentFragment()).getRouter().navigateTo(Screens.ADD_DRINK, null));
+        mFab.setOnClickListener(view1 ->
+                ((RouterProvider)getParentFragment()).getRouter().navigateTo(Screens.ADD_DRINK, null));
     }
 
 

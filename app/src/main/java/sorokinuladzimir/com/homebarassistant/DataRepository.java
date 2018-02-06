@@ -27,8 +27,9 @@ public class DataRepository {
 
     private final CocktailsDatabase mDatabase;
     private MediatorLiveData<List<Drink>> mObservableDrinks;
-    private MediatorLiveData<Drink> mObservableDrink;
-    private MediatorLiveData<List<WholeCocktail>> mObservableIngredients;
+    private MediatorLiveData<List<Ingredient>> mObservableIngredients;
+/*    private MediatorLiveData<Drink> mObservableDrink;
+    private MediatorLiveData<List<WholeCocktail>> mObservableIngredients;*/
 
 
     private AppExecutors mExecutors;
@@ -38,7 +39,6 @@ public class DataRepository {
         mExecutors = executors;
 
         mObservableDrinks = new MediatorLiveData<>();
-        mObservableDrink = new MediatorLiveData<>();
         mObservableIngredients = new MediatorLiveData<>();
 
         mObservableDrinks.addSource(mDatabase.getDrinkDao().loadAllDrinks(),
@@ -47,6 +47,13 @@ public class DataRepository {
                         mObservableDrinks.postValue(drinks);
                     }
                 });
+
+        mObservableIngredients.addSource(mDatabase.getIngredientDao().loadIngredients(),
+        ingredients -> {
+            if (mDatabase.getDatabaseCreated().getValue() != null) {
+                mObservableIngredients.postValue(ingredients);
+            }
+        });
     }
 
     public static DataRepository getInstance(final CocktailsDatabase database,AppExecutors executors) {
@@ -67,27 +74,7 @@ public class DataRepository {
         return mObservableDrinks;
     }
 
-    public LiveData<Drink> getDrink(Long drinkId) {
-
-        mObservableDrink.addSource(loadDrink(drinkId),
-                drink -> {
-                    if (mDatabase.getDatabaseCreated().getValue() != null) {
-                        mObservableDrink.postValue(drink);
-                    }
-                });
-
-        return mObservableDrink;
-    }
-
-    public LiveData<List<WholeCocktail>> getIngredients(Long drinkId) {
-
-        mObservableIngredients.addSource(loadIngredients(drinkId),
-                ingredients -> {
-                    if (mDatabase.getDatabaseCreated().getValue() != null) {
-                        mObservableIngredients.postValue(ingredients);
-                    }
-                });
-
+    public LiveData<List<Ingredient>> getIngredients() {
         return mObservableIngredients;
     }
 
@@ -107,6 +94,10 @@ public class DataRepository {
 
     public LiveData<Drink> loadDrink(final Long drinkId) {
         return mDatabase.getDrinkDao().loadDrinkById(drinkId);
+    }
+
+    public LiveData<Ingredient> loadIngredient(final Long ingredientId) {
+        return mDatabase.getIngredientDao().loadIngredient(ingredientId);
     }
 
     public Drink getCustomDrink(final Long drinkId) {
@@ -153,6 +144,22 @@ public class DataRepository {
         }
         return id;
     }
+
+    public Long insertIngredient(final Ingredient ingredient) {
+        Long id = -1L;
+        FutureTask<Long> future =
+                new FutureTask<>(() -> mDatabase.getIngredientDao().insertOrReplaceIngredient(ingredient));
+        mExecutors.diskIO().execute(future);
+        try {
+            return future.get();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+        return id;
+    }
+
 
     public void insertDrinkIngredientJoin(final List<DrinkIngredientJoin> items) {
         mExecutors.diskIO().execute(() -> mDatabase.getCocktailDao().insertDrinkIngredients(items));

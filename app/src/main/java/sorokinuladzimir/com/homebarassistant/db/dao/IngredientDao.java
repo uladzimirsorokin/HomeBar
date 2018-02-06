@@ -16,6 +16,7 @@
 
 package sorokinuladzimir.com.homebarassistant.db.dao;
 
+import android.arch.lifecycle.LiveData;
 import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Delete;
 import android.arch.persistence.room.Insert;
@@ -35,11 +36,20 @@ public interface IngredientDao {
     @Query("SELECT * FROM Ingredient")
     List<Ingredient> loadAllIngredients();
 
-    @Query("SELECT * FROM Ingredient where id = :id")
-    Ingredient loadIngredientById(int id);
+    @Query("SELECT * FROM Ingredient")
+    LiveData<List<Ingredient>> loadIngredients();
 
-    @Insert(onConflict = IGNORE)
+    @Query("SELECT * FROM Ingredient where id = :id")
+    Ingredient loadIngredientById(Long id);
+
+    @Query("SELECT * FROM Ingredient where id = :id")
+    LiveData<Ingredient> loadIngredient(Long id);
+
+    @Insert(onConflict = REPLACE)
     void insertIngredient(Ingredient ingredient);
+
+    @Insert(onConflict = REPLACE)
+    Long insertOrReplaceIngredient(Ingredient ingredient);
 
     @Delete
     void deleteIngredient(Ingredient ingredient);

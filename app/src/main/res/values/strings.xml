@@ -22,12 +22,13 @@
     <string name="drinks_toolbar_title">Мои коктейли</string>
     <string name="search_result_toolbar_title">Результаты поиска</string>
     <string name="ingredients_list_toolbar_title">Мои ингридиенты</string>
-    <string name="et_singledrink_ingredients">Ingridients</string>
-    <string name="et_singledrink_preparation">Preparation</string>
+    <string name="et_singledrink_ingredients">Ингредиенты</string>
+    <string name="et_singledrink_preparation">Приготовление</string>
     <string name="tv_singledrink_notes">Заметки</string>
     <string name="search_drink_fragment_title">Поиск</string>
     <string name="ingredient_description_title">Описание</string>
     <string name="drinks_list_fragment_title">Мои коктейли</string>
+    <string name="search_cocktails_toolbar_title">Поиск коктейлей</string>
 
 
 </resources>

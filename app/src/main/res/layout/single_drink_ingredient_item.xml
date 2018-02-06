@@ -3,31 +3,63 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="72dp">
 
     <ImageView
         android:id="@+id/image_singledrink_ingredient_item"
-        android:layout_width="64dp"
-        android:layout_height="64dp"
-        android:layout_margin="8dp"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:layout_width="72dp"
+        android:layout_height="72dp"
         android:src="@drawable/alco"/>
+
+    <ImageView
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_margin="16dp"
+        android:background="@drawable/oval"/>
 
     <TextView
         android:id="@+id/tv_singledrink_ingredient"
         android:layout_toRightOf="@+id/image_singledrink_ingredient_item"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="8dp"
+        android:paddingRight="16dp"
+        android:paddingTop="16dp"
         android:singleLine="true"
         android:ellipsize="end"
-        android:textSize="24sp"
-        android:textColor="#000000"
-        android:text="Some ingredient"/>
+        android:textSize="16sp"
+        android:textColor="#f3000000"
+        android:fontFamily="sans-serif"
+        android:text="Grey goose vodka"/>
 
-    <View
-        android:layout_height="1dp"
-        android:layout_width="match_parent"
-        android:layout_below="@+id/image_singledrink_ingredient_item"
-        android:background="#22000000"/>
+    <TextView
+        android:id="@+id/tv_singledrink_amount"
+        android:layout_toRightOf="@+id/image_singledrink_ingredient_item"
+        android:layout_below="@+id/tv_singledrink_ingredient"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:singleLine="true"
+        android:ellipsize="end"
+        android:textSize="14sp"
+        android:textColor="#84000000"
+        android:fontFamily="sans-serif"
+        android:text="10"/>
+
+    <TextView
+        android:id="@+id/tv_singledrink_unit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tv_singledrink_ingredient"
+        android:layout_toRightOf="@+id/tv_singledrink_amount"
+        android:singleLine="true"
+        android:ellipsize="end"
+        android:paddingLeft="4dp"
+        android:paddingRight="16dp"
+        android:text="dash"
+        android:textColor="#84000000"
+        android:fontFamily="sans-serif"
+        android:textSize="14sp" />
 
 </RelativeLayout>
