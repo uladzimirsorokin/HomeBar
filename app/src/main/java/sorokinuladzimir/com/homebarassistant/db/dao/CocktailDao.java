@@ -67,6 +67,9 @@ public interface CocktailDao {
             "WHERE drink_id Like :drinkID")
     List<WholeCocktail> getWholeCocktailIngr(Long drinkID);
 
+    @Query("SELECT COUNT(*) from DrinkIngredientJoin where ingredient_id = :id")
+    int countCocktailsWithIngridient(Long id);
+
     @Insert()
     void insertDrinkIngredient(DrinkIngredientJoin drinkIngredient);
 

@@ -20,49 +20,135 @@ import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MediatorLiveData;
+import android.arch.lifecycle.MutableLiveData;
+import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModel;
 import android.arch.lifecycle.ViewModelProvider;
+import android.content.Context;
+import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import sorokinuladzimir.com.homebarassistant.BarApp;
+import sorokinuladzimir.com.homebarassistant.DataRepository;
 import sorokinuladzimir.com.homebarassistant.db.entity.Ingredient;
 
 
 
 public class AddIngredientViewModel extends AndroidViewModel {
 
-    // MediatorLiveData can observe other LiveData objects and react on their emissions.
     private final MediatorLiveData<Ingredient> mObservableIngredient;
 
+    private final MediatorLiveData<String> mObservableCurrentImagePath;
 
     private final Long mIngredientId;
+
     private final LiveData<Ingredient> mLiveIngredient;
+
+    private Uri mPhotoUri = null;
+
+    private boolean mIsNewIngredient = true;
+
+    private boolean mIsImageRemoved = false;
+
+    private DataRepository mRepository;
 
     public AddIngredientViewModel(Application application, Long ingredientId) {
         super(application);
 
         mIngredientId = ingredientId;
 
-        mObservableIngredient = new MediatorLiveData<>();
+        mRepository = BarApp.getInstance().getRepository();
 
-        // set by default null, until we get data from the database.
+        mObservableIngredient = new MediatorLiveData<>();
         mObservableIngredient.setValue(null);
 
+        mObservableCurrentImagePath = new MediatorLiveData<>();
+        mObservableCurrentImagePath.setValue(null);
+        mObservableCurrentImagePath.addSource(mRepository.getObservableImagePath(), imagePath -> {
+            mObservableCurrentImagePath.setValue(imagePath);
+        });
 
-        mLiveIngredient = BarApp.getInstance().getRepository().loadIngredient(mIngredientId);
-
-        // observe the changes of the products from the database and forward them
-        mObservableIngredient.addSource(mLiveIngredient, ingredient -> mObservableIngredient.setValue(ingredient));
+        if(mIngredientId != -1L){
+            mIsNewIngredient = false;
+            mLiveIngredient = BarApp.getInstance().getRepository().loadIngredient(mIngredientId);
+            mObservableIngredient.addSource(mLiveIngredient, ingredient -> mObservableIngredient.setValue(ingredient));
+        } else {
+            mLiveIngredient = null;
+        }
 
     }
 
-    /**
-     * Expose the LiveData Products query so the UI can observe it.
-     */
     public LiveData<Ingredient> getIngredient() {
         return mObservableIngredient;
     }
 
+    public MutableLiveData<String> getCurrentImagePath() {
+        return mObservableCurrentImagePath;
+    }
+
+    public Uri getPhotoUri() {
+        return mPhotoUri;
+    }
+
+    public boolean getIsNewIngredient() {
+        return mIsNewIngredient;
+    }
+
+    public Boolean getIsImageRemoved() {
+        return mIsImageRemoved;
+    }
+
+    public Uri createPhotoFile(Context context, String albumName) {
+        mPhotoUri = BarApp.getInstance().getRepository().createImageFile(context, albumName);
+        return mPhotoUri;
+    }
+
+    public void handleImage(Context context, String albumName, Uri imageUri, int sizeForScale, boolean deleteSource){
+        mIsImageRemoved = false;
+        removeImageFile(context, getIngredient().getValue() == null ? null : getIngredient().getValue().image,
+                getCurrentImagePath().getValue(), false);
+        mRepository.saveImageToAlbum(context, albumName, imageUri, sizeForScale, deleteSource);
+    }
+
+    public void saveIngredient(Context context, String name, String description){
+        removeImageFile(context, getIngredient().getValue() == null ? null : getIngredient().getValue().image,
+                getCurrentImagePath().getValue(), true);
+        Ingredient ingredient = mObservableIngredient.getValue();
+        if(ingredient == null) ingredient = new Ingredient();
+        ingredient.image = mObservableCurrentImagePath.getValue();
+        ingredient.name = name;
+        ingredient.description = description;
+        BarApp.getInstance().getRepository().insertIngredient(ingredient);
+    }
+
+    public int deleteIngredient() {
+        return BarApp.getInstance().getRepository().deleteIngredient(mIngredientId);
+    }
+
+    public void removeCurrentImage(Context context) {
+        mIsImageRemoved = true;
+        removeImageFile(context, getIngredient().getValue() == null ? null : getIngredient().getValue().image,
+                getCurrentImagePath().getValue(), false);
+        getCurrentImagePath().setValue(null);
+    }
+
+    public void removeImageFile(Context context, String dbPath, String currentPath, Boolean savingIngredient){
+
+        String deletePath = null;
+
+        if (savingIngredient) {
+            if (dbPath != null && currentPath != dbPath) {
+                deletePath = dbPath;
+            }
+        } else {
+            if (currentPath != null && currentPath != dbPath) {
+                deletePath = currentPath;
+            }
+        }
+
+        if (deletePath != null) BarApp.getInstance().getRepository().deleteImage(context, deletePath);
+    }
 
     public static class Factory extends ViewModelProvider.NewInstanceFactory {
 
@@ -79,7 +165,7 @@ public class AddIngredientViewModel extends AndroidViewModel {
         @Override
         public <T extends ViewModel> T create(Class<T> modelClass) {
             //noinspection unchecked
-            return (T) new IngredientViewModel(mApplication, mIngredientId);
+            return (T) new AddIngredientViewModel(mApplication, mIngredientId);
         }
     }
 

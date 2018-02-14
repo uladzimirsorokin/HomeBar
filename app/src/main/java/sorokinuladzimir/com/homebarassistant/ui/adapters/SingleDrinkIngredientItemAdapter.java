@@ -11,8 +11,10 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import sorokinuladzimir.com.homebarassistant.R;
+import sorokinuladzimir.com.homebarassistant.db.entity.Ingredient;
 import sorokinuladzimir.com.homebarassistant.net.entity.IngredientEntity;
 
 
@@ -23,16 +25,16 @@ public class SingleDrinkIngredientItemAdapter extends RecyclerView.Adapter<Singl
     }
 
     public interface OnItemClickListener {
-        void onItemClick(IngredientEntity item);
+        void onItemClick(Ingredient item);
     }
 
-    private ArrayList<IngredientEntity> mData = new ArrayList();
+    private ArrayList<Ingredient> mData = new ArrayList();
     private final OnItemClickListener listener;
     
     @Override
     public IngredientViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         return new IngredientViewHolder(LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.single_drink_ingredient_item,parent,false));
+                .inflate(R.layout.single_drink_ingredient_item, parent,false));
     }
 
     @Override
@@ -45,7 +47,7 @@ public class SingleDrinkIngredientItemAdapter extends RecyclerView.Adapter<Singl
         return mData.size();
     }
 
-    public void setData(ArrayList<IngredientEntity> ingredients) {
+    public void setData(List<Ingredient> ingredients) {
         mData.clear();
         mData.addAll(ingredients);
         notifyDataSetChanged();
@@ -62,13 +64,13 @@ public class SingleDrinkIngredientItemAdapter extends RecyclerView.Adapter<Singl
             ingredientImage = itemView.findViewById(R.id.image_singledrink_ingredient_item);
         }
 
-        public void bind(final IngredientEntity item, final OnItemClickListener listener) {
+        public void bind(final Ingredient item, final OnItemClickListener listener) {
 
             if(item.name != null)ingredientName.setText(item.name);
 
-            if(item.url != null){
+            if(item.image != null){
                 Glide.with(ingredientImage.getContext())
-                        .load(item.url)
+                        .load(item.image)
                         .apply(RequestOptions.centerCropTransform())
                         .into(ingredientImage);
             }

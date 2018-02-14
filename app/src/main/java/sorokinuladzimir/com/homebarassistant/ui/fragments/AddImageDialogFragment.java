@@ -14,10 +14,11 @@ public class AddImageDialogFragment extends DialogFragment {
         void addImageDialogCallback(int item);
     }
 
-    public static AddImageDialogFragment newInstance(String title) {
+    public static AddImageDialogFragment newInstance(String title, Boolean allowDelete) {
         AddImageDialogFragment frag = new AddImageDialogFragment();
         Bundle args = new Bundle();
         args.putString("title", title);
+        args.putBoolean("allowDelete", allowDelete);
         frag.setArguments(args);
         return frag;
     }
@@ -25,8 +26,10 @@ public class AddImageDialogFragment extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         String title = getArguments().getString("title");
+        Boolean allowDelete = getArguments().getBoolean("allowDelete");
 
-        final CharSequence[] items = { "Take Photo", "Choose from Library"};
+        final CharSequence[] items = allowDelete ? new CharSequence[] { "Take Photo", "Choose from Library", "Remove picture"} :
+                new CharSequence[]{ "Take Photo", "Choose from Library"};
 
         AddImageDialogFragmentCallback callback =
                 (AddImageDialogFragmentCallback) getTargetFragment();

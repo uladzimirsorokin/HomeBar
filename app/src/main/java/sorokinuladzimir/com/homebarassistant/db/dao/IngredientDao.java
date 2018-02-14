@@ -54,6 +54,9 @@ public interface IngredientDao {
     @Delete
     void deleteIngredient(Ingredient ingredient);
 
+    @Query("delete from Ingredient where id = :ingredientId")
+    void deleteIngredientById(Long ingredientId);
+
     @Insert(onConflict = IGNORE)
     void insertOrReplaceIngredient(Ingredient... ingredient);
 

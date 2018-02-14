@@ -248,21 +248,17 @@ public class SearchDrinksFragment extends Fragment implements BackButtonListener
                     .setDismissOnColorSelected(false)
                     .setFixedColumnCount(3)
                     .setOutlineWidth(2)
-                    .setOnColorSelectedListener(new SpectrumDialog.OnColorSelectedListener() {
-                        @Override
-                        public void onColorSelected(boolean positiveResult, @ColorInt int color) {
-                            if (positiveResult) {
-                                mColor = color;
-                                GradientDrawable colorCircle = (GradientDrawable) getResources().getDrawable(R.drawable.color_circle);
-                                colorCircle.setStroke(2, Color.BLACK);
-                                colorCircle.setColor(mColor);
+                    .setOnColorSelectedListener((positiveResult, color) -> {
+                        if (positiveResult) {
+                            mColor = color;
+                            GradientDrawable colorCircle = (GradientDrawable) getResources().getDrawable(R.drawable.color_circle);
+                            colorCircle.setStroke(2, Color.BLACK);
+                            colorCircle.setColor(mColor);
 
-                                mViewColor.setBackground(colorCircle);
-                                //mToolbar.setBackgroundDrawable(new ColorDrawable(mColor));
-                                //setActionbarTextColor(mToolbar,mColor);
-                            } else {
-                                Toast.makeText(getContext(), "Dialog cancelled", Toast.LENGTH_SHORT).show();
-                            }
+                            mViewColor.setBackground(colorCircle);
+
+                        } else {
+                            Toast.makeText(getContext(), "Dialog cancelled", Toast.LENGTH_SHORT).show();
                         }
                     }).build().show(getFragmentManager(), "dialog_color");
         }

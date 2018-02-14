@@ -27,6 +27,7 @@
     <string name="tv_singledrink_notes">Заметки</string>
     <string name="search_drink_fragment_title">Поиск</string>
     <string name="ingredient_description_title">Описание</string>
+    <string name="ingredient_name_title">Название</string>
     <string name="drinks_list_fragment_title">Мои коктейли</string>
     <string name="search_cocktails_toolbar_title">Поиск коктейлей</string>
 

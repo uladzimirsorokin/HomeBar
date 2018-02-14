@@ -133,12 +133,8 @@ public final class ImageHandler {
         return null;
     }
 
-    public void deleteImage(Context context, String path, String authority){
-        File photoFile = new File(path);
-        Uri photoUri = FileProvider.getUriForFile(context,
-                authority,
-                photoFile);
-        context.getContentResolver().delete(photoUri, null, null);
+    public void deleteImage(Context context, Uri imageUri){
+        context.getContentResolver().delete(imageUri, null, null);
     }
 
 }

@@ -80,11 +80,11 @@ public class IngredientFragment extends Fragment implements BackButtonListener {
 
     private void subscribeUi(IngredientViewModel model) {
 
-        model.getIngredient().observe(this, (Observer<Ingredient>) ingredient -> {
+        model.getIngredient().observe(this, ingredient -> {
             if (ingredient != null) {
                 Glide.with(getContext())
-                        .load("https://www.vinatis.co.uk/24176-thickbox_default/johnnie-walker-black-label-12-years-old-en-etui.png")
-                        .apply(RequestOptions.fitCenterTransform())
+                        .load(ingredient.image != null ? ingredient.image : R.drawable.camera_placeholder)
+                        .apply(RequestOptions.centerCropTransform())
                         .into(mIngredientImage);
                 if(ingredient.description != null){
                     mDescriptionText.setText(ingredient.description);
@@ -133,9 +133,7 @@ public class IngredientFragment extends Fragment implements BackButtonListener {
     private void initFAB(View view){
         mFab = view.findViewById(R.id.fab);
         mFab.setOnClickListener(view1 -> {
-            //TODO: jump to edit(add) ingredient fragment on click
-            Toast.makeText(getContext(),"edit pressed",Toast.LENGTH_SHORT).show();
-            ((RouterProvider)getParentFragment()).getRouter().navigateTo(Screens.ADD_INGREDIENT,mIngredientId);
+            ((RouterProvider)getParentFragment()).getRouter().navigateTo(Screens.ADD_INGREDIENT, mIngredientId);
         });
     }
 

@@ -1,5 +1,6 @@
 package sorokinuladzimir.com.homebarassistant.db.mapper;
 
+import sorokinuladzimir.com.homebarassistant.Constants;
 import sorokinuladzimir.com.homebarassistant.db.entity.Drink;
 import sorokinuladzimir.com.homebarassistant.net.entity.DrinkEntity;
 
@@ -28,7 +29,7 @@ public class DrinkEntityToDrinkMapper extends Mapper<Drink,DrinkEntity> {
         drink.name = value.name;
         drink.tastes = value.tastes;
         drink.description = value.description;
-        drink.image = value.id;
+        drink.image = Constants.Uri.ABSOLUT_DRINKS_IMAGE_ROOT + value.id + ".png";
         drink.ingredients = IngredientEntityToIngredientMapper.getInstance().reverseMap(value.ingredients);
         /* TODO
         *  подумать как состыковать стаканы и зачем мне матчить ингридиенты если они не пойдут в базу...или пойдут...))

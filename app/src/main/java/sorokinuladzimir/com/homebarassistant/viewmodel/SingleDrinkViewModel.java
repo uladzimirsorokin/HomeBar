@@ -18,75 +18,73 @@ package sorokinuladzimir.com.homebarassistant.viewmodel;
 
 import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
-import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MediatorLiveData;
 import android.arch.lifecycle.ViewModel;
 import android.arch.lifecycle.ViewModelProvider;
+import android.content.Context;
+import android.graphics.Bitmap;
 import android.support.annotation.NonNull;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import sorokinuladzimir.com.homebarassistant.BarApp;
 import sorokinuladzimir.com.homebarassistant.db.entity.Drink;
-import sorokinuladzimir.com.homebarassistant.db.entity.WholeCocktail;
+import sorokinuladzimir.com.homebarassistant.db.entity.DrinkIngredientJoin;
+import sorokinuladzimir.com.homebarassistant.db.entity.Ingredient;
+import sorokinuladzimir.com.homebarassistant.db.mapper.DrinkEntityToDrinkMapper;
+import sorokinuladzimir.com.homebarassistant.net.entity.DrinkEntity;
 
 
-public class DrinkViewModel extends AndroidViewModel {
+public class SingleDrinkViewModel extends AndroidViewModel {
 
-    // MediatorLiveData can observe other LiveData objects and react on their emissions.
+
+    private final DrinkEntity mDrinkEntity;
+
     private final MediatorLiveData<Drink> mObservableDrink;
-    private final MediatorLiveData<List<WholeCocktail>> mObservableIngredients;
 
+    private Bitmap mBitmap = null;
 
-    private final Long mDrinkId;
-    private final LiveData<Drink> mLiveDrink;
-    private final LiveData<List<WholeCocktail>> mLiveIngredients;
-
-    public DrinkViewModel(Application application, Long drinkId) {
+    public SingleDrinkViewModel(@NonNull Application application, DrinkEntity drinkEntity) {
         super(application);
 
-        mDrinkId = drinkId;
+        mDrinkEntity = drinkEntity;
 
         mObservableDrink = new MediatorLiveData<>();
-        mObservableIngredients = new MediatorLiveData<>();
-
-        mObservableDrink.setValue(null);
-        mObservableIngredients.setValue(null);
 
 
-        mLiveDrink = BarApp.getInstance().getRepository().loadDrink(mDrinkId);
-        mLiveIngredients = BarApp.getInstance().getRepository().loadIngredients(mDrinkId);
+        mObservableDrink.setValue(DrinkEntityToDrinkMapper.getInstance().reverseMap(mDrinkEntity));
 
-        mObservableDrink.addSource(mLiveDrink, drink -> mObservableDrink.setValue(drink));
-        mObservableIngredients.addSource(mLiveIngredients, ingredients -> mObservableIngredients.setValue(ingredients));
     }
 
-    public LiveData<Drink> getDrink() {
+    public MediatorLiveData<Drink> getDrink() {
         return mObservableDrink;
     }
 
-    public LiveData<List<WholeCocktail>> getIngredients() {
-        return mObservableIngredients;
+    public void setBitmap(Bitmap mBitmap) {
+        this.mBitmap = mBitmap;
     }
 
+    public void saveDrink(String albumName) {
+        BarApp.getInstance().getRepository().saveDrinkFromNet(mObservableDrink.getValue(), mBitmap, albumName);
+    }
 
     public static class Factory extends ViewModelProvider.NewInstanceFactory {
 
         @NonNull
         private final Application mApplication;
 
-        private final Long mDrinkId;
+        private final DrinkEntity mDrinkEntity;
 
-        public Factory(@NonNull Application application, Long drinkId) {
+        public Factory(@NonNull Application application, DrinkEntity drinkEntity) {
             mApplication = application;
-            mDrinkId = drinkId;
+            mDrinkEntity = drinkEntity;
         }
 
         @Override
         public <T extends ViewModel> T create(Class<T> modelClass) {
             //noinspection unchecked
-            return (T) new DrinkViewModel(mApplication, mDrinkId);
+            return (T) new SingleDrinkViewModel(mApplication, mDrinkEntity);
         }
     }
-
 }

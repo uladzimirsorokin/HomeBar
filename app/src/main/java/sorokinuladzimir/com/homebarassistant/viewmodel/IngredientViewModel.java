@@ -63,13 +63,6 @@ public class IngredientViewModel extends AndroidViewModel {
         return mObservableIngredient;
     }
 
-
-    @Override
-    protected void onCleared() {
-        super.onCleared();
-        mObservableIngredient.removeSource(mLiveIngredient);
-    }
-
     public static class Factory extends ViewModelProvider.NewInstanceFactory {
 
         @NonNull

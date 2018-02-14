@@ -56,31 +56,20 @@ public class LocalDrinkFragment extends Fragment implements BackButtonListener {
     private Long mDrinkId = 0L;
 
     private ImageView mDrinkImage;
-    private ActionBar mToolbar;
     private LocalDrinkIngredientItemAdapter mAdapter;
     private TextView mDescriptionText;
     private CollapsingToolbarLayout mCollapsingToolbarLayout;
-    private FloatingActionButton mFab;
     private DrinkViewModel mViewModel;
-    private Drink mDrink = new Drink();
-    private List<WholeCocktail> mIngredients = new ArrayList<>();
+
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fr_single_drink, container, false);
 
-        /*Long drinkId = getArguments().getLong(EXTRA_ID);
-        mDrink = BarApp.getInstance().getRepository().getCustomDrink(drinkId);
-        mIngredients = BarApp.getInstance().getRepository().getCustomIngredients(drinkId);
-*/
-
         initToolbar(rootView);
         initFAB(rootView);
         initViews(rootView);
-
-
-
 
         return rootView;
     }
@@ -104,7 +93,7 @@ public class LocalDrinkFragment extends Fragment implements BackButtonListener {
 
     private void subscribeUi(DrinkViewModel model) {
 
-        model.getIngredients().observe(this, (Observer<List<WholeCocktail>>) ingredients -> {
+        model.getIngredients().observe(this, ingredients -> {
             if (ingredients != null) {
                 mAdapter.setData(ingredients);
             } else {
@@ -112,39 +101,16 @@ public class LocalDrinkFragment extends Fragment implements BackButtonListener {
             }
         });
 
-        model.getDrink().observe(this, (Observer<Drink>) drink -> {
+        model.getDrink().observe(this, drink -> {
             if (drink != null) {
                 Glide.with(getContext())
-                        .load(drink.image)
+                        .load(drink.image != null ? drink.image : R.drawable.camera_placeholder)
                         .into(mDrinkImage);
-                mDescriptionText.setText(drink.description);
-                mCollapsingToolbarLayout.setTitle(drink.name);
-            } else {
-
+                if(drink.description != null) mDescriptionText.setText(drink.description);
+                if(drink.name != null) mCollapsingToolbarLayout.setTitle(drink.name);
             }
         });
 
-    }
-
-    private void unsubscribeUi(DrinkViewModel model){
-        model.getDrink().removeObservers(this);
-        model.getIngredients().removeObservers(this);
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-    }
-
-    @Override
-    public void onDestroyView() {
-        unsubscribeUi(mViewModel);
-        super.onDestroyView();
     }
 
     public static LocalDrinkFragment getNewInstance(String name, Long drinkId) {
@@ -162,7 +128,7 @@ public class LocalDrinkFragment extends Fragment implements BackButtonListener {
         setHasOptionsMenu(true);
         Toolbar toolbar = view.findViewById(R.id.singleDrinkToolbar);
         ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
-        mToolbar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+        ActionBar mToolbar = ((AppCompatActivity) getActivity()).getSupportActionBar();
         if(mToolbar != null)
             mToolbar.setDisplayHomeAsUpEnabled(true);
     }
@@ -171,31 +137,17 @@ public class LocalDrinkFragment extends Fragment implements BackButtonListener {
         mCollapsingToolbarLayout = rootView.findViewById(R.id.collapsingToolbarLayout);
 
         mDrinkImage = rootView.findViewById(R.id.image_singledrink);
-        //mDrinkImage.setImageDrawable(null);
         mDescriptionText = rootView.findViewById(R.id.tv_singledrink_descriptionPlain);
 
-   /*     if(mDrink.image != null && mDrink.description!=null){
-            Glide.with(getContext())
-                    .load(mDrink.image)
-                    .into(mDrinkImage);
-            mDescriptionText.setText(mDrink.description);
-            mCollapsingToolbarLayout.setTitle(mDrink.name);
-        }
-*/
         final RecyclerView rvIngredients = rootView.findViewById(R.id.recycler_singledrink_ingredients);
         rvIngredients.setHasFixedSize(true);
         rvIngredients.setLayoutManager(new LinearLayoutManager(getContext()));
         mAdapter = new LocalDrinkIngredientItemAdapter(ingredientItem -> Toast.makeText(getContext(), ingredientItem.ingredientName, Toast.LENGTH_LONG).show());
-        //mAdapter.setData(new ArrayList<>());
-        //mAdapter.setData(mIngredients);
         rvIngredients.setAdapter(mAdapter);
-
-
-
     }
 
     private void initFAB(View view){
-        mFab = view.findViewById(R.id.single_drink_fab);
+        FloatingActionButton mFab = view.findViewById(R.id.single_drink_fab);
         mFab.setOnClickListener(view1 -> {
 
             //TODO: jump to edit(add) cocktail fragment on click

@@ -1,10 +1,12 @@
 package sorokinuladzimir.com.homebarassistant.ui.fragments;
 
+
+import android.arch.lifecycle.ViewModelProviders;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.os.Environment;
+
 import android.support.annotation.Nullable;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -28,30 +30,20 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.transition.Transition;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
-import sorokinuladzimir.com.homebarassistant.BarApp;
 import sorokinuladzimir.com.homebarassistant.Constants;
 import sorokinuladzimir.com.homebarassistant.R;
-import sorokinuladzimir.com.homebarassistant.db.entity.Drink;
-import sorokinuladzimir.com.homebarassistant.db.entity.DrinkIngredientJoin;
-import sorokinuladzimir.com.homebarassistant.db.entity.Ingredient;
-import sorokinuladzimir.com.homebarassistant.db.mapper.DrinkEntityToDrinkMapper;
+
 import sorokinuladzimir.com.homebarassistant.net.entity.DrinkEntity;
-import sorokinuladzimir.com.homebarassistant.net.entity.IngredientEntity;
+
 import sorokinuladzimir.com.homebarassistant.ui.adapters.SingleDrinkIngredientItemAdapter;
 import sorokinuladzimir.com.homebarassistant.ui.subnavigation.BackButtonListener;
 import sorokinuladzimir.com.homebarassistant.ui.subnavigation.RouterProvider;
+import sorokinuladzimir.com.homebarassistant.viewmodel.SingleDrinkViewModel;
 
 /**
  * Created by sorok on 18.10.2017.
  */
-//TODO: need viewmodel to interact with repositiry to get net drink or smth like that
+
 
 public class SingleDrinkFragment extends Fragment implements BackButtonListener {
 
@@ -60,35 +52,65 @@ public class SingleDrinkFragment extends Fragment implements BackButtonListener 
     private static final String EXTRA_NAME = "extra_name";
     private static final String EXTRA_BUNDLE = "extra_bundle";
 
-    private DrinkEntity mCocktail;
+    private static final String ALBUM_NAME = "HomeBar";
+
     private ImageView mDrinkImage;
-    private ActionBar mToolbar;
     private SingleDrinkIngredientItemAdapter mAdapter;
     private TextView mDescriptionText;
     private CollapsingToolbarLayout mCollapsingToolbarLayout;
     private FloatingActionButton mFab;
-    private Bitmap mBitmap;
+
+
+    private SingleDrinkViewModel mViewModel;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fr_single_drink, container, false);
 
-        if(savedInstanceState != null) {
-            mCocktail = (DrinkEntity) savedInstanceState.getSerializable(Constants.Extra.COCKTAIL);
-        }
-
-        Bundle args = getArguments().getBundle(EXTRA_BUNDLE);
-        if((args != null) && !args.isEmpty()){
-            mCocktail = (DrinkEntity) args.getSerializable(Constants.Extra.COCKTAIL);
-            args.clear();
-        }
+        SingleDrinkViewModel.Factory factory = new SingleDrinkViewModel.Factory(getActivity().getApplication(),
+                (DrinkEntity) getArguments().getBundle(EXTRA_BUNDLE).getSerializable(Constants.Extra.COCKTAIL));
+        mViewModel = ViewModelProviders.of(this, factory).get(SingleDrinkViewModel.class);
 
         initToolbar(rootView);
         initViews(rootView);
         initFAB(rootView);
 
         return rootView;
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        subscribeUi(mViewModel);
+    }
+
+    private void subscribeUi(SingleDrinkViewModel viewModel) {
+        viewModel.getDrink().observe(this, drink -> {
+            if (drink != null) {
+                Glide.with(getContext())
+                        .load(drink.image)
+                        .into(new SimpleTarget<Drawable>() {
+
+                            @Override
+                            public void onResourceReady(Drawable resource, Transition<? super Drawable> transition) {
+                                Bitmap bitmap = ((BitmapDrawable)resource).getBitmap();
+                                if (bitmap != null) {
+                                    mViewModel.setBitmap(bitmap);
+                                }
+                                mDrinkImage.setImageBitmap(bitmap);
+                                mDrinkImage.setDrawingCacheEnabled(true);
+                            }
+                        });
+                if (drink.ingredients != null) mAdapter.setData(drink.ingredients);
+                if (drink.description != null) mDescriptionText.setText(drink.description);
+                if (drink.name != null) mCollapsingToolbarLayout.setTitle(drink.name);
+            }
+        });
+    }
+
+    private void addDrinkToDb(String albumName){
+        mViewModel.saveDrink(albumName);
     }
 
     public static SingleDrinkFragment getNewInstance(String name, Bundle bundle) {
@@ -106,118 +128,38 @@ public class SingleDrinkFragment extends Fragment implements BackButtonListener 
         setHasOptionsMenu(true);
         Toolbar toolbar = view.findViewById(R.id.singleDrinkToolbar);
         ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
-        mToolbar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+        ActionBar mToolbar = ((AppCompatActivity) getActivity()).getSupportActionBar();
         if(mToolbar != null)
             mToolbar.setDisplayHomeAsUpEnabled(true);
     }
 
-    /* Checks if external storage is available for read and write */
-    public boolean isExternalStorageWritable() {
-        String state = Environment.getExternalStorageState();
-        if (Environment.MEDIA_MOUNTED.equals(state)) {
-            return true;
-        }
-        return false;
-    }
-
-    public File getAlbumStorageDir(String albumName) {
-        // Get the directory for the user's public pictures directory.
-        File file = new File(Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_PICTURES), albumName);
-        if (!file.mkdirs()) {
-            Log.e(TAG, "Directory not created");
-        }
-        return file;
-    }
-
     private void initViews(View rootView) {
+
         mCollapsingToolbarLayout = rootView.findViewById(R.id.collapsingToolbarLayout);
-
         mDrinkImage = rootView.findViewById(R.id.image_singledrink);
-
-        Glide.with(getContext())
-                .load(Constants.Uri.ABSOLUT_DRINKS_IMAGE_ROOT + mCocktail.id + ".png")
-                .into(new SimpleTarget<Drawable>() {
-
-                          @Override
-                          public void onResourceReady(Drawable resource, Transition<? super Drawable> transition) {
-
-                              mBitmap = ((BitmapDrawable)resource).getBitmap();
-                              mDrinkImage.setImageBitmap(mBitmap);
-                              mDrinkImage.setDrawingCacheEnabled(true);
-                          }
-                });
+        mDescriptionText = rootView.findViewById(R.id.tv_singledrink_descriptionPlain);
 
         final RecyclerView rvIngredients = rootView.findViewById(R.id.recycler_singledrink_ingredients);
         rvIngredients.setHasFixedSize(true);
         rvIngredients.setLayoutManager(new LinearLayoutManager(getContext()));
         mAdapter = new SingleDrinkIngredientItemAdapter(ingredientItem -> Toast.makeText(getContext(), ingredientItem.name, Toast.LENGTH_LONG).show());
-
-        mAdapter.setData(mCocktail.ingredients);
         rvIngredients.setAdapter(mAdapter);
 
-        mDescriptionText = rootView.findViewById(R.id.tv_singledrink_descriptionPlain);
-        mDescriptionText.setText(mCocktail.description);
-        mCollapsingToolbarLayout.setTitle(mCocktail.name);
     }
 
     private void initFAB(View view){
         mFab = view.findViewById(R.id.single_drink_fab);
         mFab.setOnClickListener(view1 -> {
-            //((RouterProvider)getParentFragment()).getRouter().navigateTo(Screens.ADD_DRINK, mCocktail);
-            addDrinkToDb(mCocktail, mBitmap);
+            addDrinkToDb(ALBUM_NAME);
             mFab.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_done));
             mFab.setEnabled(false);
         });
     }
 
-    //TODO: add image on diskIO thread, move method to repository
-    private void addDrinkToDb(DrinkEntity cocktail, Bitmap bitmap){
-
-        //Save image to albums
-        String filename = cocktail.id + ".png";
-
-        if(isExternalStorageWritable()){
-            File albumDir = getAlbumStorageDir("HomeBar");
-            File imageFile = new File(albumDir, filename);
-
-            try {
-                FileOutputStream fos = new FileOutputStream(imageFile);
-                bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos);
-                fos.close();
-                Log.d(TAG, "File created1" + imageFile.getPath());
-                cocktail.id = imageFile.getAbsolutePath();
-                imageFile.exists();
-            } catch (FileNotFoundException e) {
-                Log.d(TAG, "File not found: " + e.getMessage());
-            } catch (IOException e) {
-                Log.d(TAG, "Error accessing file: " + e.getMessage());
-            }
-        }
-
-        //Save raw ingredients without matching with existing and drinks to db
-        Drink drink = DrinkEntityToDrinkMapper.getInstance().reverseMap(cocktail);
-        Long drinkId = BarApp.getInstance().getRepository().insertDrink(drink);
-
-        Long[] ingredientIds = BarApp.getInstance().getRepository().insertIngredients(drink.ingredients);
-
-        List<DrinkIngredientJoin> list = new ArrayList<>();
-        for (Long ingredientId: ingredientIds) {
-            DrinkIngredientJoin item = new DrinkIngredientJoin();
-            item.ingredientId = ingredientId;
-            item.drinkId = drinkId;
-            item.amount = 0L;
-            item.unit = "Номер в списке " + list.size();
-            list.add(item);
-        }
-
-        BarApp.getInstance().getRepository().insertDrinkIngredientJoin(list);
-    }
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if(item.getItemId() == android.R.id.home){
-            ((RouterProvider)getParentFragment()).getRouter().exit();
+            onBackPressed();
             return true;
         }
         return false;
@@ -229,9 +171,4 @@ public class SingleDrinkFragment extends Fragment implements BackButtonListener 
         return true;
     }
 
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putSerializable(Constants.Extra.COCKTAIL, mCocktail);
-    }
 }
