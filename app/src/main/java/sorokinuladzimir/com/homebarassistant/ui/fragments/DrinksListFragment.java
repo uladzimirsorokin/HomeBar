@@ -64,11 +64,7 @@ public class DrinksListFragment extends Fragment {
         // Update the list when the data changes
         viewModel.getDrinks().observe(this, drinks -> {
             if (drinks != null) {
-                ArrayList<Drink> newDrinks = new ArrayList<>();
-                newDrinks.addAll(drinks);
-                mAdapter.setData(newDrinks);
-            } else {
-
+                mAdapter.setDrinks(drinks);
             }
         });
     }
@@ -104,7 +100,7 @@ public class DrinksListFragment extends Fragment {
         mFab = view.findViewById(R.id.fab);
         mFab.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_add));
         mFab.setOnClickListener(view1 ->
-                ((RouterProvider)getParentFragment()).getRouter().navigateTo(Screens.ADD_DRINK, null));
+                ((RouterProvider)getParentFragment()).getRouter().navigateTo(Screens.ADD_DRINK, -1L));
     }
 
 

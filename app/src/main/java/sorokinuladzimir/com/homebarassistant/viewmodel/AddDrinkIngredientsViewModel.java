@@ -20,32 +20,37 @@ import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MediatorLiveData;
-import android.util.SparseBooleanArray;
+import android.arch.lifecycle.MutableLiveData;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import sorokinuladzimir.com.homebarassistant.BarApp;
-import sorokinuladzimir.com.homebarassistant.db.entity.Drink;
 import sorokinuladzimir.com.homebarassistant.db.entity.Ingredient;
 
 
-public class IngredientListViewModel extends AndroidViewModel {
+public class AddDrinkIngredientsViewModel extends AndroidViewModel {
 
-    // MediatorLiveData can observe other LiveData objects and react on their emissions.
     private final MediatorLiveData<List<Ingredient>> mObservableIngredients;
 
-    public IngredientListViewModel(Application application) {
+    private final MutableLiveData<List<Long>> mSelection = new MutableLiveData<>();
+
+    private final MutableLiveData<String> mFilteredIngredientsQuery = new MutableLiveData<>();
+
+    private final List<Long> mSelectedIds = new ArrayList<>();
+
+
+    public AddDrinkIngredientsViewModel(Application application) {
         super(application);
 
         mObservableIngredients = new MediatorLiveData<>();
-        // set by default null, until we get data from the database.
+
         mObservableIngredients.setValue(null);
 
         LiveData<List<Ingredient>> liveIngredients = BarApp.getInstance().getRepository()
                 .getIngredients();
 
-        // observe the changes of the products from the database and forward them
+
         mObservableIngredients.addSource(liveIngredients, ingredients -> mObservableIngredients.setValue(ingredients));
     }
 
@@ -53,13 +58,30 @@ public class IngredientListViewModel extends AndroidViewModel {
         BarApp.getInstance().getRepository().insertIngredient(ingredient);
     }
 
-    /**
-     * Expose the LiveData Products query so the UI can observe it.
-     */
+    public MutableLiveData<List<Long>> getSelection() {
+        return mSelection;
+    }
+
+    public LiveData<String> getQuery() {
+        return mFilteredIngredientsQuery;
+    }
+
+    public void searchIngredients(String query) {
+        mFilteredIngredientsQuery.setValue(query);
+    }
+
     public LiveData<List<Ingredient>> getIngredients() {
         return mObservableIngredients;
     }
 
+    public void selectIngredient(Ingredient ingredient) {
+        List<Long> selection = new ArrayList<>();
+        selection.add(ingredient.id);
+        mSelection.setValue(selection);
+    }
 
 
+    public List<Long> getSelectedIds() {
+        return mSelectedIds;
+    }
 }

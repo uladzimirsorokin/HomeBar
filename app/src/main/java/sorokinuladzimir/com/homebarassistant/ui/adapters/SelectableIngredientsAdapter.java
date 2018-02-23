@@ -5,14 +5,12 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.RecyclerView;
-import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -23,10 +21,9 @@ import java.util.List;
 
 import sorokinuladzimir.com.homebarassistant.R;
 import sorokinuladzimir.com.homebarassistant.db.entity.Ingredient;
-import sorokinuladzimir.com.homebarassistant.ui.animator.FlipAnimator;
 
 
-public class IngredientsListItemAdapter extends RecyclerView.Adapter<IngredientsListItemAdapter.IngredientViewHolder>
+public class SelectableIngredientsAdapter extends RecyclerView.Adapter<SelectableIngredientsAdapter.IngredientViewHolder>
         implements Filterable{
 
     public interface OnItemClickListener {
@@ -38,13 +35,9 @@ public class IngredientsListItemAdapter extends RecyclerView.Adapter<Ingredients
 
     private final OnItemClickListener listener;
 
-    private SparseBooleanArray selectedIngredients = new SparseBooleanArray();
-
-    private List<Long> selectedIds = new ArrayList<>();
-
     private Context mContext;
 
-    public IngredientsListItemAdapter(Context context, OnItemClickListener listener) {
+    public SelectableIngredientsAdapter(Context context, OnItemClickListener listener) {
         this.listener = listener;
         this.mContext = context;
     }
@@ -52,16 +45,12 @@ public class IngredientsListItemAdapter extends RecyclerView.Adapter<Ingredients
     @Override
     public IngredientViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         return new IngredientViewHolder(LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.ingredients_list_single_ingredient_item, parent,false));
+                .inflate(R.layout.ingredients_list_single_ingredient_item,parent,false));
     }
 
     @Override
     public void onBindViewHolder(IngredientViewHolder holder, int position) {
-
-        holder.bind(mContext,
-                mFilteredIngredientsList.get(position),
-                listener,
-                selectedIngredients.get(mFilteredIngredientsList.get(position).hashCode(), false));
+        holder.bind(mContext, mFilteredIngredientsList.get(position),listener);
     }
 
     @Override
@@ -107,96 +96,34 @@ public class IngredientsListItemAdapter extends RecyclerView.Adapter<Ingredients
                 protected void onPostExecute(DiffUtil.DiffResult diffResult) {
                     mIngredientsList = ingredients;
                     mFilteredIngredientsList = ingredients;
-                    restoreSelection();
-                    diffResult.dispatchUpdatesTo(IngredientsListItemAdapter.this);
+                    diffResult.dispatchUpdatesTo(SelectableIngredientsAdapter.this);
                 }
             }.execute();
         }
-
     }
 
     public static class IngredientViewHolder extends RecyclerView.ViewHolder{
 
         final TextView ingredientName;
         final ImageView ingredientImage;
-        final RelativeLayout imageBack;
-        final RelativeLayout imageFront;
 
         public IngredientViewHolder(View itemView) {
             super(itemView);
             ingredientName = itemView.findViewById(R.id.tv_ingredient_item);
             ingredientImage = itemView.findViewById(R.id.image_ingredient_item);
-            imageBack = itemView.findViewById(R.id.image_back);
-            imageFront = itemView.findViewById(R.id.image_front);
         }
 
-        public void bind(Context mContext, final Ingredient item, final OnItemClickListener listener, boolean selected) {
+        public void bind(Context mContext, final Ingredient item, final OnItemClickListener listener) {
 
-            if(item.name != null) ingredientName.setText(item.name);
+            if(item.name != null)ingredientName.setText(item.name);
 
-            if (selected) {
-                itemView.setActivated(true);
-                imageFront.setVisibility(View.INVISIBLE);
-                imageBack.setVisibility(View.VISIBLE);
-                imageBack.setAlpha(1);
+            Glide.with(mContext)
+                    .load(item.image != null ? item.image : R.drawable.camera_placeholder)
+                    .apply(RequestOptions.circleCropTransform())
+                    .into(ingredientImage);
 
-            } else {
-                itemView.setActivated(false);
-                imageFront.setVisibility(View.VISIBLE);
-                imageBack.setVisibility(View.INVISIBLE);
-                imageBack.setAlpha(1);
 
-                Glide.with(mContext)
-                        .load(item.image != null ? item.image : R.drawable.camera_placeholder)
-                        .apply(RequestOptions.circleCropTransform())
-                        .into(ingredientImage);
-
-            }
-
-            itemView.setOnClickListener(v -> {
-                listener.onItemClick(item);
-            });
-        }
-    }
-
-    public void toggleSelection(Ingredient item) {
-        int position = mFilteredIngredientsList.indexOf(item);
-        if (position != -1){
-            int hashCode = item.hashCode();
-            if (selectedIngredients.get(hashCode, false)) {
-                selectedIngredients.delete(hashCode);
-                selectedIds.remove(item.id);
-            } else {
-                selectedIngredients.put(hashCode, true);
-                selectedIds.add(item.id);
-            }
-            notifyItemChanged(position);
-        }
-    }
-
-    public SparseBooleanArray getSelectedIngredients() {
-        return selectedIngredients;
-    }
-
-    public void setSelectedIngredients(SparseBooleanArray selectedIngredients) {
-        this.selectedIngredients = selectedIngredients;
-    }
-
-    public List<Long> getSelectedIds() {
-        return selectedIds;
-    }
-
-    public void setSelectedIds(List<Long> selectedIds) {
-        this.selectedIds.clear();
-        this.selectedIds.addAll(selectedIds);
-    }
-
-    public void restoreSelection(){
-        for (Ingredient ingredient : mFilteredIngredientsList) {
-            if (selectedIds.indexOf(ingredient.id) != -1){
-                selectedIngredients.put(ingredient.hashCode(), true);
-                notifyItemChanged(mFilteredIngredientsList.indexOf(ingredient));
-            }
+            itemView.setOnClickListener(v -> listener.onItemClick(item));
         }
     }
 

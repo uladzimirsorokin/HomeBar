@@ -1,12 +1,11 @@
 package sorokinuladzimir.com.homebarassistant.ui.fragments;
 
 import android.app.Dialog;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
 
-import sorokinuladzimir.com.homebarassistant.R;
+
 
 public class AddImageDialogFragment extends DialogFragment {
 

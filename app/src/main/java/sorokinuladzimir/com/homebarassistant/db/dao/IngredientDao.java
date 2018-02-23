@@ -26,7 +26,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ru.terrakok.cicerone.commands.Replace;
+import sorokinuladzimir.com.homebarassistant.db.entity.DrinkIngredientJoin;
 import sorokinuladzimir.com.homebarassistant.db.entity.Ingredient;
+import sorokinuladzimir.com.homebarassistant.db.entity.WholeCocktail;
 
 import static android.arch.persistence.room.OnConflictStrategy.IGNORE;
 import static android.arch.persistence.room.OnConflictStrategy.REPLACE;
@@ -38,6 +40,9 @@ public interface IngredientDao {
 
     @Query("SELECT * FROM Ingredient")
     LiveData<List<Ingredient>> loadIngredients();
+
+    @Query("SELECT id, name FROM Ingredient WHERE id IN (:ingredientIds)")
+    LiveData<List<Ingredient>> loadIngredients(List<Long> ingredientIds);
 
     @Query("SELECT * FROM Ingredient where id = :id")
     Ingredient loadIngredientById(Long id);

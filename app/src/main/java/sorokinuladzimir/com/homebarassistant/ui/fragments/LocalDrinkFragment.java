@@ -142,7 +142,8 @@ public class LocalDrinkFragment extends Fragment implements BackButtonListener {
         final RecyclerView rvIngredients = rootView.findViewById(R.id.recycler_singledrink_ingredients);
         rvIngredients.setHasFixedSize(true);
         rvIngredients.setLayoutManager(new LinearLayoutManager(getContext()));
-        mAdapter = new LocalDrinkIngredientItemAdapter(ingredientItem -> Toast.makeText(getContext(), ingredientItem.ingredientName, Toast.LENGTH_LONG).show());
+        mAdapter = new LocalDrinkIngredientItemAdapter(ingredientItem -> Toast.makeText(getContext(),
+                ingredientItem.ingredientName, Toast.LENGTH_LONG).show());
         rvIngredients.setAdapter(mAdapter);
     }
 

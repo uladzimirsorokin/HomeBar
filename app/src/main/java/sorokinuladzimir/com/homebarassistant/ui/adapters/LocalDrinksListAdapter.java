@@ -1,5 +1,8 @@
 package sorokinuladzimir.com.homebarassistant.ui.adapters;
 
+import android.annotation.SuppressLint;
+import android.os.AsyncTask;
+import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,12 +12,10 @@ import android.widget.RatingBar;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.request.RequestOptions;
 
 import java.util.ArrayList;
+import java.util.List;
 
-import sorokinuladzimir.com.homebarassistant.Constants;
 import sorokinuladzimir.com.homebarassistant.R;
 import sorokinuladzimir.com.homebarassistant.db.entity.Drink;
 import sorokinuladzimir.com.homebarassistant.db.entity.Taste;
@@ -34,7 +35,7 @@ public class LocalDrinksListAdapter extends RecyclerView.Adapter<LocalDrinksList
         void onItemClick(Drink item);
     }
 
-    private ArrayList<Drink> mData = new ArrayList();
+    private List<Drink> mDrinkList;
     private final OnItemClickListener listener;
 
     @Override
@@ -45,18 +46,55 @@ public class LocalDrinksListAdapter extends RecyclerView.Adapter<LocalDrinksList
 
     @Override
     public void onBindViewHolder(CardViewHolder holder, int position) {
-        holder.bind(mData.get(position), listener);
+        holder.bind(mDrinkList.get(position), listener);
     }
 
     @Override
     public int getItemCount() {
-        return mData.size();
+        return mDrinkList != null ? mDrinkList.size() : 0;
     }
 
-    public void setData(ArrayList<Drink> cocktails) {
-        mData.clear();
-        mData.addAll(cocktails);
-        notifyDataSetChanged();
+    @SuppressLint("StaticFieldLeak")
+    public void setDrinks(final List<Drink> drinks) {
+        if (mDrinkList == null) {
+            mDrinkList = drinks;
+            notifyItemRangeInserted(0, drinks.size());
+        } else {
+            new AsyncTask<Void, Void, DiffUtil.DiffResult>() {
+
+                @Override
+                protected DiffUtil.DiffResult doInBackground(Void... voids) {
+                    return DiffUtil.calculateDiff(new DiffUtil.Callback() {
+                        @Override
+                        public int getOldListSize() {
+                            return mDrinkList.size();
+                        }
+
+                        @Override
+                        public int getNewListSize() {
+                            return drinks.size();
+                        }
+
+                        @Override
+                        public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
+                            return mDrinkList.get(oldItemPosition).id == drinks.get(newItemPosition).id;
+                        }
+
+                        @Override
+                        public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
+                            return mDrinkList.get(oldItemPosition).equals(drinks.get(newItemPosition));
+                        }
+                    });
+                }
+
+                @Override
+                protected void onPostExecute(DiffUtil.DiffResult diffResult) {
+                    mDrinkList = drinks;
+                    diffResult.dispatchUpdatesTo(LocalDrinksListAdapter.this);
+                }
+            }.execute();
+
+        }
     }
 
     public static class CardViewHolder extends RecyclerView.ViewHolder{
@@ -79,10 +117,7 @@ public class LocalDrinksListAdapter extends RecyclerView.Adapter<LocalDrinksList
 
             Glide.with(cardImage.getContext())
                     .load(drinkItem.image)
-                    .apply(RequestOptions.diskCacheStrategyOf(DiskCacheStrategy.ALL))
-                    .apply(RequestOptions.noAnimation())
                     .into(cardImage);
-
 
             title.setText(drinkItem.name);
 

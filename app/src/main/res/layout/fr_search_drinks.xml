@@ -1,346 +1,286 @@
-<LinearLayout
+<android.support.design.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
+    android:layout_height="match_parent"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:fitsSystemWindows="true">
+    <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/linearLayout2"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-    <include layout="@layout/toolbar"
-        android:id="@+id/include" />
-
-    <ScrollView android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingTop="8dp">
-
-        <LinearLayout
+        <include
+            android:id="@+id/include"
+            layout="@layout/toolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-            <FrameLayout
+        <ScrollView
+            android:id="@+id/scrollView2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingTop="8dp"
+            app:layout_constraintStart_toStartOf="@+id/include"
+            app:layout_constraintTop_toBottomOf="@+id/include">
+
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:layout_marginRight="16dp">
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
 
-                <TextView
-                    android:paddingLeft="72dp"
-                    android:layout_gravity="center_vertical"
-                    android:fontFamily="sans-serif"
-                    android:textSize="16sp"
-                    android:text="@string/glass_type"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-
-                <Spinner
+                <FrameLayout
                     android:layout_width="match_parent"
-                    android:layout_marginLeft="164dp"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical|right"
-                    android:fontFamily="sans-serif"
-                    android:textSize="16sp"
-                    android:id="@+id/spin_glass_type" />
+                    android:layout_height="48dp"
+                    android:layout_marginRight="16dp">
 
-                <ImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:layout_gravity="center_vertical"
-                    android:src="@drawable/cocktail"
-                    android:layout_marginLeft="16dp"/>
-            </FrameLayout>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:fontFamily="sans-serif"
+                        android:paddingLeft="72dp"
+                        android:text="@string/glass_type"
+                        android:textSize="16sp" />
 
-            <View
-                android:layout_height="1dp"
-                android:layout_width="match_parent"
-                android:background="#22000000"/>
+                    <Spinner
+                        android:id="@+id/spin_glass_type"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical|right"
+                        android:layout_marginLeft="164dp"
+                        android:fontFamily="sans-serif"
+                        android:textSize="16sp" />
 
-            <FrameLayout
-                android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:layout_marginRight="16dp">
-                <TextView
-                    android:layout_marginLeft="72dp"
-                    android:fontFamily="sans-serif"
-                    android:textSize="16sp"
-                    android:layout_gravity="center_vertical"
-                    android:text="@string/taste_type"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginLeft="16dp"
+                        android:src="@drawable/cocktail" />
+                </FrameLayout>
 
-                <Spinner
+                <View
                     android:layout_width="match_parent"
-                    android:layout_marginLeft="164dp"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical|right"
-                    android:fontFamily="sans-serif"
-                    android:textSize="16sp"
-                    android:id="@+id/spin_taste_type" />
+                    android:layout_height="1dp"
+                    android:background="#22000000" />
 
-                <ImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:layout_gravity="center_vertical"
-                    android:src="@drawable/taste"
-                    android:layout_marginLeft="16dp"/>
-
-            </FrameLayout>
-
-            <View
-                android:layout_height="1dp"
-                android:layout_width="match_parent"
-                android:background="#22000000"/>
-
-            <FrameLayout
-                android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:layout_marginEnd="16dp">
-                <TextView
-                    android:layout_marginStart="72dp"
-                    android:fontFamily="sans-serif"
-                    android:layout_gravity="center_vertical"
-                    android:textSize="16sp"
-                    android:text="@string/ingridient_type"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-
-                <Spinner
+                <FrameLayout
                     android:layout_width="match_parent"
-                    android:layout_marginLeft="164dp"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical|end"
-                    android:fontFamily="sans-serif"
-                    android:textSize="16sp"
-                    android:id="@+id/spin_ingridient_type" />
+                    android:layout_height="48dp"
+                    android:layout_marginRight="16dp">
 
-                <ImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:layout_gravity="center_vertical"
-                    android:src="@drawable/ingridient_alco"
-                    android:layout_marginLeft="16dp"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginLeft="72dp"
+                        android:fontFamily="sans-serif"
+                        android:text="@string/taste_type"
+                        android:textSize="16sp" />
 
-            </FrameLayout>
+                    <Spinner
+                        android:id="@+id/spin_taste_type"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical|right"
+                        android:layout_marginLeft="164dp"
+                        android:fontFamily="sans-serif"
+                        android:textSize="16sp" />
 
-            <View
-                android:layout_height="1dp"
-                android:layout_width="match_parent"
-                android:background="#22000000"/>
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginLeft="16dp"
+                        android:src="@drawable/taste" />
 
+                </FrameLayout>
 
-            <!--<LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="60dp"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:layout_marginRight="16dp">
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="#22000000" />
 
-                <ImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:layout_gravity="center_vertical"
-                    android:src="@drawable/star"
-                    android:layout_marginLeft="16dp"/>
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:layout_marginEnd="16dp">
 
-                <TextView
-                    android:text="@string/cocktail_rating"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="sans-serif"
-                    android:textSize="16sp"
-                    android:layout_marginStart="32dp"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginStart="72dp"
+                        android:fontFamily="sans-serif"
+                        android:text="@string/ingridient_type"
+                        android:textSize="16sp" />
+
+                    <Spinner
+                        android:id="@+id/spin_ingridient_type"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical|end"
+                        android:layout_marginLeft="164dp"
+                        android:fontFamily="sans-serif"
+                        android:textSize="16sp" />
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginLeft="16dp"
+                        android:src="@drawable/ingridient_alco" />
+
+                </FrameLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="#22000000" />
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:layout_marginEnd="16dp">
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="16dp"
+                        android:src="@drawable/skill" />
+
+                    <TextView
+                        android:id="@+id/et_skill_sb"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="72dp"
+                        android:fontFamily="sans-serif"
+                        android:text="@string/skill_level_string"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:id="@+id/tv_skill_container"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/et_skill_sb"
+                        android:layout_marginStart="72dp"
+                        android:fontFamily="sans-serif"
+                        android:text="@string/skill_novice"
+                        android:textSize="16sp" />
+
+                    <SeekBar
+                        android:id="@+id/sb_skill"
+                        style="@style/Widget.AppCompat.SeekBar.Discrete"
+                        android:layout_width="100dp"
+                        android:layout_height="36dp"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true"
+                        android:max="2"
+                        android:progress="0" />
+                </RelativeLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="#22000000" />
+
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical">
+                    android:layout_height="48dp"
+                    android:layout_marginRight="16dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
 
-                    <com.crystal.crystalrangeseekbar.widgets.CrystalRangeSeekbar
-                        android:id="@+id/rangeSeekbar1"
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_marginLeft="16dp"
+                        android:src="@drawable/carbonated" />
+
+                    <Switch
+                        android:id="@+id/sw_search_carbonated"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        app:corner_radius="2"
-                        app:left_thumb_image="@drawable/circle"
-                        app:right_thumb_image="@drawable/circle"
-                        app:left_thumb_image_pressed="@drawable/circle_pressed"
-                        app:right_thumb_image_pressed="@drawable/circle_pressed"
-                        android:layout_marginLeft="8dp"
-                        android:layout_marginBottom="4dp"
-                        app:gap="5"
-                        app:bar_color="@color/colorAccent" />
-
-                    <FrameLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal" >
-
-                        <TextView
-                            android:text="TextView"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:fontFamily="sans-serif"
-                            android:layout_marginLeft="8dp"
-                            android:textSize="16sp"
-                            android:textColor="@color/cardview_dark_background"
-                            android:id="@+id/textMin1"/>
-
-                        <TextView
-                            android:text="TextView"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:id="@+id/textMax1"
-                            android:gravity="right"
-                            android:fontFamily="sans-serif"
-                            android:textSize="16sp"
-                            android:textColor="@color/cardview_dark_background"/>
-                    </FrameLayout>
+                        android:layout_marginLeft="32dp"
+                        android:checked="false"
+                        android:fontFamily="sans-serif"
+                        android:text="@string/carbonated"
+                        android:textSize="16sp" />
 
                 </LinearLayout>
 
-            </LinearLayout>-->
-
-
-            <View
-                android:layout_height="1dp"
-                android:layout_width="match_parent"
-                android:background="#22000000"/>
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:layout_marginEnd="16dp">
-
-                <ImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:layout_centerVertical="true"
-                    android:src="@drawable/skill"
-                    android:layout_marginLeft="16dp"/>
-
-                <TextView
-                    android:text="@string/skill_level_string"
-                    android:layout_width="wrap_content"
-                    android:fontFamily="sans-serif"
-                    android:id="@+id/et_skill_sb"
-                    android:textSize="16sp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="72dp" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/et_skill_sb"
-                    android:id="@+id/tv_skill_container"
-                    android:text="@string/skill_novice"
-                    android:layout_marginStart="72dp"
-                    android:fontFamily="sans-serif"
-                    android:textSize="16sp" />
-
-                <SeekBar
-                    style="@style/Widget.AppCompat.SeekBar.Discrete"
-                    android:layout_width="100dp"
-                    android:layout_height="36dp"
-                    android:max="2"
-                    android:progress="0"
-                    android:id="@+id/sb_skill"
-                    android:layout_centerVertical="true"
-                    android:layout_alignParentEnd="true" />
-            </RelativeLayout>
-
-            <View
-                android:layout_height="1dp"
-                android:layout_width="match_parent"
-                android:background="#22000000"/>
-
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:layout_marginRight="16dp">
-
-                <ImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:src="@drawable/carbonated"
-                    android:layout_marginLeft="16dp"/>
-
-                <Switch
-                    android:text="@string/carbonated"
+                <View
                     android:layout_width="match_parent"
-                    android:id="@+id/sw_search_carbonated"
-                    android:layout_height="wrap_content"
-                    android:checked="false"
-                    android:layout_marginLeft="32dp"
-                    android:fontFamily="sans-serif"
-                    android:textSize="16sp"/>
+                    android:layout_height="1dp"
+                    android:background="#22000000" />
 
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:layout_marginRight="16dp"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginLeft="16dp"
+                        android:src="@drawable/alco" />
+
+                    <Switch
+                        android:id="@+id/sw_search_alcoholic"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginLeft="32dp"
+                        android:checked="true"
+                        android:fontFamily="sans-serif"
+                        android:text="@string/alcoholic"
+                        android:textSize="16sp" />
+
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="#22000000" />
+
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:layout_marginRight="16dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:id="@+id/choose_color"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginStart="16dp"
+                        android:background="@drawable/color_circle"
+                        android:outlineProvider="bounds"></ImageView>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginStart="72dp"
+                        android:fontFamily="sans-serif"
+                        android:text="@string/cocktail_color"
+                        android:textSize="16sp" />
+
+                </FrameLayout>
             </LinearLayout>
 
-            <View
-                android:layout_height="1dp"
-                android:layout_width="match_parent"
-                android:background="#22000000"/>
-
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:orientation="horizontal"
-                android:layout_marginRight="16dp">
-
-                <ImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:layout_gravity="center_vertical"
-                    android:src="@drawable/alco"
-                    android:layout_marginLeft="16dp"/>
-
-                <Switch
-                    android:text="@string/alcoholic"
-                    android:layout_marginLeft="32dp"
-                    android:layout_height="wrap_content"
-                    android:layout_width="match_parent"
-                    android:layout_gravity="center_vertical"
-                    android:id="@+id/sw_search_alcoholic"
-                    android:checked="true"
-                    android:fontFamily="sans-serif"
-                    android:textSize="16sp" />
-
-            </LinearLayout>
-
-            <View
-                android:layout_height="1dp"
-                android:layout_width="match_parent"
-                android:background="#22000000"/>
-
-            <FrameLayout
-                android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:orientation="horizontal"
-                android:layout_marginRight="16dp"
-                android:gravity="center_vertical">
-
-                <ImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:layout_marginStart="16dp"
-                    android:layout_gravity="center_vertical"
-                    android:background="@drawable/color_circle"
-                    android:id="@+id/choose_color"
-                    android:outlineProvider="bounds">
-                </ImageView>
-
-                <TextView
-                    android:layout_marginStart="72dp"
-                    android:layout_gravity="center_vertical"
-                    android:text="@string/cocktail_color"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="sans-serif"
-                    android:textSize="16sp"/>
-
-            </FrameLayout>
-        </LinearLayout>
-
-    </ScrollView>
-</LinearLayout>
+        </ScrollView>
+    </android.support.constraint.ConstraintLayout>
+</android.support.design.widget.CoordinatorLayout>

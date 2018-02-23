@@ -18,4 +18,5 @@ public class Screens {
     public static final String SINGLE_DRINK_MAIN = "single drink main screen";
     public static final String ADD_DRINK = "add drink screen";
     public static final String ADD_INGREDIENT = "add ingredient screen";
+    public static final String ADD_DRINK_INGREDIENTS = "add drink ingredients screen";
 }

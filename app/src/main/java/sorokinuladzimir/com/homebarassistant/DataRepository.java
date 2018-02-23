@@ -115,6 +115,10 @@ public class DataRepository {
         return mDatabase.getIngredientDao().loadIngredient(ingredientId);
     }
 
+    public LiveData<List<Ingredient>> loadIngredients(final List<Long> ingredientIds) {
+        return mDatabase.getIngredientDao().loadIngredients(ingredientIds);
+    }
+
     public LiveData<String> getObservableImagePath() {
         return mObservableImagePath;
     }

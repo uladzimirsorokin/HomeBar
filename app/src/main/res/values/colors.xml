@@ -5,5 +5,9 @@
     <color name="colorAccent">#FF4081</color>
     <color name="colorFAB1">#2196F3</color>
     <color name="colorFAB2">#E040FB</color>
+
+
+    <color name="bg_circle_default">#666666</color>
+    <color name="row_activated">#e0e0e0</color>
 </resources>
 

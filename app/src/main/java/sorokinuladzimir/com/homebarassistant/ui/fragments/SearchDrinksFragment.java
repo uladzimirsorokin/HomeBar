@@ -38,9 +38,8 @@ import sorokinuladzimir.com.homebarassistant.ui.subnavigation.RouterProvider;
  */
 
 public class SearchDrinksFragment extends Fragment implements BackButtonListener {
-    private static final String EXTRA_NAME = "extra_name";
 
-    private ActionBar mToolbar;
+    private static final String EXTRA_NAME = "sdf_extra_name";
 
     private Switch mSwIsCarbonated;
 
@@ -98,10 +97,10 @@ public class SearchDrinksFragment extends Fragment implements BackButtonListener
         setHasOptionsMenu(true);
         Toolbar toolbar = view.findViewById(R.id.toolbar);
         ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
-        mToolbar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+        ActionBar mToolbar = ((AppCompatActivity) getActivity()).getSupportActionBar();
         if(mToolbar != null)
             mToolbar.setDisplayHomeAsUpEnabled(true);
-        mToolbar.setTitle(R.string.search_drink_fragment_title);
+        mToolbar.setTitle(R.string.search_cocktails_toolbar_title);
     }
 
     private void initViews(View rootView) {
@@ -144,7 +143,7 @@ public class SearchDrinksFragment extends Fragment implements BackButtonListener
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.searchfragment_menu,menu);
+        inflater.inflate(R.menu.searchfragment_menu, menu);
     }
 
     @Override

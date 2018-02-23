@@ -3,6 +3,7 @@ package sorokinuladzimir.com.homebarassistant.ui.fragments;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
@@ -20,6 +21,7 @@ import android.view.ViewGroup;
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigation;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import sorokinuladzimir.com.homebarassistant.BarApp;
 import sorokinuladzimir.com.homebarassistant.Constants;
@@ -30,6 +32,7 @@ import sorokinuladzimir.com.homebarassistant.net.entity.IngredientEntity;
 import sorokinuladzimir.com.homebarassistant.ui.adapters.IngredientsListItemAdapter;
 import sorokinuladzimir.com.homebarassistant.ui.subnavigation.RouterProvider;
 import sorokinuladzimir.com.homebarassistant.viewmodel.IngredientListViewModel;
+import sorokinuladzimir.com.homebarassistant.viewmodel.SharedViewModel;
 
 
 /**
@@ -44,6 +47,7 @@ public class IngredientsListFragment extends Fragment {
     private ActionBar mToolbar;
     private FloatingActionButton mFab;
     private IngredientListViewModel mViewModel;
+
 
     @Nullable
     @Override
@@ -66,11 +70,13 @@ public class IngredientsListFragment extends Fragment {
 
         model.getIngredients().observe(this, ingredients -> {
             if (ingredients != null) {
-                mAdapter.setData(ingredients);
+                mAdapter.setIngredients(ingredients);
             } else {
 
             }
         });
+
+
     }
 
     public static IngredientsListFragment getNewInstance(String name) {
@@ -102,10 +108,19 @@ public class IngredientsListFragment extends Fragment {
         final RecyclerView recyclerView = rootView.findViewById(R.id.recycler_view);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        mAdapter = new IngredientsListItemAdapter(ingredient ->
+        mAdapter = new IngredientsListItemAdapter(getContext(), ingredient ->
                 ((RouterProvider)getParentFragment()).getRouter().navigateTo(Screens.LOCAL_INGREDIENT, ingredient.id));
         recyclerView.addItemDecoration(new DividerItemDecoration(getContext(),DividerItemDecoration.VERTICAL));
         recyclerView.setAdapter(mAdapter);
     }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+    }
 }
