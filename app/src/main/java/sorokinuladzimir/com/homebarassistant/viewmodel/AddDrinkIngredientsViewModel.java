@@ -33,11 +33,7 @@ public class AddDrinkIngredientsViewModel extends AndroidViewModel {
 
     private final MediatorLiveData<List<Ingredient>> mObservableIngredients;
 
-    private final MutableLiveData<List<Long>> mSelection = new MutableLiveData<>();
-
     private final MutableLiveData<String> mFilteredIngredientsQuery = new MutableLiveData<>();
-
-    private final List<Long> mSelectedIds = new ArrayList<>();
 
 
     public AddDrinkIngredientsViewModel(Application application) {
@@ -50,16 +46,7 @@ public class AddDrinkIngredientsViewModel extends AndroidViewModel {
         LiveData<List<Ingredient>> liveIngredients = BarApp.getInstance().getRepository()
                 .getIngredients();
 
-
         mObservableIngredients.addSource(liveIngredients, ingredients -> mObservableIngredients.setValue(ingredients));
-    }
-
-    public void addIngredient(Ingredient ingredient){
-        BarApp.getInstance().getRepository().insertIngredient(ingredient);
-    }
-
-    public MutableLiveData<List<Long>> getSelection() {
-        return mSelection;
     }
 
     public LiveData<String> getQuery() {
@@ -74,14 +61,4 @@ public class AddDrinkIngredientsViewModel extends AndroidViewModel {
         return mObservableIngredients;
     }
 
-    public void selectIngredient(Ingredient ingredient) {
-        List<Long> selection = new ArrayList<>();
-        selection.add(ingredient.id);
-        mSelection.setValue(selection);
-    }
-
-
-    public List<Long> getSelectedIds() {
-        return mSelectedIds;
-    }
 }

@@ -60,36 +60,29 @@ public class AddDrinkIngredientsFragment extends Fragment implements BackButtonL
         mSharedIngredientsViewModel = ViewModelProviders.of(getActivity()).get(SharedViewModel.class);
 
         mViewModel = ViewModelProviders.of(this).get(AddDrinkIngredientsViewModel.class);
-        subscribeUi(mViewModel);
+        subscribeUi(mViewModel, mSharedIngredientsViewModel);
 
         return rootView;
     }
 
 
-    private void subscribeUi(AddDrinkIngredientsViewModel model) {
+    private void subscribeUi(AddDrinkIngredientsViewModel model, SharedViewModel sharedIngredients) {
 
         model.getIngredients().observe(this, ingredients -> {
             if (ingredients != null) {
                 mAdapter.setIngredients(ingredients);
-                if (model.getSelectedIds() != null && model.getSelectedIds().size() > 0) mAdapter.setSelectedIds(model.getSelectedIds());
-            } else {
-
             }
-
         });
 
         model.getQuery().observe(this, query -> {
             if(query != null) mAdapter.getFilter().filter(query);
         });
 
-        mSharedIngredientsViewModel.getSelectedIds().observe(this, list -> {
+        sharedIngredients.getSelectedIds().observe(this, list ->{
             if (list != null && list.size() != 0) {
                 mAdapter.setSelectedIds(list);
-                mSharedIngredientsViewModel.getSelectedIds().setValue(new ArrayList<>());
             }
         });
-
-
     }
 
     public static AddDrinkIngredientsFragment getNewInstance(String name) {
@@ -126,7 +119,6 @@ public class AddDrinkIngredientsFragment extends Fragment implements BackButtonL
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         mAdapter = new IngredientsListItemAdapter(getContext(), ingredient -> {
-            //mViewModel.selectIngredient(ingredient);
             toggleSelection(ingredient);
         });
         recyclerView.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));
@@ -166,8 +158,7 @@ public class AddDrinkIngredientsFragment extends Fragment implements BackButtonL
     @Override
     public void onPause() {
         super.onPause();
-        mViewModel.getSelectedIds().clear();
-        mViewModel.getSelectedIds().addAll(mAdapter.getSelectedIds());
+        mSharedIngredientsViewModel.selectIds(mAdapter.getSelectedIds());
     }
 
     @Override
@@ -177,7 +168,7 @@ public class AddDrinkIngredientsFragment extends Fragment implements BackButtonL
             return true;
         }
         if(item.getItemId() == R.id.ab_add){
-            mSharedIngredientsViewModel.getSelectedIds().getValue().addAll(mAdapter.getSelectedIds());
+            mSharedIngredientsViewModel.selectIds(mAdapter.getSelectedIds());
             onBackPressed();
             return true;
         }

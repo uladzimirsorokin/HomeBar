@@ -74,20 +74,21 @@ public class AddDrinkFragment extends Fragment implements BackButtonListener {
         subscribeUi(mViewModel, mSharedIngredientsViewModel);
     }
 
-    private void subscribeUi(AddDrinkViewModel drinkModel, SharedViewModel ingredientsModel) {
+    private void subscribeUi(AddDrinkViewModel drinkModel, SharedViewModel sharedIngredients) {
+
         drinkModel.getDrink().observe(this, drink -> {
             Log.d(this.getClass().getSimpleName(), AddDrinkFragment.this.toString());
         });
 
         drinkModel.getIngredients().observe(this, ingredients -> {
-            if (ingredients != null) {
+            if (ingredients != null && ingredients.size() != 0) {
                 mAdapter.setData(ingredients);
             }
         });
 
-        ingredientsModel.getSelectedIds().observe(this, ingredientsId -> {
-            if (ingredientsId != null && ingredientsId.size() > 0) {
-                mViewModel.setSelectedIds(ingredientsId);
+        sharedIngredients.getSelectedIds().observe(this, list -> {
+            if (list != null && list.size() != 0) {
+                mViewModel.setSelectedIds(list);
             }
         });
 
@@ -107,10 +108,9 @@ public class AddDrinkFragment extends Fragment implements BackButtonListener {
         mRvIngredients.addItemDecoration(itemDecoration);
 
 
-
         mGlass = view.findViewById(R.id.tvGlass);
         mGlass.setOnClickListener(view1 -> {
-            mSharedIngredientsViewModel.getSelectedIds().setValue(mViewModel.getIngredientIds());
+            mSharedIngredientsViewModel.selectIds(mViewModel.getIngredientIds());
             ((RouterProvider)getParentFragment()).getRouter().navigateTo(Screens.ADD_DRINK_INGREDIENTS);
         });
     }

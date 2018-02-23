@@ -19,6 +19,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 import sorokinuladzimir.com.homebarassistant.R;
@@ -35,14 +36,11 @@ public class IngredientsListItemAdapter extends RecyclerView.Adapter<Ingredients
 
     private List<Ingredient> mIngredientsList = new ArrayList();
     private List<Ingredient> mFilteredIngredientsList = new ArrayList();
-
+    private Context mContext;
     private final OnItemClickListener listener;
 
-    private SparseBooleanArray selectedIngredients = new SparseBooleanArray();
-
+    private HashSet<Ingredient> selectedSet = new HashSet<>();
     private List<Long> selectedIds = new ArrayList<>();
-
-    private Context mContext;
 
     public IngredientsListItemAdapter(Context context, OnItemClickListener listener) {
         this.listener = listener;
@@ -61,7 +59,8 @@ public class IngredientsListItemAdapter extends RecyclerView.Adapter<Ingredients
         holder.bind(mContext,
                 mFilteredIngredientsList.get(position),
                 listener,
-                selectedIngredients.get(mFilteredIngredientsList.get(position).hashCode(), false));
+                isIngredientSelected(position));
+        //selectedIngredients.get(mFilteredIngredientsList.get(position).hashCode(), false)
     }
 
     @Override
@@ -162,24 +161,19 @@ public class IngredientsListItemAdapter extends RecyclerView.Adapter<Ingredients
     public void toggleSelection(Ingredient item) {
         int position = mFilteredIngredientsList.indexOf(item);
         if (position != -1){
-            int hashCode = item.hashCode();
-            if (selectedIngredients.get(hashCode, false)) {
-                selectedIngredients.delete(hashCode);
+            if (selectedSet.contains(item)) {
+                selectedSet.remove(item);
                 selectedIds.remove(item.id);
             } else {
-                selectedIngredients.put(hashCode, true);
+                selectedSet.add(item);
                 selectedIds.add(item.id);
             }
             notifyItemChanged(position);
         }
     }
 
-    public SparseBooleanArray getSelectedIngredients() {
-        return selectedIngredients;
-    }
-
-    public void setSelectedIngredients(SparseBooleanArray selectedIngredients) {
-        this.selectedIngredients = selectedIngredients;
+    private boolean isIngredientSelected(int position) {
+        return selectedSet.contains(mFilteredIngredientsList.get(position));
     }
 
     public List<Long> getSelectedIds() {
@@ -187,15 +181,17 @@ public class IngredientsListItemAdapter extends RecyclerView.Adapter<Ingredients
     }
 
     public void setSelectedIds(List<Long> selectedIds) {
-        this.selectedIds.clear();
+        this.selectedIds = new ArrayList<>();
         this.selectedIds.addAll(selectedIds);
     }
 
     public void restoreSelection(){
-        for (Ingredient ingredient : mFilteredIngredientsList) {
-            if (selectedIds.indexOf(ingredient.id) != -1){
-                selectedIngredients.put(ingredient.hashCode(), true);
-                notifyItemChanged(mFilteredIngredientsList.indexOf(ingredient));
+        if (selectedSet.isEmpty()) {
+            for (Ingredient ingredient : mFilteredIngredientsList) {
+                if (selectedIds.indexOf(ingredient.id) != -1){
+                    selectedSet.add(ingredient);
+                    notifyItemChanged(mFilteredIngredientsList.indexOf(ingredient));
+                }
             }
         }
     }
@@ -207,7 +203,6 @@ public class IngredientsListItemAdapter extends RecyclerView.Adapter<Ingredients
             protected FilterResults performFiltering(CharSequence charSequence) {
                 String charString = charSequence.toString();
                 if (charString.isEmpty()) {
-                    //mFilteredIngredientsList.clear();
                     mFilteredIngredientsList = mIngredientsList;
                 } else {
                     List<Ingredient> filteredList = new ArrayList<>();

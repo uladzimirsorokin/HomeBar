@@ -23,7 +23,7 @@ public class SharedViewModel extends ViewModel {
         return selected;
     }
 
-    public MutableLiveData<List<Long>> getSelectedIds() {
+    public LiveData<List<Long>> getSelectedIds() {
         return selectedIds;
     }
 

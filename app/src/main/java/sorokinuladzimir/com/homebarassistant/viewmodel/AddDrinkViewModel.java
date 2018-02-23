@@ -159,13 +159,14 @@ public class AddDrinkViewModel extends AndroidViewModel {
         if (deletePath != null) BarApp.getInstance().getRepository().deleteImage(context, deletePath);
     }
 
-    public void setSelectedIds(List<Long> ingredientsId) {
+    public void setSelectedIds(List<Long> ingredientIds) {
 
-        if (ingredientsId != null) {
-            mIngredientIds.addAll(ingredientsId);
+        if (ingredientIds != null && ingredientIds.size() != 0) {
+            mIngredientIds = ingredientIds;
             mLiveListIngredients = mRepository.loadIngredients(mIngredientIds);
             mObservableIngredients.addSource(mLiveListIngredients,
-                    ingredients -> mObservableIngredients.setValue(IngredientToWholeCocktailMapper.getInstance().reverseMap(ingredients)));
+                    ingredients -> mObservableIngredients
+                            .setValue(IngredientToWholeCocktailMapper.getInstance().reverseMap(ingredients)));
         }
 
 
