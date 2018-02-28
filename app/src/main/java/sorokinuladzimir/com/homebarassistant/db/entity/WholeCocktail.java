@@ -12,7 +12,7 @@ public class WholeCocktail {
     @ColumnInfo(name="drink")
     public String drinkName;
 
-    public int amount;
+    public String amount;
 
     public String unit;
 

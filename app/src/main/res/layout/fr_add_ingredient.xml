@@ -60,13 +60,7 @@
             android:id="@+id/tv_singleingredient_name_title"
             android:layout_width="match_parent"
             android:layout_height="@dimen/list_subheader_height"
-            android:fontFamily="sans-serif-medium"
-            android:gravity="center_vertical"
-            android:paddingLeft="16dp"
-            android:paddingRight="16dp"
-            android:textColor="#8c000000"
-            android:textSize="14sp"
-            android:textIsSelectable="false"
+            style="@style/SubheaderTextStyle"
             android:text="@string/ingredient_name_title"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
@@ -77,13 +71,7 @@
             android:hint="Ingredient name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:ems="10"
-            android:paddingLeft="16dp"
-            android:paddingRight="16dp"
-            android:paddingTop="8dp"
-            android:textSize="16sp"
-            android:textColor="#f3000000"
-            android:fontFamily="sans-serif"
+            style="@style/SinglelineEditTextStyle"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tv_singleingredient_name_title" />
@@ -101,14 +89,8 @@
             android:id="@+id/tv_singleingredient_description_title"
             android:layout_width="match_parent"
             android:layout_height="@dimen/list_subheader_height"
-            android:fontFamily="sans-serif-medium"
-            android:gravity="center_vertical"
             android:layout_marginTop="8dp"
-            android:paddingLeft="16dp"
-            android:paddingRight="16dp"
-            android:textColor="#8c000000"
-            android:textSize="14sp"
-            android:textIsSelectable="false"
+            style="@style/SubheaderTextStyle"
             android:text="@string/ingredient_description_title"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -119,16 +101,42 @@
             android:hint="Ingredient description"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:ems="10"
-            android:paddingLeft="16dp"
-            android:paddingRight="16dp"
-            android:paddingTop="8dp"
-            android:textSize="16sp"
-            android:textColor="#f3000000"
-            android:fontFamily="sans-serif"
+            style="@style/SinglelineEditTextStyle"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tv_singleingredient_description_title" />
+
+        <View
+            android:layout_height="1dp"
+            android:layout_width="match_parent"
+            android:background="#22000000"
+            android:layout_marginTop="16dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/et_ingredient_description"/>
+
+        <TextView
+            android:id="@+id/tv_singleingredient_notes_title"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/list_subheader_height"
+            android:layout_marginTop="8dp"
+            style="@style/SubheaderTextStyle"
+            android:text="@string/tv_singledrink_notes"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/et_ingredient_description" />
+
+        <EditText
+            android:id="@+id/et_ingredient_notes"
+            android:hint="Ingredient notes"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/MultilineEditTextStyle"
+            android:nestedScrollingEnabled="false"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_singleingredient_notes_title" />
+
 
     </android.support.constraint.ConstraintLayout>
     </android.support.v4.widget.NestedScrollView>

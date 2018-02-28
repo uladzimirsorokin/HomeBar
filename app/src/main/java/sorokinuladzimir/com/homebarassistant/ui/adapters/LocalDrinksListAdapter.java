@@ -16,6 +16,7 @@ import com.bumptech.glide.Glide;
 import java.util.ArrayList;
 import java.util.List;
 
+import sorokinuladzimir.com.homebarassistant.BarApp;
 import sorokinuladzimir.com.homebarassistant.R;
 import sorokinuladzimir.com.homebarassistant.db.entity.Drink;
 import sorokinuladzimir.com.homebarassistant.db.entity.Taste;
@@ -60,40 +61,36 @@ public class LocalDrinksListAdapter extends RecyclerView.Adapter<LocalDrinksList
             mDrinkList = drinks;
             notifyItemRangeInserted(0, drinks.size());
         } else {
-            new AsyncTask<Void, Void, DiffUtil.DiffResult>() {
+            BarApp.getInstance().getExecutors().diskIO().execute(
+                    () -> {
+                        DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new DiffUtil.Callback() {
+                            @Override
+                            public int getOldListSize() {
+                                return mDrinkList.size();
+                            }
 
-                @Override
-                protected DiffUtil.DiffResult doInBackground(Void... voids) {
-                    return DiffUtil.calculateDiff(new DiffUtil.Callback() {
-                        @Override
-                        public int getOldListSize() {
-                            return mDrinkList.size();
-                        }
+                            @Override
+                            public int getNewListSize() {
+                                return drinks.size();
+                            }
 
-                        @Override
-                        public int getNewListSize() {
-                            return drinks.size();
-                        }
+                            @Override
+                            public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
+                                return mDrinkList.get(oldItemPosition).id == drinks.get(newItemPosition).id;
+                            }
 
-                        @Override
-                        public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
-                            return mDrinkList.get(oldItemPosition).id == drinks.get(newItemPosition).id;
-                        }
+                            @Override
+                            public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
+                                return mDrinkList.get(oldItemPosition).equals(drinks.get(newItemPosition));
+                            }
+                        });
 
-                        @Override
-                        public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
-                            return mDrinkList.get(oldItemPosition).equals(drinks.get(newItemPosition));
-                        }
-                    });
-                }
-
-                @Override
-                protected void onPostExecute(DiffUtil.DiffResult diffResult) {
-                    mDrinkList = drinks;
-                    diffResult.dispatchUpdatesTo(LocalDrinksListAdapter.this);
-                }
-            }.execute();
-
+                        BarApp.getInstance().getExecutors().mainThread().execute(() -> {
+                            mDrinkList = drinks;
+                            diffResult.dispatchUpdatesTo(LocalDrinksListAdapter.this);
+                        });
+                    }
+            );
         }
     }
 

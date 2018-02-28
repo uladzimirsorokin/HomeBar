@@ -3,36 +3,44 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:background="?selectableItemBackground"
+    android:contextClickable="true"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-
-    <EditText
-        android:id="@+id/et_ingredient_name"
+    <TextView
+        android:id="@+id/tv_ingredient_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:ems="15"
-        android:hint="Ingredient name"
-        android:inputType="textPersonName"
+        android:paddingTop="16dp"
+        android:singleLine="true"
+        android:ellipsize="end"
+        android:textIsSelectable="false"
+        android:textSize="18sp"
+        android:textColor="#f3000000"
+        android:fontFamily="sans-serif"
+        android:text="Grey goose vodka"
         android:padding="8dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
         android:id="@+id/et_ingredient_amount"
-        android:layout_width="48dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:ems="2"
+        android:ems="3"
+        android:maxEms="3"
+        android:maxLength="4"
         android:hint="10"
-        android:inputType="number"
+        android:gravity="bottom"
+        android:inputType="numberDecimal"
         android:padding="8dp"
         android:singleLine="true"
-        android:textAlignment="textEnd"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/et_ingredient_name" />
+        app:layout_constraintTop_toBottomOf="@+id/tv_ingredient_name" />
 
     <Spinner
         android:id="@+id/spin_ingridient_unit"
@@ -42,14 +50,17 @@
         android:layout_marginTop="8dp"
         android:padding="8dp"
         app:layout_constraintStart_toEndOf="@id/et_ingredient_amount"
-        app:layout_constraintTop_toBottomOf="@+id/et_ingredient_name" />
+        app:layout_constraintTop_toBottomOf="@+id/tv_ingredient_name" />
 
     <ImageView
         android:id="@+id/ingredient_item_delete"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
+        android:layout_width="42dp"
+        android:layout_height="42dp"
+        android:padding="8dp"
+        android:contextClickable="true"
+        android:background="?selectableItemBackgroundBorderless"
         android:layout_margin="8dp"
-        android:src="@drawable/ic_star_black"
+        android:src="@drawable/ic_close_black_24dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 

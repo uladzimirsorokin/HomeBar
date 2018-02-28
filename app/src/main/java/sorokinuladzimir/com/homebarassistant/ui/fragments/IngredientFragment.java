@@ -86,16 +86,9 @@ public class IngredientFragment extends Fragment implements BackButtonListener {
                         .load(ingredient.image != null ? ingredient.image : R.drawable.camera_placeholder)
                         .apply(RequestOptions.centerCropTransform())
                         .into(mIngredientImage);
-                if(ingredient.description != null){
-                    mDescriptionText.setText(ingredient.description);
-                    mNotesText.setText(ingredient.description);
-                } else{
-                    mDescriptionText.setText("Some description");
-                    mNotesText.setText("Some very interesting notes");
-                }
-                if(ingredient.name!=null) mCollapsingToolbarLayout.setTitle(ingredient.name);
-            } else {
-
+                if(ingredient.description != null) mDescriptionText.setText(ingredient.description);
+                if (ingredient.name != null) mCollapsingToolbarLayout.setTitle(ingredient.name);
+                if (ingredient.notes != null) mNotesText.setText(ingredient.notes);
             }
         });
 
@@ -127,7 +120,6 @@ public class IngredientFragment extends Fragment implements BackButtonListener {
         mIngredientImage = rootView.findViewById(R.id.image_singleIngredient);
         mDescriptionText = rootView.findViewById(R.id.tv_singleingredient_description);
         mNotesText = rootView.findViewById(R.id.tv_singleingredient_notes);
-
     }
 
     private void initFAB(View view){

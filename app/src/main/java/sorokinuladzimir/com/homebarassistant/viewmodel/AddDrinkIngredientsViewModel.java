@@ -35,6 +35,8 @@ public class AddDrinkIngredientsViewModel extends AndroidViewModel {
 
     private final MutableLiveData<String> mFilteredIngredientsQuery = new MutableLiveData<>();
 
+    private final MutableLiveData<List<Long>> mLocalSelection = new MutableLiveData<>();
+
 
     public AddDrinkIngredientsViewModel(Application application) {
         super(application);
@@ -61,4 +63,11 @@ public class AddDrinkIngredientsViewModel extends AndroidViewModel {
         return mObservableIngredients;
     }
 
+    public LiveData<List<Long>> getLocalSelection() {
+        return mLocalSelection;
+    }
+
+    public void setLocalSelection(List<Long> list){
+        mLocalSelection.setValue(list);
+    }
 }

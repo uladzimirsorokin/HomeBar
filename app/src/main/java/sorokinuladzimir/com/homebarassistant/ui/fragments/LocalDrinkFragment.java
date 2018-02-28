@@ -150,9 +150,7 @@ public class LocalDrinkFragment extends Fragment implements BackButtonListener {
     private void initFAB(View view){
         FloatingActionButton mFab = view.findViewById(R.id.single_drink_fab);
         mFab.setOnClickListener(view1 -> {
-
-            //TODO: jump to edit(add) cocktail fragment on click
-            Toast.makeText(getContext(),"edit pressed",Toast.LENGTH_SHORT).show();
+            ((RouterProvider)getParentFragment()).getRouter().navigateTo(Screens.ADD_DRINK, mDrinkId);
         });
     }
 

@@ -9,5 +9,11 @@
 
     <color name="bg_circle_default">#666666</color>
     <color name="row_activated">#e0e0e0</color>
+
+    <color name="bg_close_circle">#be3f51b5</color>
+
+    <color name="subheader_text">#8c000000</color>
+    <color name="singleline_edittext">#f3000000</color>
+    <color name="add_ingredients">#84313335</color>
 </resources>
 

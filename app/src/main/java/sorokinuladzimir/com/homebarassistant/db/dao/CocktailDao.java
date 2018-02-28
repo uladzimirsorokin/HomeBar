@@ -30,6 +30,8 @@ import sorokinuladzimir.com.homebarassistant.db.entity.Ingredient;
 import sorokinuladzimir.com.homebarassistant.db.converter.TasteConverter;
 import sorokinuladzimir.com.homebarassistant.db.entity.WholeCocktail;
 
+import static android.arch.persistence.room.OnConflictStrategy.REPLACE;
+
 @Dao
 @TypeConverters(TasteConverter.class)
 public interface CocktailDao {
@@ -53,7 +55,7 @@ public interface CocktailDao {
             "WHERE drink_id Like :drinkID")
     List<Ingredient> ingredientsForCocktail(int drinkID);
 
-    @Query("SELECT DrinkIngredientJoin.id, Ingredient.name as ingredient, Drink.name as drink, DrinkIngredientJoin.amount, DrinkIngredientJoin.unit " +
+    @Query("SELECT ingredient_id as id, Ingredient.name as ingredient, DrinkIngredientJoin.amount, DrinkIngredientJoin.unit " +
             "FROM DrinkIngredientJoin " +
             "INNER JOIN Ingredient ON DrinkIngredientJoin.ingredient_id = Ingredient.id " +
             "INNER JOIN Drink ON DrinkIngredientJoin.drink_id = Drink.id " +
@@ -70,14 +72,20 @@ public interface CocktailDao {
     @Query("SELECT COUNT(*) from DrinkIngredientJoin where ingredient_id = :id")
     int countCocktailsWithIngridient(Long id);
 
+    @Query("SELECT ingredient_id FROM DrinkIngredientJoin where drink_id = :drinkId")
+    LiveData<List<Long>> getDrinkIngredientIds(Long drinkId);
+
     @Insert()
     void insertDrinkIngredient(DrinkIngredientJoin drinkIngredient);
 
-    @Insert()
+    @Insert(onConflict = REPLACE)
     void insertDrinkIngredients(DrinkIngredientJoin... drinkIngredient);
 
-    @Insert()
+    @Insert(onConflict = REPLACE)
     void insertDrinkIngredients(List<DrinkIngredientJoin> drinkIngredient);
+
+    @Query("delete from DrinkIngredientJoin where drink_id = :drinkId")
+    void deleteDrinkIngredientsById(Long drinkId);
 
     @Query("DELETE FROM DrinkIngredientJoin")
     void deleteAll();

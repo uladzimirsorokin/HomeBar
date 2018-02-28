@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,15 +42,15 @@ public class AddDrinkIngredientItemAdapter extends RecyclerView.Adapter<AddDrink
     @Override
     public IngredientViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         return new IngredientViewHolder(LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.add_drink_ingredient_item, parent,false), new MyAmountListener(), new MyNameListener());
+                .inflate(R.layout.add_drink_ingredient_item, parent,false), new MyAmountListener());
     }
 
     @Override
     public void onBindViewHolder(IngredientViewHolder holder, int position) {
         holder.myAmountListener.updatePosition(holder.getAdapterPosition());
-        holder.myNameListener.updatePosition(holder.getAdapterPosition());
-        holder.amount.setText("" + mIngredients.get(holder.getAdapterPosition()).amount);
-        holder.name.setText(mIngredients.get(holder.getAdapterPosition()).ingredientName);
+        WholeCocktail cocktail = mIngredients.get(holder.getAdapterPosition());
+        if (cocktail.amount != null) holder.amount.setText("" + cocktail.amount);
+        if (cocktail.ingredientName != null) holder.name.setText(cocktail.ingredientName);
         holder.bind(holder.getAdapterPosition(), listener);
     }
 
@@ -71,22 +72,20 @@ public class AddDrinkIngredientItemAdapter extends RecyclerView.Adapter<AddDrink
 
     public class IngredientViewHolder extends RecyclerView.ViewHolder {
 
-        public EditText name;
+        public TextView name;
         public EditText amount;
         public View deleteButton;
         public MyAmountListener myAmountListener;
-        public MyNameListener myNameListener;
 
-        public IngredientViewHolder(View itemView, MyAmountListener myAmountListener, MyNameListener myNameListener) {
+
+        public IngredientViewHolder(View itemView, MyAmountListener myAmountListener) {
             super(itemView);
 
-            name = itemView.findViewById(R.id.et_ingredient_name);
+            name = itemView.findViewById(R.id.tv_ingredient_name);
             amount = itemView.findViewById(R.id.et_ingredient_amount);
             deleteButton = itemView.findViewById(R.id.ingredient_item_delete);
             this.myAmountListener = myAmountListener;
-            this.myNameListener = myNameListener;
             amount.addTextChangedListener(myAmountListener);
-            name.addTextChangedListener(myNameListener);
         }
 
         public void bind(final int position, final OnDeleteClickListener listener) {
@@ -112,35 +111,10 @@ public class AddDrinkIngredientItemAdapter extends RecyclerView.Adapter<AddDrink
         @Override
         public void onTextChanged(CharSequence charSequence, int i, int i2, int i3) {
             if(charSequence.length() > 0){
-                mIngredients.get(position).amount = Integer.valueOf(charSequence.toString());
+                mIngredients.get(position).amount = charSequence.toString();
             } else {
-                mIngredients.get(position).amount = 0;
+                mIngredients.get(position).amount = "";
             }
-        }
-
-        @Override
-        public void afterTextChanged(Editable editable) {
-
-        }
-    }
-
-    private class MyNameListener implements TextWatcher {
-
-        private int position;
-
-
-        public void updatePosition(int position) {
-            this.position = position;
-        }
-
-        @Override
-        public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) {
-
-        }
-
-        @Override
-        public void onTextChanged(CharSequence charSequence, int i, int i2, int i3) {
-
         }
 
         @Override

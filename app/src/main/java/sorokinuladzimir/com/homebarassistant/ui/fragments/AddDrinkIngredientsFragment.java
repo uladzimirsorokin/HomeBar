@@ -78,7 +78,15 @@ public class AddDrinkIngredientsFragment extends Fragment implements BackButtonL
             if(query != null) mAdapter.getFilter().filter(query);
         });
 
-        sharedIngredients.getSelectedIds().observe(this, list ->{
+        sharedIngredients.getSelectedIds().observe(this, list -> {
+            if (list != null && list.size() != 0) {
+                if (model.getLocalSelection().getValue() == null || model.getLocalSelection().getValue().size() == 0) {
+                    model.setLocalSelection(list);
+                }
+            }
+        });
+
+        model.getLocalSelection().observe(this, list -> {
             if (list != null && list.size() != 0) {
                 mAdapter.setSelectedIds(list);
             }
@@ -158,7 +166,7 @@ public class AddDrinkIngredientsFragment extends Fragment implements BackButtonL
     @Override
     public void onPause() {
         super.onPause();
-        mSharedIngredientsViewModel.selectIds(mAdapter.getSelectedIds());
+        mViewModel.setLocalSelection(mAdapter.getSelectedIds());
     }
 
     @Override

@@ -65,7 +65,8 @@ public class AddIngredientViewModel extends AndroidViewModel {
 
         mObservableCurrentImagePath = new MediatorLiveData<>();
         mObservableCurrentImagePath.setValue(null);
-        mObservableCurrentImagePath.addSource(mRepository.getObservableImagePath(), imagePath -> {
+        mRepository.resetIngredientImagePath();
+        mObservableCurrentImagePath.addSource(mRepository.getObservableIngredientImagePath(), imagePath -> {
             mObservableCurrentImagePath.setValue(imagePath);
         });
 
@@ -108,10 +109,10 @@ public class AddIngredientViewModel extends AndroidViewModel {
         mIsImageRemoved = false;
         removeImageFile(context, getIngredient().getValue() == null ? null : getIngredient().getValue().image,
                 getCurrentImagePath().getValue(), false);
-        mRepository.saveImageToAlbum(context, albumName, imageUri, sizeForScale, deleteSource);
+        mRepository.saveImageToAlbum(context, albumName, imageUri, sizeForScale, deleteSource, true);
     }
 
-    public void saveIngredient(Context context, String name, String description){
+    public void saveIngredient(Context context, String name, String description, String notes){
         removeImageFile(context, getIngredient().getValue() == null ? null : getIngredient().getValue().image,
                 getCurrentImagePath().getValue(), true);
         Ingredient ingredient = mObservableIngredient.getValue();
@@ -119,7 +120,8 @@ public class AddIngredientViewModel extends AndroidViewModel {
         ingredient.image = mObservableCurrentImagePath.getValue();
         ingredient.name = name;
         ingredient.description = description;
-        BarApp.getInstance().getRepository().insertIngredient(ingredient);
+        ingredient.notes = notes;
+        mRepository.insertIngredient(ingredient);
     }
 
     public int deleteIngredient() {

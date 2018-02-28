@@ -54,6 +54,7 @@ public class AddIngredientFragment extends Fragment implements BackButtonListene
     private ImageView mIngredientImage;
     private EditText mName;
     private EditText mDesc;
+    private EditText mNotes;
 
     private AddIngredientViewModel mViewModel;
 
@@ -96,9 +97,12 @@ public class AddIngredientFragment extends Fragment implements BackButtonListene
         if(!mViewModel.getIsNewIngredient()) {
             mViewModel.getIngredient().observe(this, ingredient -> {
                 if(ingredient != null && mViewModel.getCurrentImagePath().getValue() == null) {
-                    if (ingredient.image != null && !mViewModel.getIsImageRemoved()) mViewModel.getCurrentImagePath().setValue(ingredient.image);
+                    if (ingredient.image != null && !mViewModel.getIsImageRemoved()){
+                        mViewModel.getCurrentImagePath().setValue(ingredient.image);
+                    }
                     if (ingredient.name != null) mName.setText(ingredient.name);
                     if (ingredient.description != null) mDesc.setText(ingredient.description);
+                    if (ingredient.notes != null) mNotes.setText(ingredient.notes);
                 }
             });
         }
@@ -143,6 +147,7 @@ public class AddIngredientFragment extends Fragment implements BackButtonListene
         mIngredientImage = view.findViewById(R.id.image_add_ingredient);
         mName = view.findViewById(R.id.et_ingredient_name);
         mDesc = view.findViewById(R.id.et_ingredient_description);
+        mNotes = view.findViewById(R.id.et_ingredient_notes);
 
         mIngredientImage.setOnClickListener(view1 -> showAddImageDialog());
     }
@@ -216,13 +221,14 @@ public class AddIngredientFragment extends Fragment implements BackButtonListene
     }
 
     private void saveIngredient() {
-        mViewModel.saveIngredient(getContext(), mName.getText().toString(), mDesc.getText().toString());
+        mViewModel.saveIngredient(getContext(), mName.getText().toString(),
+                mDesc.getText().toString(), mNotes.getText().toString());
         ((RouterProvider)getParentFragment()).getRouter().navigateTo(Screens.INGREDIENTS_LIST);
     }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.add_ingredient_menu, menu);
+        inflater.inflate(R.menu.add_edit_item_menu, menu);
         if(mViewModel.getIsNewIngredient()){
             menu.findItem(R.id.ab_add).setTitle("Добавить");
             menu.findItem(R.id.ab_delete).setVisible(false);
@@ -244,7 +250,8 @@ public class AddIngredientFragment extends Fragment implements BackButtonListene
                 return true;
             case R.id.ab_delete:
                 int count = mViewModel.deleteIngredient();
-                if(count != 0) Toast.makeText(getContext(), "Can't be deleted, used in " + count + "cocktails",Toast.LENGTH_SHORT).show();
+                if(count != 0) Toast.makeText(getContext(),
+                        "Can't be deleted, used in " + count + "cocktails",Toast.LENGTH_SHORT).show();
                 ((RouterProvider)getParentFragment()).getRouter().navigateTo(Screens.INGREDIENTS_LIST);
                 return true;
             case R.id.ab_about:

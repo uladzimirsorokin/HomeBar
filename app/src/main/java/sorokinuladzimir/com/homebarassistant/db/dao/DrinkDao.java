@@ -46,7 +46,7 @@ public interface DrinkDao {
     @Query("SELECT * FROM Drink")
     LiveData<List<Drink>> loadAllDrinks();
 
-    @Insert(onConflict = IGNORE)
+    @Insert(onConflict = REPLACE)
     Long insertDrink(Drink drink);
 
     @Update(onConflict = REPLACE)
@@ -54,6 +54,9 @@ public interface DrinkDao {
 
     @Delete
     void delete(Drink drink);
+
+    @Query("delete from Drink where id = :drinkId")
+    void deleteDrinkById(Long drinkId);
 
     @Query("DELETE FROM Drink")
     void deleteAll();

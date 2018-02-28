@@ -4,6 +4,7 @@ package sorokinuladzimir.com.homebarassistant.db.entity;
 import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.ForeignKey;
+import android.arch.persistence.room.Index;
 import android.arch.persistence.room.PrimaryKey;
 
 @Entity(foreignKeys = {
@@ -19,7 +20,7 @@ public class DrinkIngredientJoin {
     @PrimaryKey(autoGenerate = true)
     public Long id;
 
-    public Long amount;
+    public String amount;
 
     public String unit;
 

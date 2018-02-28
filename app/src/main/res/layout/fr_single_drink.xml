@@ -123,7 +123,7 @@
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
         android:clickable="true"
-        android:src="@drawable/ic_add"
+        android:src="@drawable/ic_edit_done"
         app:layout_anchor="@+id/singleDrinkAppbar"
         app:layout_anchorGravity="bottom|right|end" />
 

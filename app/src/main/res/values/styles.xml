@@ -21,4 +21,40 @@
         <item name="actionMenuTextColor">@android:color/white</item>
     </style>
 
+    <style name="SubheaderTextStyle" parent="@android:style/TextAppearance.Large">
+        <item name="android:textSize">18sp</item>
+        <item name="android:textColor">@color/subheader_text</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:paddingLeft">16dp</item>
+        <item name="android:paddingRight">16dp</item>
+        <item name="android:textIsSelectable">false</item>
+    </style>
+
+    <style name="SinglelineEditTextStyle" parent="@android:style/TextAppearance.Large">
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:paddingLeft">16dp</item>
+        <item name="android:paddingRight">16dp</item>
+        <item name="android:ems">10</item>
+        <item name="android:paddingTop">8dp</item>
+    </style>
+
+    <style name="MultilineEditTextStyle" parent="@android:style/TextAppearance.Large">
+        <item name="android:paddingLeft">16dp</item>
+        <item name="android:paddingRight">16dp</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:ems">10</item>
+        <item name="android:paddingTop">8dp</item>
+        <item name="android:inputType">textMultiLine</item>
+        <item name="android:lines">7</item>
+        <item name="android:minLines">1</item>
+        <item name="android:maxLines">10</item>
+        <item name="android:gravity">top|left</item>
+    </style>
+
+    <style name="TextStyle" parent="TextAppearance.AppCompat.Medium">
+        <item name="android:textColor">@color/add_ingredients</item>
+    </style>
+
 </resources>

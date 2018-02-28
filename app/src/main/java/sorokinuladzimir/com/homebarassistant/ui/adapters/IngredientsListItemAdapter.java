@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
+import sorokinuladzimir.com.homebarassistant.BarApp;
 import sorokinuladzimir.com.homebarassistant.R;
 import sorokinuladzimir.com.homebarassistant.db.entity.Ingredient;
 import sorokinuladzimir.com.homebarassistant.ui.animator.FlipAnimator;
@@ -75,41 +76,39 @@ public class IngredientsListItemAdapter extends RecyclerView.Adapter<Ingredients
             mFilteredIngredientsList = ingredients;
             notifyItemRangeInserted(0, ingredients.size());
         } else {
-            new AsyncTask<Void, Void, DiffUtil.DiffResult>() {
+            BarApp.getInstance().getExecutors().diskIO().execute(
+                    () -> {
+                        DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new DiffUtil.Callback() {
+                            @Override
+                            public int getOldListSize() {
+                                return mIngredientsList.size();
+                            }
 
-                @Override
-                protected DiffUtil.DiffResult doInBackground(Void... voids) {
-                    return DiffUtil.calculateDiff(new DiffUtil.Callback() {
-                        @Override
-                        public int getOldListSize() {
-                            return mIngredientsList.size();
-                        }
+                            @Override
+                            public int getNewListSize() {
+                                return ingredients.size();
+                            }
 
-                        @Override
-                        public int getNewListSize() {
-                            return ingredients.size();
-                        }
+                            @Override
+                            public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
+                                return mIngredientsList.get(oldItemPosition).id == ingredients.get(newItemPosition).id;
+                            }
 
-                        @Override
-                        public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
-                            return mIngredientsList.get(oldItemPosition).id == ingredients.get(newItemPosition).id;
-                        }
+                            @Override
+                            public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
+                                return mIngredientsList.get(oldItemPosition).equals(ingredients.get(newItemPosition));
+                            }
+                        });
 
-                        @Override
-                        public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
-                            return mIngredientsList.get(oldItemPosition).equals(ingredients.get(newItemPosition));
-                        }
-                    });
-                }
+                        BarApp.getInstance().getExecutors().mainThread().execute(() -> {
+                            mIngredientsList = ingredients;
+                            mFilteredIngredientsList = ingredients;
+                            restoreSelection();
+                            diffResult.dispatchUpdatesTo(IngredientsListItemAdapter.this);
+                        });
+                    }
+            );
 
-                @Override
-                protected void onPostExecute(DiffUtil.DiffResult diffResult) {
-                    mIngredientsList = ingredients;
-                    mFilteredIngredientsList = ingredients;
-                    restoreSelection();
-                    diffResult.dispatchUpdatesTo(IngredientsListItemAdapter.this);
-                }
-            }.execute();
         }
 
     }

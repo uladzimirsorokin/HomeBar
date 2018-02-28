@@ -17,6 +17,8 @@ public class Ingredient {
 
     public String image;
 
+    public String notes;
+
     @Override
     public String toString() {
         return "Ingredient{" +
@@ -24,6 +26,7 @@ public class Ingredient {
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 ", image='" + image + '\'' +
+                ", notes='" + notes + '\'' +
                 '}';
     }
 
@@ -35,11 +38,12 @@ public class Ingredient {
         return Objects.equals(id, that.id) &&
                 Objects.equals(name, that.name) &&
                 Objects.equals(description, that.description) &&
-                Objects.equals(image, that.image);
+                Objects.equals(image, that.image) &&
+                Objects.equals(notes, that.notes);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, description, image);
+        return Objects.hash(id, name, description, image, notes);
     }
 }
