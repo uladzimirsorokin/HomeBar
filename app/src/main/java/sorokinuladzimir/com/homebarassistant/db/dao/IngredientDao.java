@@ -44,6 +44,9 @@ public interface IngredientDao {
     @Query("SELECT id, name FROM Ingredient WHERE id IN (:ingredientIds)")
     LiveData<List<Ingredient>> loadIngredients(List<Long> ingredientIds);
 
+    @Query("SELECT Ingredient.id as id, Ingredient.name as ingredient FROM Ingredient WHERE Ingredient.id IN (:ingredientIds)")
+    LiveData<List<WholeCocktail>> loadCocktailIngredients(List<Long> ingredientIds);
+
     @Query("SELECT * FROM Ingredient where id = :id")
     Ingredient loadIngredientById(Long id);
 

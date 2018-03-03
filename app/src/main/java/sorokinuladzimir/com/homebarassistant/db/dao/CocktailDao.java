@@ -48,33 +48,6 @@ public interface CocktailDao {
     @Query("SELECT * From DrinkIngredientJoin WHERE amount >= :amount")
     List<DrinkIngredientJoin> findAllDrinkIngredientsByAmount(int amount);
 
-    @Query("SELECT Ingredient.id, Ingredient.name, Ingredient.description, DrinkIngredientJoin.amount as amount, DrinkIngredientJoin.unit " +
-            "FROM DrinkIngredientJoin " +
-            "INNER JOIN Ingredient ON DrinkIngredientJoin.ingredient_id = Ingredient.id " +
-            "INNER JOIN Drink ON DrinkIngredientJoin.drink_id = Drink.id " +
-            "WHERE drink_id Like :drinkID")
-    List<Ingredient> ingredientsForCocktail(int drinkID);
-
-    @Query("SELECT ingredient_id as id, Ingredient.name as ingredient, DrinkIngredientJoin.amount, DrinkIngredientJoin.unit " +
-            "FROM DrinkIngredientJoin " +
-            "INNER JOIN Ingredient ON DrinkIngredientJoin.ingredient_id = Ingredient.id " +
-            "INNER JOIN Drink ON DrinkIngredientJoin.drink_id = Drink.id " +
-            "WHERE drink_id Like :drinkID")
-    LiveData<List<WholeCocktail>> findAllIngredientsByDrinkId(Long drinkID);
-
-    @Query("SELECT DrinkIngredientJoin.id, Ingredient.name as ingredient, Drink.name as drink, DrinkIngredientJoin.amount, DrinkIngredientJoin.unit " +
-            "FROM DrinkIngredientJoin " +
-            "INNER JOIN Ingredient ON DrinkIngredientJoin.ingredient_id = Ingredient.id " +
-            "INNER JOIN Drink ON DrinkIngredientJoin.drink_id = Drink.id " +
-            "WHERE drink_id Like :drinkID")
-    List<WholeCocktail> getWholeCocktailIngr(Long drinkID);
-
-    @Query("SELECT COUNT(*) from DrinkIngredientJoin where ingredient_id = :id")
-    int countCocktailsWithIngridient(Long id);
-
-    @Query("SELECT ingredient_id FROM DrinkIngredientJoin where drink_id = :drinkId")
-    LiveData<List<Long>> getDrinkIngredientIds(Long drinkId);
-
     @Insert()
     void insertDrinkIngredient(DrinkIngredientJoin drinkIngredient);
 
@@ -89,4 +62,33 @@ public interface CocktailDao {
 
     @Query("DELETE FROM DrinkIngredientJoin")
     void deleteAll();
+
+    @Query("SELECT COUNT(*) from DrinkIngredientJoin where ingredient_id = :id")
+    int countCocktailsWithIngridient(Long id);
+
+    @Query("SELECT ingredient_id FROM DrinkIngredientJoin where drink_id = :drinkId")
+    LiveData<List<Long>> getDrinkIngredientIds(Long drinkId);
+
+    @Query("SELECT Ingredient.id, Ingredient.name, Ingredient.description, DrinkIngredientJoin.amount as amount, DrinkIngredientJoin.unit " +
+            "FROM DrinkIngredientJoin " +
+            "INNER JOIN Ingredient ON DrinkIngredientJoin.ingredient_id = Ingredient.id " +
+            "INNER JOIN Drink ON DrinkIngredientJoin.drink_id = Drink.id " +
+            "WHERE drink_id Like :drinkID")
+    List<Ingredient> ingredientsForCocktail(int drinkID);
+
+    @Query("SELECT DrinkIngredientJoin.id as join_id, DrinkIngredientJoin.ingredient_id as id, Ingredient.name as ingredient, " +
+            "DrinkIngredientJoin.amount, DrinkIngredientJoin.unit, Ingredient.image as image " +
+            "FROM DrinkIngredientJoin " +
+            "INNER JOIN Ingredient ON DrinkIngredientJoin.ingredient_id = Ingredient.id " +
+            "WHERE drink_id Like :drinkID")
+    LiveData<List<WholeCocktail>> findAllIngredientsByDrinkId(Long drinkID);
+
+/*
+    @Query("SELECT DrinkIngredientJoin.id as join_id, DrinkIngredientJoin.ingredient_id as id, Ingredient.name as ingredient, " +
+            "DrinkIngredientJoin.amount, DrinkIngredientJoin.unit, Ingredient.image as image " +
+            "FROM DrinkIngredientJoin " +
+            "INNER JOIN Ingredient ON DrinkIngredientJoin.ingredient_id = Ingredient.id " +
+            "INNER JOIN Drink ON DrinkIngredientJoin.drink_id = Drink.id " +
+            "WHERE drink_id Like :drinkID")
+    LiveData<List<WholeCocktail>> findAllIngredientsByDrinkId(Long drinkID);*/
 }

@@ -26,9 +26,12 @@ public class WholeCocktailToDrinkIngredientJoinMapper extends Mapper<DrinkIngred
     @Override
     public DrinkIngredientJoin reverseMap(WholeCocktail value) {
         DrinkIngredientJoin drinkIngredient = new DrinkIngredientJoin();
-        drinkIngredient.ingredientId = value.id;
+        drinkIngredient.id = value.jointableId;
+        drinkIngredient.ingredientId = value.ingredientId;
         drinkIngredient.amount = value.amount;
         drinkIngredient.unit = value.unit;
         return drinkIngredient;
     }
+
+
 }

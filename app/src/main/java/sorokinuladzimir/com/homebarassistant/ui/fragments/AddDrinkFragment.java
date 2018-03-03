@@ -119,11 +119,19 @@ public class AddDrinkFragment extends Fragment implements BackButtonListener,
              }
         });
 
-        if (!drinkModel.getIsNewDrink()) {
-            drinkModel.getInitialIngredientIds().observe(this, ingredientIds -> {
-                if (ingredientIds != null) drinkModel.setIngredientIds(ingredientIds);
-            });
-        }
+        if(!drinkModel.getIsNewDrink() && drinkModel.getIngredients().getValue() == null)
+        drinkModel.getInitialIngredients().observe(this, ingredients -> {
+            if (ingredients != null) {
+                drinkModel.setInitialIngredients(ingredients, true);
+                drinkModel.getInitialIngredients().removeObservers(this);
+            }
+        });
+
+        drinkModel.getObservableLiveIngredients().observe(this, ingredients -> {
+            if (ingredients != null) {
+                drinkModel.updateIngredients(ingredients, mAdapter.getIngredients());
+            }
+        });
 
         sharedIngredients.getSelectedIds().observe(this, list -> {
             if (list != null) {
@@ -145,14 +153,15 @@ public class AddDrinkFragment extends Fragment implements BackButtonListener,
         mRvIngredients.addItemDecoration(itemDecoration);
 
         mAdapter = new AddDrinkIngredientItemAdapter((position, cocktail) -> {
-            mAdapter.deleteItem(position);
-            mViewModel.removeIngredient(cocktail);
+            //mAdapter.deleteItem(position);
+            mViewModel.removeIngredient(cocktail, mAdapter.getIngredients());
         });
         mRvIngredients.setAdapter(mAdapter);
 
 
         mGlass = view.findViewById(R.id.tvGlass);
         mGlass.setOnClickListener(view1 -> {
+            mViewModel.setIngredients(mAdapter.getIngredients(), true);
             mSharedIngredientsViewModel.selectIds(mViewModel.getIngredientIds());
             ((RouterProvider)getParentFragment()).getRouter().navigateTo(Screens.ADD_DRINK_INGREDIENTS);
         });

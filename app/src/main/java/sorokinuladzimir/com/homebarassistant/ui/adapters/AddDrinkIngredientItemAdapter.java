@@ -1,5 +1,7 @@
 package sorokinuladzimir.com.homebarassistant.ui.adapters;
 
+import android.annotation.SuppressLint;
+import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -12,7 +14,9 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
+import sorokinuladzimir.com.homebarassistant.BarApp;
 import sorokinuladzimir.com.homebarassistant.R;
+import sorokinuladzimir.com.homebarassistant.db.entity.Drink;
 import sorokinuladzimir.com.homebarassistant.db.entity.Ingredient;
 import sorokinuladzimir.com.homebarassistant.db.entity.WholeCocktail;
 
@@ -49,7 +53,11 @@ public class AddDrinkIngredientItemAdapter extends RecyclerView.Adapter<AddDrink
     public void onBindViewHolder(IngredientViewHolder holder, int position) {
         holder.myAmountListener.updatePosition(holder.getAdapterPosition());
         WholeCocktail cocktail = mIngredients.get(holder.getAdapterPosition());
-        if (cocktail.amount != null) holder.amount.setText("" + cocktail.amount);
+        if (cocktail.amount != null){
+            holder.amount.setText("" + cocktail.amount);
+        } else {
+            holder.amount.setText("");
+        }
         if (cocktail.ingredientName != null) holder.name.setText(cocktail.ingredientName);
         holder.bind(holder.getAdapterPosition(), listener);
     }

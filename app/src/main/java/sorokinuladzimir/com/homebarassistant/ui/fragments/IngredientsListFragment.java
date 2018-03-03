@@ -60,11 +60,16 @@ public class IngredientsListFragment extends Fragment {
 
 
         mViewModel = ViewModelProviders.of(this).get(IngredientListViewModel.class);
-        subscribeUi(mViewModel);
+
 
         return rootView;
     }
 
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        subscribeUi(mViewModel);
+    }
 
     private void subscribeUi(IngredientListViewModel model) {
 
@@ -75,8 +80,6 @@ public class IngredientsListFragment extends Fragment {
 
             }
         });
-
-
     }
 
     public static IngredientsListFragment getNewInstance(String name) {
@@ -114,13 +117,4 @@ public class IngredientsListFragment extends Fragment {
         recyclerView.setAdapter(mAdapter);
     }
 
-    @Override
-    public void onPause() {
-        super.onPause();
-    }
-
-    @Override
-    public void onSaveInstanceState(@NonNull Bundle outState) {
-        super.onSaveInstanceState(outState);
-    }
 }

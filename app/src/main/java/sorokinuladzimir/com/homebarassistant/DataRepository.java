@@ -99,20 +99,6 @@ public class DataRepository {
         return mObservableIngredients;
     }
 
-    public List<WholeCocktail> getCustomIngredients(Long drinkId) {
-        FutureTask<List<WholeCocktail>> future =
-                new FutureTask<>(() -> mDatabase.getCocktailDao().getWholeCocktailIngr(drinkId));
-        mExecutors.diskIO().execute(future);
-        try {
-            return future.get();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        }
-        return new ArrayList<>();
-    }
-
     public LiveData<Drink> loadDrink(final Long drinkId) {
         return mDatabase.getDrinkDao().loadDrinkById(drinkId);
     }
@@ -123,6 +109,10 @@ public class DataRepository {
 
     public LiveData<List<Ingredient>> loadIngredients(final List<Long> ingredientIds) {
         return mDatabase.getIngredientDao().loadIngredients(ingredientIds);
+    }
+
+    public LiveData<List<WholeCocktail>> loadCocktailIngredients(final List<Long> ingredientIds) {
+        return mDatabase.getIngredientDao().loadCocktailIngredients(ingredientIds);
     }
 
     public LiveData<String> getObservableIngredientImagePath() {
@@ -183,8 +173,6 @@ public class DataRepository {
         return new Long[]{};
     }
 
-
-
     public LiveData<List<WholeCocktail>> loadIngredients(final Long drinkId) {
         return mDatabase.getCocktailDao().findAllIngredientsByDrinkId(drinkId);
     }
@@ -234,7 +222,6 @@ public class DataRepository {
                 e.printStackTrace();
             }
         });
-
     }
 
     public void deleteDrink(Long drinkId) {
@@ -246,6 +233,7 @@ public class DataRepository {
 
     public void insertDrink(Drink drink, List<DrinkIngredientJoin> drinkIngredients) {
         mExecutors.diskIO().execute(() -> {
+            if (drink.id != null) mDatabase.getCocktailDao().deleteDrinkIngredientsById(drink.id);
             Long drinkId = mDatabase.getDrinkDao().insertDrink(drink);
             for (final ListIterator<DrinkIngredientJoin> i = drinkIngredients.listIterator(); i.hasNext();) {
                 final DrinkIngredientJoin item = i.next();
