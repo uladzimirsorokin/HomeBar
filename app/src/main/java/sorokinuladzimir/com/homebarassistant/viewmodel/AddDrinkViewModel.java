@@ -167,6 +167,16 @@ public class AddDrinkViewModel extends AndroidViewModel {
         setSelectedIds(mIngredientIds);
     }
 
+    public void setSelectedIds(List<Long> ingredientIds) {
+        if (ingredientIds != null) {
+            mIngredientIds = ingredientIds;
+            if (mLiveListIngredients != null) mObservableLiveIngredients.removeSource(mLiveListIngredients);
+            mLiveListIngredients = mRepository.loadCocktailIngredients(mIngredientIds);
+            mObservableLiveIngredients.addSource(mLiveListIngredients,
+                    ingredients -> mObservableLiveIngredients.setValue(ingredients));
+        }
+    }
+
 
     /*
     *  List<WholeCocktail> ingredients обновленный список ингридиентов (id, name) без колличества
@@ -186,16 +196,17 @@ public class AddDrinkViewModel extends AndroidViewModel {
             if (tempIngredients.containsKey(cocktail.ingredientId)){
                 tempIngredients.get(cocktail.ingredientId).unit = cocktail.unit;
                 tempIngredients.get(cocktail.ingredientId).amount = cocktail.amount;
-                tempIngredients.get(cocktail.ingredientId).jointableId = cocktail.jointableId;
+                //anyway delete all previous insted of updating
+                //tempIngredients.get(cocktail.ingredientId).jointableId = cocktail.jointableId;
             }
         }
 
         exposeIngredients();
 
-        /*boolean isListChangedFlag = false;
 
-        List<Long> oldIds = new ArrayList<>();
-        oldIds.addAll(mIngredientIds);
+    /*    boolean isListChangedFlag = false;
+
+        List<Long> oldIds = new ArrayList<>(tempIngredients.keySet());
 
         List<Long> newIds = new ArrayList<>();
         for (WholeCocktail cocktail : newIngredients) {
@@ -205,7 +216,6 @@ public class AddDrinkViewModel extends AndroidViewModel {
         if (oldIds.size() != newIds.size()) {
             oldIds.removeAll(newIds);
             isListChangedFlag = true;
-            setSelectedIds(newIds);
             if (oldIds.size() != 0) {
                 //remove some old add some new
                 tempIngredients.keySet().removeAll(oldIds);
@@ -217,7 +227,6 @@ public class AddDrinkViewModel extends AndroidViewModel {
             oldIds.removeAll(newIds);
             if (oldIds.size() != 0) {
                 //remove some old add some new
-                setSelectedIds(newIds);
                 isListChangedFlag = true;
                 tempIngredients.keySet().removeAll(oldIds);
             } else {
@@ -245,20 +254,8 @@ public class AddDrinkViewModel extends AndroidViewModel {
             }
         }
 
-
         if (isListChangedFlag) exposeIngredients();*/
     }
-
-    public void setSelectedIds(List<Long> ingredientIds) {
-        if (ingredientIds != null) {
-            mIngredientIds = ingredientIds;
-            if (mLiveListIngredients != null) mObservableLiveIngredients.removeSource(mLiveListIngredients);
-            mLiveListIngredients = mRepository.loadCocktailIngredients(mIngredientIds);
-            mObservableLiveIngredients.addSource(mLiveListIngredients,
-                    ingredients -> mObservableLiveIngredients.setValue(ingredients));
-        }
-    }
-
 
     // image-related block
 
@@ -326,8 +323,8 @@ public class AddDrinkViewModel extends AndroidViewModel {
         if(drink == null) drink = new Drink();
 
         drink.image = mObservableCurrentImagePath.getValue();
-        drink.name = "name stub";
-        drink.description = "description stub";
+        drink.name = name != null ? name : "name stub";
+        drink.description = description != null ? description : "description stub";
         ArrayList<Taste> tastes1 = new ArrayList<>();
         for (int i = 0; i < 5; i++) {
             Taste taste1 = new Taste();

@@ -25,28 +25,124 @@
             android:layout_height="match_parent"
             android:fitsSystemWindows="true">
 
+
+
             <TextView
-                android:id="@+id/tvGlass"
+                android:id="@+id/tv_drink_name_title"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/list_subheader_height"
+                style="@style/SubheaderTextStyle"
+                android:text="@string/ingredient_name_title"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+
+
+            <EditText
+                android:id="@+id/et_drink_name"
+                android:hint="Drink name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="@style/SinglelineEditTextStyle"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tv_drink_name_title" />
+
+            <TextView
+                android:id="@+id/tv_preparation_title"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/list_subheader_height"
+                android:layout_marginTop="8dp"
+                style="@style/SubheaderTextStyle"
+                android:text="@string/ingredient_description_title"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/et_drink_name" />
+
+            <EditText
+                android:id="@+id/et_preparation"
+                android:hint="1. Fill glass with ice cubes..."
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="@style/MultilineEditTextStyle"
+                android:nestedScrollingEnabled="false"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tv_preparation_title" />
+
+            <TextView
+                android:id="@+id/tv_ingredients_title"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/list_subheader_height"
+                android:layout_marginTop="8dp"
+                style="@style/SubheaderTextStyle"
+                android:text="Ингридиенты"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/et_preparation" />
+
+            <TextView
+                android:id="@+id/tv_add_ingredient"
                 style="@style/TextStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="16dp"
+                android:paddingStart="16dp"
+                android:layout_marginTop="8dp"
                 android:drawableStart="@drawable/ic_add_drink_ingredients"
                 android:text=" add ingredients"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintHorizontal_bias="0.2"
+                app:layout_constraintTop_toBottomOf="@id/tv_ingredients_title"/>
 
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/rv_ingredients"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="100dp"
+                android:nestedScrollingEnabled="false"
                 android:padding="8dp"
+                android:layout_marginTop="8dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tvGlass" />
+                app:layout_constraintTop_toBottomOf="@+id/tv_add_ingredient" />
+
+            <TextView
+                android:id="@+id/tv_tastes_title"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/list_subheader_height"
+                android:layout_marginTop="8dp"
+                style="@style/SubheaderTextStyle"
+                android:text="Вкусы"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/rv_ingredients" />
+
+            <TextView
+                android:id="@+id/tv_add_tastes"
+                style="@style/TextStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingStart="16dp"
+                android:layout_marginTop="8dp"
+                android:drawableStart="@drawable/ic_add_drink_ingredients"
+                android:text=" add tastes"
+                android:layout_marginBottom="16dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintHorizontal_bias="0.2"
+                app:layout_constraintTop_toBottomOf="@id/tv_tastes_title"/>
+
+            <TextView
+                android:id="@+id/tv_tastes"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="16dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tv_add_tastes"/>
 
 
         </android.support.constraint.ConstraintLayout>

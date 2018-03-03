@@ -21,6 +21,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -29,7 +30,6 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 
 import sorokinuladzimir.com.homebarassistant.R;
-import sorokinuladzimir.com.homebarassistant.db.entity.WholeCocktail;
 import sorokinuladzimir.com.homebarassistant.ui.adapters.AddDrinkIngredientItemAdapter;
 import sorokinuladzimir.com.homebarassistant.ui.subnavigation.BackButtonListener;
 import sorokinuladzimir.com.homebarassistant.ui.subnavigation.RouterProvider;
@@ -60,11 +60,15 @@ public class AddDrinkFragment extends Fragment implements BackButtonListener,
     private ActionBar mToolbar;
     private RecyclerView mRvIngredients;
     private AddDrinkIngredientItemAdapter mAdapter;
-    private TextView mGlass;
+    private TextView mTvAddIngredients;
     private Long mDrinkId = -1L;
     private AddDrinkViewModel mViewModel;
     private SharedViewModel mSharedIngredientsViewModel;
     private ImageView mDrinkImage;
+    private EditText mEtName;
+    private EditText mEtDescription;
+    private TextView mTvAddTastes;
+    private TextView mTvTastes;
 
     @Nullable
     @Override
@@ -106,9 +110,9 @@ public class AddDrinkFragment extends Fragment implements BackButtonListener,
                     if (drink.image != null && !drinkModel.getIsImageRemoved()){
                         drinkModel.getCurrentImagePath().setValue(drink.image);
                     }
-                 /*   if (drink.name != null) .setText(ingredient.name);
-                    if (ingredient.description != null) mDesc.setText(ingredient.description);
-                    if (ingredient.notes != null) mNotes.setText(ingredient.notes);*/
+                    if (drink.name != null) mEtName.setText(drink.name);
+                    if (drink.description != null) mEtDescription.setText(drink.description);
+                    if (drink.tastes != null) mTvTastes.setText(drink.tastes.toString());
                 }
             });
         }
@@ -142,6 +146,12 @@ public class AddDrinkFragment extends Fragment implements BackButtonListener,
 
     private void initViews(View view) {
 
+        mEtName = view.findViewById(R.id.et_drink_name);
+        mEtDescription = view.findViewById(R.id.et_preparation);
+        mTvAddTastes = view.findViewById(R.id.tv_add_tastes);
+        mTvAddTastes = mTvAddTastes;
+        mTvTastes = view.findViewById(R.id.tv_tastes);
+
         mDrinkImage = view.findViewById(R.id.image_add_drink);
         mDrinkImage.setOnClickListener(image -> showAddImageDialog());
 
@@ -152,15 +162,15 @@ public class AddDrinkFragment extends Fragment implements BackButtonListener,
                 DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL);
         mRvIngredients.addItemDecoration(itemDecoration);
 
-        mAdapter = new AddDrinkIngredientItemAdapter((position, cocktail) -> {
+        mAdapter = new AddDrinkIngredientItemAdapter(getContext(), (position, cocktail) -> {
             //mAdapter.deleteItem(position);
             mViewModel.removeIngredient(cocktail, mAdapter.getIngredients());
         });
         mRvIngredients.setAdapter(mAdapter);
 
 
-        mGlass = view.findViewById(R.id.tvGlass);
-        mGlass.setOnClickListener(view1 -> {
+        mTvAddIngredients = view.findViewById(R.id.tv_add_ingredient);
+        mTvAddIngredients.setOnClickListener(view1 -> {
             mViewModel.setIngredients(mAdapter.getIngredients(), true);
             mSharedIngredientsViewModel.selectIds(mViewModel.getIngredientIds());
             ((RouterProvider)getParentFragment()).getRouter().navigateTo(Screens.ADD_DRINK_INGREDIENTS);
@@ -270,7 +280,11 @@ public class AddDrinkFragment extends Fragment implements BackButtonListener,
     }
 
     private void saveDrink() {
-        mViewModel.saveDrink(getContext(), "NAME", "desc", null, mAdapter.getIngredients());
+        mViewModel.saveDrink(getContext(),
+                mEtName.getText().toString(),
+                mEtDescription.getText().toString(),
+                null,
+                mAdapter.getIngredients());
         onBackPressed();
     }
 
