@@ -29,7 +29,11 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import sorokinuladzimir.com.homebarassistant.R;
+import sorokinuladzimir.com.homebarassistant.db.entity.Taste;
 import sorokinuladzimir.com.homebarassistant.ui.adapters.AddDrinkIngredientItemAdapter;
 import sorokinuladzimir.com.homebarassistant.ui.subnavigation.BackButtonListener;
 import sorokinuladzimir.com.homebarassistant.ui.subnavigation.RouterProvider;
@@ -44,7 +48,8 @@ import static android.app.Activity.RESULT_OK;
  */
 
 public class AddDrinkFragment extends Fragment implements BackButtonListener,
-        AddImageDialogFragment.AddImageDialogFragmentCallback {
+        AddImageDialogFragment.AddImageDialogFragmentCallback,
+        AddTastesDialogFragment.AddTastesDialogFragmentCallback{
 
     private static final String EXTRA_NAME = "extra_name";
     private static final String EXTRA_ID = "extra_id";
@@ -112,7 +117,9 @@ public class AddDrinkFragment extends Fragment implements BackButtonListener,
                     }
                     if (drink.name != null) mEtName.setText(drink.name);
                     if (drink.description != null) mEtDescription.setText(drink.description);
-                    if (drink.tastes != null) mTvTastes.setText(drink.tastes.toString());
+                    if (drink.tastes != null) {
+                            drinkModel.getTastesList().setValue(drink.tastes);
+                      };
                 }
             });
         }
@@ -137,20 +144,35 @@ public class AddDrinkFragment extends Fragment implements BackButtonListener,
             }
         });
 
+        drinkModel.getTastesList().observe(this, tastes -> {
+            if (tastes != null && tastes.size() != 0) {
+                String tastesStr = tastes.get(0).text;
+                for (int i = 1; i < tastes.size(); i++){
+                    tastesStr += ", " + tastes.get(i).text;
+                }
+                mTvTastes.setText(tastesStr);
+            }
+        });
+
         sharedIngredients.getSelectedIds().observe(this, list -> {
             if (list != null) {
                 drinkModel.setSelectedIds(list);
             }
         });
+
     }
 
     private void initViews(View view) {
 
         mEtName = view.findViewById(R.id.et_drink_name);
         mEtDescription = view.findViewById(R.id.et_preparation);
+
         mTvAddTastes = view.findViewById(R.id.tv_add_tastes);
-        mTvAddTastes = mTvAddTastes;
         mTvTastes = view.findViewById(R.id.tv_tastes);
+
+        mTvAddTastes.setOnClickListener(v -> {
+            showAddTastesDialog();
+        });
 
         mDrinkImage = view.findViewById(R.id.image_add_drink);
         mDrinkImage.setOnClickListener(image -> showAddImageDialog());
@@ -242,6 +264,18 @@ public class AddDrinkFragment extends Fragment implements BackButtonListener,
         newFragment.show(getFragmentManager(), "dialog");
     }
 
+    void showAddTastesDialog() {
+        DialogFragment newFragment = AddTastesDialogFragment.newInstance("Choose tastes",
+                mViewModel.getTastes(getResources().getStringArray(R.array.taste_name)));
+        newFragment.setTargetFragment(this,911);
+        newFragment.show(getFragmentManager(), "dialog");
+    }
+
+    @Override
+    public void addTastesDialogCallback(List<Integer> tastes) {
+        mViewModel.setTastes(tastes, getResources().getStringArray(R.array.taste_name));
+    }
+
     @Override
     public void addImageDialogCallback(int item) {
         switch (item){
@@ -259,7 +293,6 @@ public class AddDrinkFragment extends Fragment implements BackButtonListener,
                 break;
         }
     }
-
 
     private void dispatchTakePictureIntent() {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -283,7 +316,6 @@ public class AddDrinkFragment extends Fragment implements BackButtonListener,
         mViewModel.saveDrink(getContext(),
                 mEtName.getText().toString(),
                 mEtDescription.getText().toString(),
-                null,
                 mAdapter.getIngredients());
         onBackPressed();
     }
@@ -331,4 +363,5 @@ public class AddDrinkFragment extends Fragment implements BackButtonListener,
         ((RouterProvider)getParentFragment()).getRouter().exit();
         return true;
     }
+
 }

@@ -33,4 +33,6 @@ public class Drink implements Serializable {
     @Embedded
     public Glass glass;
 
+    //public int rating;
+
 }

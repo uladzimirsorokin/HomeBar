@@ -53,8 +53,6 @@
             android:id="@+id/card_image"
             android:layout_height="match_parent"
             android:layout_width="125dp"
-            android:paddingBottom="15dp"
-            android:paddingStart="15dp"
             android:layout_alignParentTop="true"
             android:layout_alignParentEnd="true" />
 

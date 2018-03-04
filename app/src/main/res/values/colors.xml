@@ -15,5 +15,8 @@
     <color name="subheader_text">#8c000000</color>
     <color name="singleline_edittext">#f3000000</color>
     <color name="add_ingredients">#84313335</color>
+
+    <color name="transparent">#00ffffff</color>
+    <color name="black_trans80">#33000000</color>
 </resources>
 

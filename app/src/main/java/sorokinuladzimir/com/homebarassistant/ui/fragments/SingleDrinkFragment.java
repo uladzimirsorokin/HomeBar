@@ -142,13 +142,15 @@ public class SingleDrinkFragment extends Fragment implements BackButtonListener 
         final RecyclerView rvIngredients = rootView.findViewById(R.id.recycler_singledrink_ingredients);
         rvIngredients.setHasFixedSize(true);
         rvIngredients.setLayoutManager(new LinearLayoutManager(getContext()));
-        mAdapter = new SingleDrinkIngredientItemAdapter(ingredientItem -> Toast.makeText(getContext(), ingredientItem.name, Toast.LENGTH_LONG).show());
+        mAdapter = new SingleDrinkIngredientItemAdapter(ingredientItem ->
+                Toast.makeText(getContext(), ingredientItem.name, Toast.LENGTH_LONG).show());
         rvIngredients.setAdapter(mAdapter);
 
     }
 
     private void initFAB(View view){
         mFab = view.findViewById(R.id.single_drink_fab);
+        mFab.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_add));
         mFab.setOnClickListener(view1 -> {
             addDrinkToDb(ALBUM_NAME);
             mFab.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_done));

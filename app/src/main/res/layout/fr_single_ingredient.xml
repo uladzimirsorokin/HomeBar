@@ -32,6 +32,12 @@
                 android:fitsSystemWindows="true"
                 app:layout_collapseParallaxMultiplier="0.7" />
 
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="160dp"
+                android:layout_gravity="bottom"
+                android:background="@drawable/scrim"/>
+
             <android.support.v7.widget.Toolbar
                 android:id="@+id/singleIngredientToolbar"
                 android:layout_width="match_parent"
