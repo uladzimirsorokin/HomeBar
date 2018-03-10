@@ -7,19 +7,19 @@ import java.util.Objects;
 public class WholeCocktail {
 
     @ColumnInfo(name="join_id")
-    public Long jointableId;
+    private Long jointableId;
 
     @ColumnInfo(name="id")
-    public Long ingredientId;
+    private Long ingredientId;
 
     @ColumnInfo(name="ingredient")
-    public String ingredientName;
+    private String ingredientName;
 
-    public String amount;
+    private String amount;
 
-    public String unit;
+    private String unit;
 
-    public String image;
+    private String image;
 
     @Override
     public boolean equals(Object o) {
@@ -37,5 +37,53 @@ public class WholeCocktail {
     @Override
     public int hashCode() {
         return Objects.hash(jointableId, ingredientId, ingredientName, amount, unit, image);
+    }
+
+    public Long getJointableId() {
+        return jointableId;
+    }
+
+    public void setJointableId(Long jointableId) {
+        this.jointableId = jointableId;
+    }
+
+    public Long getIngredientId() {
+        return ingredientId;
+    }
+
+    public void setIngredientId(Long ingredientId) {
+        this.ingredientId = ingredientId;
+    }
+
+    public String getIngredientName() {
+        return ingredientName;
+    }
+
+    public void setIngredientName(String ingredientName) {
+        this.ingredientName = ingredientName;
+    }
+
+    public String getAmount() {
+        return amount;
+    }
+
+    public void setAmount(String amount) {
+        this.amount = amount;
+    }
+
+    public String getUnit() {
+        return unit;
+    }
+
+    public void setUnit(String unit) {
+        this.unit = unit;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
     }
 }

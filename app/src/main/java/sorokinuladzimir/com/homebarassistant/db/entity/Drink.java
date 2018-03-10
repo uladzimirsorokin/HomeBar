@@ -17,22 +17,85 @@ import sorokinuladzimir.com.homebarassistant.db.converter.TasteConverter;
 public class Drink implements Serializable {
 
     @PrimaryKey(autoGenerate = true)
-    public Long id;
+    private Long id;
 
-    public String name;
+    private String name;
 
-    public String description;
+    private String description;
 
-    public ArrayList<Taste> tastes;
+    private ArrayList<Taste> tastes;
 
-    public String image;
+    private String image;
 
     @Ignore
-    public List<Ingredient> ingredients;
+    private List<Ingredient> ingredients;
 
     @Embedded
-    public Glass glass;
+    private Glass glass;
 
-    //public int rating;
+    private int rating;
 
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public ArrayList<Taste> getTastes() {
+        return tastes;
+    }
+
+    public void setTastes(ArrayList<Taste> tastes) {
+        this.tastes = tastes;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
+    }
+
+    public List<Ingredient> getIngredients() {
+        return ingredients;
+    }
+
+    public void setIngredients(List<Ingredient> ingredients) {
+        this.ingredients = ingredients;
+    }
+
+    public Glass getGlass() {
+        return glass;
+    }
+
+    public void setGlass(Glass glass) {
+        this.glass = glass;
+    }
+
+    public int getRating() {
+        return rating;
+    }
+
+    public void setRating(int rating) {
+        this.rating = rating;
+    }
 }

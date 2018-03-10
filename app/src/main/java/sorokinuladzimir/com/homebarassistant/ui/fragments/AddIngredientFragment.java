@@ -97,12 +97,12 @@ public class AddIngredientFragment extends Fragment implements BackButtonListene
         if(!mViewModel.getIsNewIngredient()) {
             mViewModel.getIngredient().observe(this, ingredient -> {
                 if(ingredient != null && mViewModel.getCurrentImagePath().getValue() == null) {
-                    if (ingredient.image != null && !mViewModel.getIsImageRemoved()){
-                        mViewModel.getCurrentImagePath().setValue(ingredient.image);
+                    if (ingredient.getImage() != null && !mViewModel.getIsImageRemoved()){
+                        mViewModel.getCurrentImagePath().setValue(ingredient.getImage());
                     }
-                    if (ingredient.name != null) mName.setText(ingredient.name);
-                    if (ingredient.description != null) mDesc.setText(ingredient.description);
-                    if (ingredient.notes != null) mNotes.setText(ingredient.notes);
+                    if (ingredient.getName() != null) mName.setText(ingredient.getName());
+                    if (ingredient.getDescription() != null) mDesc.setText(ingredient.getDescription());
+                    if (ingredient.getNotes() != null) mNotes.setText(ingredient.getNotes());
                 }
             });
         }
@@ -223,7 +223,8 @@ public class AddIngredientFragment extends Fragment implements BackButtonListene
     private void saveIngredient() {
         mViewModel.saveIngredient(getContext(), mName.getText().toString(),
                 mDesc.getText().toString(), mNotes.getText().toString());
-        ((RouterProvider)getParentFragment()).getRouter().navigateTo(Screens.INGREDIENTS_LIST);
+        //((RouterProvider)getParentFragment()).getRouter().navigateTo(Screens.INGREDIENTS_LIST);
+        onBackPressed();
     }
 
     @Override

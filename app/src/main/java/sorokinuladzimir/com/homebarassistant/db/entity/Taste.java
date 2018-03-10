@@ -4,15 +4,31 @@ import java.io.Serializable;
 
 public class Taste implements Serializable {
 
-    public String id;
+    private String id;
 
-    public String text;
+    private String text;
+
+    public Taste() {
+
+    }
 
     public Taste(String text) {
         this.text = text;
     }
 
-    public Taste() {
+    public String getId() {
+        return id;
+    }
 
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getText() {
+        return text;
+    }
+
+    public void setText(String text) {
+        this.text = text;
     }
 }

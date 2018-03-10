@@ -112,7 +112,7 @@ public class IngredientsListFragment extends Fragment {
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         mAdapter = new IngredientsListItemAdapter(getContext(), ingredient ->
-                ((RouterProvider)getParentFragment()).getRouter().navigateTo(Screens.LOCAL_INGREDIENT, ingredient.id));
+                ((RouterProvider)getParentFragment()).getRouter().navigateTo(Screens.LOCAL_INGREDIENT, ingredient.getId()));
         recyclerView.addItemDecoration(new DividerItemDecoration(getContext(),DividerItemDecoration.VERTICAL));
         recyclerView.setAdapter(mAdapter);
     }

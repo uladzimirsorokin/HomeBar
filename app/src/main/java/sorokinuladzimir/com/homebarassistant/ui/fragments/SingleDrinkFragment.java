@@ -89,7 +89,7 @@ public class SingleDrinkFragment extends Fragment implements BackButtonListener 
         viewModel.getDrink().observe(this, drink -> {
             if (drink != null) {
                 Glide.with(getContext())
-                        .load(drink.image)
+                        .load(drink.getImage())
                         .into(new SimpleTarget<Drawable>() {
 
                             @Override
@@ -102,9 +102,9 @@ public class SingleDrinkFragment extends Fragment implements BackButtonListener 
                                 mDrinkImage.setDrawingCacheEnabled(true);
                             }
                         });
-                if (drink.ingredients != null) mAdapter.setData(drink.ingredients);
-                if (drink.description != null) mDescriptionText.setText(drink.description);
-                if (drink.name != null) mCollapsingToolbarLayout.setTitle(drink.name);
+                if (drink.getIngredients() != null) mAdapter.setData(drink.getIngredients());
+                if (drink.getDescription() != null) mDescriptionText.setText(drink.getDescription());
+                if (drink.getName() != null) mCollapsingToolbarLayout.setTitle(drink.getName());
             }
         });
     }
@@ -143,7 +143,7 @@ public class SingleDrinkFragment extends Fragment implements BackButtonListener 
         rvIngredients.setHasFixedSize(true);
         rvIngredients.setLayoutManager(new LinearLayoutManager(getContext()));
         mAdapter = new SingleDrinkIngredientItemAdapter(ingredientItem ->
-                Toast.makeText(getContext(), ingredientItem.name, Toast.LENGTH_LONG).show());
+                Toast.makeText(getContext(), ingredientItem.getName(), Toast.LENGTH_LONG).show());
         rvIngredients.setAdapter(mAdapter);
 
     }

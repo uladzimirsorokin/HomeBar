@@ -76,23 +76,23 @@ public class DrinkCardItemAdapter extends RecyclerView.Adapter<DrinkCardItemAdap
         public void bind(final DrinkEntity drinkItem, final OnItemClickListener listener) {
 
             Glide.with(cardImage.getContext())
-                    .load(Constants.Uri.ABSOLUT_DRINKS_IMAGE_ROOT + drinkItem.id + ".png")
+                    .load(Constants.Uri.ABSOLUT_DRINKS_IMAGE_ROOT + drinkItem.getId() + ".png")
                     .into(cardImage);
 
 
-            title.setText(drinkItem.name);
+            title.setText(drinkItem.getName());
 
-            ArrayList<Taste> tastes = drinkItem.tastes;
+            ArrayList<Taste> tastes = drinkItem.getTastes();
 
             if(tastes != null) {
-                String tastesStr = tastes.get(0).text;
+                String tastesStr = tastes.get(0).getText();
                 for (int i = 1; i < tastes.size(); i++){
-                    tastesStr += ", " + tastes.get(i).text;
+                    tastesStr += ", " + tastes.get(i).getText();
                 }
                 subtitle.setText(tastesStr);
             }
 
-            rating.setProgress(drinkItem.rating / 10);
+            rating.setProgress(drinkItem.getRating() / 10);
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override

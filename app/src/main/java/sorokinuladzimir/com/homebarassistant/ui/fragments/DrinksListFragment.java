@@ -74,7 +74,7 @@ public class DrinksListFragment extends Fragment {
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         mAdapter = new LocalDrinksListAdapter(drink -> {
-            ((RouterProvider)getParentFragment()).getRouter().navigateTo(Screens.LOCAL_DRINK, drink.id);
+            ((RouterProvider)getParentFragment()).getRouter().navigateTo(Screens.LOCAL_DRINK, drink.getId());
         });
         recyclerView.setAdapter(mAdapter);
     }

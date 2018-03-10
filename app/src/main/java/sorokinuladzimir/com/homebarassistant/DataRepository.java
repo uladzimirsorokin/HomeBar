@@ -2,7 +2,6 @@ package sorokinuladzimir.com.homebarassistant;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MediatorLiveData;
-import android.arch.lifecycle.MutableLiveData;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -14,13 +13,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
-import java.util.Random;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executor;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 import java.util.concurrent.FutureTask;
 
 import sorokinuladzimir.com.homebarassistant.db.CocktailsDatabase;
@@ -35,6 +28,7 @@ import static android.support.v4.content.FileProvider.getUriForFile;
 public class DataRepository {
 
     private static DataRepository sInstance;
+    private Context mContext;
 
     private static final String AUTHORITY = BuildConfig.APPLICATION_ID + ".provider";
 
@@ -51,9 +45,10 @@ public class DataRepository {
 
     private ImageHandler imageHandler;
 
-    private DataRepository(final CocktailsDatabase database, AppExecutors executors) {
+    private DataRepository(final CocktailsDatabase database, AppExecutors executors, Context context) {
         mDatabase = database;
         mExecutors = executors;
+        mContext = context;
 
         mObservableDrinks = new MediatorLiveData<>();
         mObservableIngredients = new MediatorLiveData<>();
@@ -77,11 +72,11 @@ public class DataRepository {
         imageHandler = new ImageHandler();
     }
 
-    public static DataRepository getInstance(final CocktailsDatabase database,AppExecutors executors) {
+    public static DataRepository getInstance(final CocktailsDatabase database,AppExecutors executors, Context context) {
         if (sInstance == null) {
             synchronized (DataRepository.class) {
                 if (sInstance == null) {
-                    sInstance = new DataRepository(database, executors);
+                    sInstance = new DataRepository(database, executors, context);
                 }
             }
         }
@@ -107,10 +102,6 @@ public class DataRepository {
         return mDatabase.getIngredientDao().loadIngredient(ingredientId);
     }
 
-    public LiveData<List<Ingredient>> loadIngredients(final List<Long> ingredientIds) {
-        return mDatabase.getIngredientDao().loadIngredients(ingredientIds);
-    }
-
     public LiveData<List<WholeCocktail>> loadCocktailIngredients(final List<Long> ingredientIds) {
         return mDatabase.getIngredientDao().loadCocktailIngredients(ingredientIds);
     }
@@ -124,61 +115,18 @@ public class DataRepository {
     }
 
 
-    public Long insertDrink(final Drink drink) {
-        Long id = -1L;
-        FutureTask<Long> future =
-                new FutureTask<>(() -> mDatabase.getDrinkDao().insertDrink(drink));
-        mExecutors.diskIO().execute(future);
-        try {
-            return future.get();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        }
-        return id;
+    public void insertIngredient(final Ingredient ingredient) {
+      mExecutors.diskIO().execute(()->{
+          mDatabase.getIngredientDao().insertOrReplaceIngredient(ingredient);
+      });
     }
-
-    public Long insertIngredient(final Ingredient ingredient) {
-        Long id = -1L;
-        FutureTask<Long> future =
-                new FutureTask<>(() -> mDatabase.getIngredientDao().insertOrReplaceIngredient(ingredient));
-        mExecutors.diskIO().execute(future);
-        try {
-            return future.get();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        }
-        return id;
-    }
-
 
     public void insertDrinkIngredientJoin(final List<DrinkIngredientJoin> items) {
         mExecutors.diskIO().execute(() -> mDatabase.getCocktailDao().insertDrinkIngredients(items));
     }
 
-    public Long[] insertIngredients(final List<Ingredient> ingredients) {
-        FutureTask<Long[]> future =
-                new FutureTask<>(() -> mDatabase.getIngredientDao().insertOrReplaceIngredient(ingredients));
-        mExecutors.diskIO().execute(future);
-        try {
-            return future.get();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        }
-        return new Long[]{};
-    }
-
     public LiveData<List<WholeCocktail>> loadIngredients(final Long drinkId) {
         return mDatabase.getCocktailDao().findAllIngredientsByDrinkId(drinkId);
-    }
-
-    public LiveData<List<Long>> loadIngredientIds(final Long drinkId) {
-        return mDatabase.getCocktailDao().getDrinkIngredientIds(drinkId);
     }
 
     public Uri createImageFile(Context context, String albumName){
@@ -199,10 +147,7 @@ public class DataRepository {
         return null;
     }
 
-
-
-    public void saveImageToAlbum(Context context,
-                                 String albumName,
+    public void saveImageToAlbum(String albumName,
                                  Uri imageUri,
                                  int sizeForScale,
                                  boolean deleteSource,
@@ -211,8 +156,8 @@ public class DataRepository {
         mExecutors.diskIO().execute(()->{
             Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);
             try {
-                Bitmap bitmap = imageHandler.getBitmapFromUri(context, imageUri, sizeForScale);
-                if (deleteSource) imageHandler.deleteImage(context, imageUri);
+                Bitmap bitmap = imageHandler.getBitmapFromUri(mContext, imageUri, sizeForScale);
+                if (deleteSource) imageHandler.deleteImage(mContext, imageUri);
                 if (ingredientImage) {
                     mObservableIngredientImagePath.postValue(imageHandler.saveImage(bitmap, albumName));
                 } else {
@@ -233,11 +178,11 @@ public class DataRepository {
 
     public void insertDrink(Drink drink, List<DrinkIngredientJoin> drinkIngredients) {
         mExecutors.diskIO().execute(() -> {
-            if (drink.id != null) mDatabase.getCocktailDao().deleteDrinkIngredientsById(drink.id);
+            if (drink.getId() != null) mDatabase.getCocktailDao().deleteDrinkIngredientsById(drink.getId());
             Long drinkId = mDatabase.getDrinkDao().insertDrink(drink);
             for (final ListIterator<DrinkIngredientJoin> i = drinkIngredients.listIterator(); i.hasNext();) {
                 final DrinkIngredientJoin item = i.next();
-                item.drinkId = drinkId;
+                item.setDrinkId(drinkId);
             }
             mDatabase.getCocktailDao().insertDrinkIngredients(drinkIngredients);
         });
@@ -262,16 +207,16 @@ public class DataRepository {
         return 0;
     }
 
-    public void deleteImage(Context context, String imagePath){
+    public void deleteImage(String imagePath){
         mExecutors.diskIO().execute(()->{
             Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);
             if (imagePath != null) {
                 File imageFile = new File(imagePath);
                 if (imageFile.exists()) {
-                    Uri photoUri = FileProvider.getUriForFile(context,
+                    Uri photoUri = FileProvider.getUriForFile(mContext,
                             AUTHORITY,
                             imageFile);
-                    imageHandler.deleteImage(context, photoUri);
+                    imageHandler.deleteImage(mContext, photoUri);
                 }
             }
         });
@@ -279,28 +224,29 @@ public class DataRepository {
 
     //TODO: parse addb responce somehow to get amout/unit/ingredient separately
     public void saveDrinkFromNet(Drink drink, Bitmap bitmap, String albumName) {
+        mExecutors.diskIO().execute(()->{
+            try {
+                drink.setImage(imageHandler.saveImage(bitmap, albumName));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
 
-        try {
-            drink.image = imageHandler.saveImage(bitmap, albumName);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+            Long[] ingredientIds = mDatabase.getIngredientDao().insertOrReplaceIngredient(drink.getIngredients());
+            Long drinkId = mDatabase.getDrinkDao().insertDrink(drink);
 
-        Long drinkId = insertDrink(drink);
+            List<DrinkIngredientJoin> list = new ArrayList<>();
+            for (Long ingredientId: ingredientIds) {
+                DrinkIngredientJoin item = new DrinkIngredientJoin();
+                item.setIngredientId(ingredientId);
+                item.setDrinkId(drinkId);
+                item.setAmount("" + list.size());
+                item.setUnit("ml");
+                list.add(item);
+            }
 
-        Long[] ingredientIds = insertIngredients(drink.ingredients);
+            insertDrinkIngredientJoin(list);
 
-        List<DrinkIngredientJoin> list = new ArrayList<>();
-        for (Long ingredientId: ingredientIds) {
-            DrinkIngredientJoin item = new DrinkIngredientJoin();
-            item.ingredientId = ingredientId;
-            item.drinkId = drinkId;
-            item.amount = "" + list.size();
-            item.unit = "Номер в списке " + list.size();
-            list.add(item);
-        }
-
-        insertDrinkIngredientJoin(list);
+        });
     }
 
     public void resetIngredientImagePath() {

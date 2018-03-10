@@ -25,8 +25,8 @@ public class IngredientEntityToIngredientMapper extends Mapper<Ingredient, Ingre
     @Override
     public Ingredient reverseMap(IngredientEntity value) {
         Ingredient ingredient = new Ingredient();
-        ingredient.name = value.name;
-        ingredient.description = value.description;
+        ingredient.setName(value.getName());
+        ingredient.setDescription(value.getDescription());
         return ingredient;
     }
 }

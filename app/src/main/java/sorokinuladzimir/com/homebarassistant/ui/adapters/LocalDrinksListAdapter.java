@@ -77,7 +77,7 @@ public class LocalDrinksListAdapter extends RecyclerView.Adapter<LocalDrinksList
 
                             @Override
                             public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
-                                return mDrinkList.get(oldItemPosition).id == drinks.get(newItemPosition).id;
+                                return mDrinkList.get(oldItemPosition).getId() == drinks.get(newItemPosition).getId();
                             }
 
                             @Override
@@ -114,18 +114,18 @@ public class LocalDrinksListAdapter extends RecyclerView.Adapter<LocalDrinksList
         public void bind(final Drink drinkItem, final OnItemClickListener listener) {
 
             Glide.with(cardImage.getContext())
-                    .load(drinkItem.image)
+                    .load(drinkItem.getImage())
                     .apply(RequestOptions.centerCropTransform())
                     .into(cardImage);
 
-            title.setText(drinkItem.name);
+            title.setText(drinkItem.getName());
 
-            ArrayList<Taste> tastes = drinkItem.tastes;
+            ArrayList<Taste> tastes = drinkItem.getTastes();
 
             if(tastes != null) {
-                String tastesStr = tastes.get(0).text;
+                String tastesStr = tastes.get(0).getText();
                 for (int i = 1; i < tastes.size(); i++){
-                    tastesStr += ", " + tastes.get(i).text;
+                    tastesStr += ", " + tastes.get(i).getText();
                 }
                 subtitle.setText(tastesStr);
             }

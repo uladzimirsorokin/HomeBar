@@ -83,12 +83,12 @@ public class IngredientFragment extends Fragment implements BackButtonListener {
         model.getIngredient().observe(this, ingredient -> {
             if (ingredient != null) {
                 Glide.with(getContext())
-                        .load(ingredient.image != null ? ingredient.image : R.drawable.camera_placeholder)
+                        .load(ingredient.getImage() != null ? ingredient.getImage() : R.drawable.camera_placeholder)
                         .apply(RequestOptions.centerCropTransform())
                         .into(mIngredientImage);
-                if(ingredient.description != null) mDescriptionText.setText(ingredient.description);
-                if (ingredient.name != null) mCollapsingToolbarLayout.setTitle(ingredient.name);
-                if (ingredient.notes != null) mNotesText.setText(ingredient.notes);
+                if(ingredient.getDescription() != null) mDescriptionText.setText(ingredient.getDescription());
+                if (ingredient.getName() != null) mCollapsingToolbarLayout.setTitle(ingredient.getName());
+                if (ingredient.getNotes() != null) mNotesText.setText(ingredient.getNotes());
             }
         });
 

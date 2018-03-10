@@ -52,10 +52,6 @@ public class DrinkListViewModel extends AndroidViewModel {
         mObservableDrinks.addSource(liveDrinks, drinks -> mObservableDrinks.setValue(drinks));
     }
 
-    public void addDrink(Drink drink){
-        BarApp.getInstance().getRepository().insertDrink(drink);
-    }
-
     /**
      * Expose the LiveData Products query so the UI can observe it.
      */

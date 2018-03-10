@@ -26,8 +26,8 @@ public class IngredientToWholeCocktailMapper extends Mapper<WholeCocktail, Ingre
     @Override
     public WholeCocktail reverseMap(Ingredient value) {
         WholeCocktail wholeCocktail = new WholeCocktail();
-        wholeCocktail.ingredientName = value.name;
-        wholeCocktail.ingredientId = value.id;
+        wholeCocktail.setIngredientName(value.getName());
+        wholeCocktail.setIngredientId(value.getId());
         return wholeCocktail;
     }
 }

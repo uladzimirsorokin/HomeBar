@@ -35,8 +35,8 @@
 
                 <FrameLayout
                     android:layout_width="match_parent"
-                    android:layout_height="48dp"
-                    android:layout_marginRight="16dp">
+                    android:layout_height="72dp"
+                    android:layout_marginEnd="16dp">
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -52,7 +52,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical|right"
-                        android:layout_marginLeft="164dp"
+                        android:layout_marginStart="164dp"
                         android:fontFamily="sans-serif"
                         android:textSize="16sp" />
 
@@ -60,7 +60,7 @@
                         android:layout_width="24dp"
                         android:layout_height="24dp"
                         android:layout_gravity="center_vertical"
-                        android:layout_marginLeft="16dp"
+                        android:layout_marginStart="16dp"
                         android:src="@drawable/cocktail" />
                 </FrameLayout>
 
@@ -71,14 +71,14 @@
 
                 <FrameLayout
                     android:layout_width="match_parent"
-                    android:layout_height="48dp"
-                    android:layout_marginRight="16dp">
+                    android:layout_height="72dp"
+                    android:layout_marginEnd="16dp">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
-                        android:layout_marginLeft="72dp"
+                        android:layout_marginStart="72dp"
                         android:fontFamily="sans-serif"
                         android:text="@string/taste_type"
                         android:textSize="16sp" />
@@ -88,7 +88,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical|right"
-                        android:layout_marginLeft="164dp"
+                        android:layout_marginStart="164dp"
                         android:fontFamily="sans-serif"
                         android:textSize="16sp" />
 
@@ -96,7 +96,7 @@
                         android:layout_width="24dp"
                         android:layout_height="24dp"
                         android:layout_gravity="center_vertical"
-                        android:layout_marginLeft="16dp"
+                        android:layout_marginStart="16dp"
                         android:src="@drawable/taste" />
 
                 </FrameLayout>
@@ -108,7 +108,7 @@
 
                 <FrameLayout
                     android:layout_width="match_parent"
-                    android:layout_height="48dp"
+                    android:layout_height="72dp"
                     android:layout_marginEnd="16dp">
 
                     <TextView
@@ -125,7 +125,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical|end"
-                        android:layout_marginLeft="164dp"
+                        android:layout_marginStart="164dp"
                         android:fontFamily="sans-serif"
                         android:textSize="16sp" />
 
@@ -133,7 +133,7 @@
                         android:layout_width="24dp"
                         android:layout_height="24dp"
                         android:layout_gravity="center_vertical"
-                        android:layout_marginLeft="16dp"
+                        android:layout_marginStart="16dp"
                         android:src="@drawable/ingridient_alco" />
 
                 </FrameLayout>
@@ -145,21 +145,22 @@
 
                 <RelativeLayout
                     android:layout_width="match_parent"
-                    android:layout_height="48dp"
+                    android:layout_height="72dp"
                     android:layout_marginEnd="16dp">
 
                     <ImageView
                         android:layout_width="24dp"
                         android:layout_height="24dp"
                         android:layout_centerVertical="true"
-                        android:layout_marginLeft="16dp"
+                        android:layout_marginStart="16dp"
                         android:src="@drawable/skill" />
 
                     <TextView
                         android:id="@+id/et_skill_sb"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="72dp"
+                        android:layout_marginStart="72dp"
+                        android:layout_marginTop="12dp"
                         android:fontFamily="sans-serif"
                         android:text="@string/skill_level_string"
                         android:textSize="16sp" />
@@ -168,6 +169,7 @@
                         android:id="@+id/tv_skill_container"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
                         android:layout_below="@id/et_skill_sb"
                         android:layout_marginStart="72dp"
                         android:fontFamily="sans-serif"
@@ -193,7 +195,7 @@
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="48dp"
+                    android:layout_height="72dp"
                     android:layout_marginRight="16dp"
                     android:gravity="center_vertical"
                     android:orientation="horizontal">
@@ -201,14 +203,14 @@
                     <ImageView
                         android:layout_width="24dp"
                         android:layout_height="24dp"
-                        android:layout_marginLeft="16dp"
+                        android:layout_marginStart="16dp"
                         android:src="@drawable/carbonated" />
 
                     <Switch
                         android:id="@+id/sw_search_carbonated"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="32dp"
+                        android:layout_marginStart="32dp"
                         android:checked="false"
                         android:fontFamily="sans-serif"
                         android:text="@string/carbonated"
@@ -224,15 +226,15 @@
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="48dp"
-                    android:layout_marginRight="16dp"
+                    android:layout_height="72dp"
+                    android:layout_marginEnd="16dp"
                     android:orientation="horizontal">
 
                     <ImageView
                         android:layout_width="24dp"
                         android:layout_height="24dp"
                         android:layout_gravity="center_vertical"
-                        android:layout_marginLeft="16dp"
+                        android:layout_marginStart="16dp"
                         android:src="@drawable/alco" />
 
                     <Switch
@@ -240,7 +242,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
-                        android:layout_marginLeft="32dp"
+                        android:layout_marginStart="32dp"
                         android:checked="true"
                         android:fontFamily="sans-serif"
                         android:text="@string/alcoholic"
@@ -255,8 +257,8 @@
 
                 <FrameLayout
                     android:layout_width="match_parent"
-                    android:layout_height="48dp"
-                    android:layout_marginRight="16dp"
+                    android:layout_height="72dp"
+                    android:layout_marginEnd="16dp"
                     android:gravity="center_vertical"
                     android:orientation="horizontal">
 

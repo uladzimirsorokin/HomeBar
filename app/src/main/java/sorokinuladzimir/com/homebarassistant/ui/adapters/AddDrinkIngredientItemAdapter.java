@@ -63,16 +63,16 @@ public class AddDrinkIngredientItemAdapter extends RecyclerView.Adapter<AddDrink
     public void onBindViewHolder(IngredientViewHolder holder, int position) {
         holder.myAmountListener.updatePosition(holder.getAdapterPosition());
         WholeCocktail cocktail = mIngredients.get(holder.getAdapterPosition());
-        if (cocktail.amount != null){
-            holder.amount.setText("" + cocktail.amount);
+        if (cocktail.getAmount() != null){
+            holder.amount.setText("" + cocktail.getAmount());
         } else {
             holder.amount.setText("");
         }
-        if (cocktail.ingredientName != null) holder.name.setText(cocktail.ingredientName);
+        if (cocktail.getIngredientName() != null) holder.name.setText(cocktail.getIngredientName());
         holder.unitListener.updatePosition(holder.getAdapterPosition());
 
-        if (cocktail.unit != null) {
-            holder.unit.setSelection(Arrays.asList(unitArray).indexOf(cocktail.unit));
+        if (cocktail.getUnit() != null) {
+            holder.unit.setSelection(Arrays.asList(unitArray).indexOf(cocktail.getUnit()));
         }
 
         holder.bind(holder.getAdapterPosition(), listener);
@@ -137,7 +137,7 @@ public class AddDrinkIngredientItemAdapter extends RecyclerView.Adapter<AddDrink
 
         @Override
         public void onItemSelected(AdapterView<?> adapterView, View view, int pos, long id) {
-            mIngredients.get(position).unit = mContext.getResources().getStringArray(R.array.ingredient_unit)[pos];
+            mIngredients.get(position).setUnit(mContext.getResources().getStringArray(R.array.ingredient_unit)[pos]);
         }
 
         @Override
@@ -162,9 +162,9 @@ public class AddDrinkIngredientItemAdapter extends RecyclerView.Adapter<AddDrink
         @Override
         public void onTextChanged(CharSequence charSequence, int i, int i2, int i3) {
             if(charSequence.length() > 0){
-                mIngredients.get(position).amount = charSequence.toString();
+                mIngredients.get(position).setAmount(charSequence.toString());
             } else {
-                mIngredients.get(position).amount = "";
+                mIngredients.get(position).setAmount("");
             }
         }
 

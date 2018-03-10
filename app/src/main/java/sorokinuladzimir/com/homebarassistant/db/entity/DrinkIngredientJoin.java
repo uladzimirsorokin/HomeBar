@@ -18,15 +18,55 @@ import android.arch.persistence.room.PrimaryKey;
 public class DrinkIngredientJoin {
 
     @PrimaryKey(autoGenerate = true)
-    public Long id;
+    private Long id;
 
-    public String amount;
+    private String amount;
 
-    public String unit;
+    private String unit;
 
     @ColumnInfo(name="drink_id")
-    public Long drinkId;
+    private Long drinkId;
 
     @ColumnInfo(name="ingredient_id")
-    public Long ingredientId;
+    private Long ingredientId;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getAmount() {
+        return amount;
+    }
+
+    public void setAmount(String amount) {
+        this.amount = amount;
+    }
+
+    public String getUnit() {
+        return unit;
+    }
+
+    public void setUnit(String unit) {
+        this.unit = unit;
+    }
+
+    public Long getDrinkId() {
+        return drinkId;
+    }
+
+    public void setDrinkId(Long drinkId) {
+        this.drinkId = drinkId;
+    }
+
+    public Long getIngredientId() {
+        return ingredientId;
+    }
+
+    public void setIngredientId(Long ingredientId) {
+        this.ingredientId = ingredientId;
+    }
 }

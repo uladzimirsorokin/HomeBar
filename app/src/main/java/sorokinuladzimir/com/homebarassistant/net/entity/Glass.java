@@ -10,10 +10,33 @@ public class Glass implements Serializable {
 
     //6 разновидностей стаканов
     //пока засунул в ресурсы, есть запрос+картинка приходит
-    public String text;
+    private String text;
 
-    public String name;
+    private String name;
 
-    public int image;
+    private int image;
 
+    public String getText() {
+        return text;
+    }
+
+    public void setText(String text) {
+        this.text = text;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public int getImage() {
+        return image;
+    }
+
+    public void setImage(int image) {
+        this.image = image;
+    }
 }

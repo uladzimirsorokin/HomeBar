@@ -9,15 +9,15 @@ import java.util.Objects;
 public class Ingredient {
 
     @PrimaryKey(autoGenerate = true)
-    public Long id;
+    private Long id;
 
-    public String name;
+    private String name;
 
-    public String description;
+    private String description;
 
-    public String image;
+    private String image;
 
-    public String notes;
+    private String notes;
 
     @Override
     public String toString() {
@@ -45,5 +45,45 @@ public class Ingredient {
     @Override
     public int hashCode() {
         return Objects.hash(id, name, description, image, notes);
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
+    }
+
+    public String getNotes() {
+        return notes;
+    }
+
+    public void setNotes(String notes) {
+        this.notes = notes;
     }
 }

@@ -102,11 +102,11 @@ public class LocalDrinkFragment extends Fragment implements BackButtonListener {
         model.getDrink().observe(this, drink -> {
             if (drink != null) {
                 Glide.with(getContext())
-                        .load(drink.image != null ? drink.image : R.drawable.camera_placeholder)
+                        .load(drink.getImage() != null ? drink.getImage() : R.drawable.camera_placeholder)
                         .apply(RequestOptions.centerCropTransform())
                         .into(mDrinkImage);
-                if(drink.description != null) mDescriptionText.setText(drink.description);
-                if(drink.name != null) mCollapsingToolbarLayout.setTitle(drink.name);
+                if(drink.getDescription() != null) mDescriptionText.setText(drink.getDescription());
+                if(drink.getName() != null) mCollapsingToolbarLayout.setTitle(drink.getName());
 
             }
         });
@@ -177,7 +177,7 @@ public class LocalDrinkFragment extends Fragment implements BackButtonListener {
         rvIngredients.setHasFixedSize(true);
         rvIngredients.setLayoutManager(new LinearLayoutManager(getContext()));
         mAdapter = new LocalDrinkIngredientItemAdapter(ingredientItem -> Toast.makeText(getContext(),
-                ingredientItem.ingredientName, Toast.LENGTH_LONG).show());
+                ingredientItem.getIngredientName(), Toast.LENGTH_LONG).show());
         rvIngredients.setAdapter(mAdapter);
     }
 

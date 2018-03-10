@@ -132,8 +132,8 @@ public class AddDrinkViewModel extends AndroidViewModel {
         tempIngredients.clear();
         List<Long> newIds = new ArrayList<>();
         for (WholeCocktail wholeCocktail : ingredients) {
-            newIds.add(wholeCocktail.ingredientId);
-            tempIngredients.put(wholeCocktail.ingredientId, wholeCocktail);
+            newIds.add(wholeCocktail.getIngredientId());
+            tempIngredients.put(wholeCocktail.getIngredientId(), wholeCocktail);
         }
         setSelectedIds(newIds);
         if (expose) exposeIngredients();
@@ -142,7 +142,7 @@ public class AddDrinkViewModel extends AndroidViewModel {
     public void setIngredients(List<WholeCocktail> ingredients, boolean expose) {
         tempIngredients.clear();
         for (WholeCocktail wholeCocktail : ingredients) {
-            tempIngredients.put(wholeCocktail.ingredientId, wholeCocktail);
+            tempIngredients.put(wholeCocktail.getIngredientId(), wholeCocktail);
         }
         if (expose) exposeIngredients();
     }
@@ -156,7 +156,7 @@ public class AddDrinkViewModel extends AndroidViewModel {
         return mObservableIngredients;
     }
 
-    //ingredients name change or delete ingredients event handle + new selection
+    //ingredients name change or delete ingredient event handle + new selection
     public MediatorLiveData<List<WholeCocktail>> getObservableLiveIngredients() {
         return mObservableLiveIngredients;
     }
@@ -166,9 +166,7 @@ public class AddDrinkViewModel extends AndroidViewModel {
     }
 
     public void removeIngredient(WholeCocktail cocktail, List<WholeCocktail> cocktailsList) {
-        /*cocktailsList.remove(cocktail);
-        setIngredients(cocktailsList, true);*/
-        mIngredientIds.remove(cocktail.ingredientId);
+        mIngredientIds.remove(cocktail.getIngredientId());
         setSelectedIds(mIngredientIds);
     }
 
@@ -215,7 +213,7 @@ public class AddDrinkViewModel extends AndroidViewModel {
 
         List<Long> newIds = new ArrayList<>();
         for (WholeCocktail cocktail : newIngredients) {
-            newIds.add(cocktail.ingredientId);
+            newIds.add(cocktail.getIngredientId());
         }
 
         if (oldIds.size() != newIds.size()) {
@@ -234,22 +232,22 @@ public class AddDrinkViewModel extends AndroidViewModel {
 
         //update names
         for (WholeCocktail cocktail : newIngredients) {
-            if (tempIngredients.containsKey(cocktail.ingredientId)) {
-                if (!tempIngredients.get(cocktail.ingredientId).ingredientName.equals(cocktail.ingredientName)){
-                    tempIngredients.get(cocktail.ingredientId).ingredientName = cocktail.ingredientName;
+            if (tempIngredients.containsKey(cocktail.getIngredientId())) {
+                if (!tempIngredients.get(cocktail.getIngredientId()).getIngredientName().equals(cocktail.getIngredientName())){
+                    tempIngredients.get(cocktail.getIngredientId()).setIngredientName(cocktail.getIngredientName());
                     isListChangedFlag = true;
                 }
             } else {
-                tempIngredients.put(cocktail.ingredientId, cocktail);
+                tempIngredients.put(cocktail.getIngredientId(), cocktail);
                 isListChangedFlag = true;
             }
         }
 
         //update amount, unit
         for (WholeCocktail cocktail : adapterCocktailList) {
-            if (tempIngredients.containsKey(cocktail.ingredientId)){
-                tempIngredients.get(cocktail.ingredientId).unit = cocktail.unit;
-                tempIngredients.get(cocktail.ingredientId).amount = cocktail.amount;
+            if (tempIngredients.containsKey(cocktail.getIngredientId())){
+                tempIngredients.get(cocktail.getIngredientId()).setUnit(cocktail.getUnit());
+                tempIngredients.get(cocktail.getIngredientId()).setAmount(cocktail.getAmount());
             }
         }
 
@@ -285,14 +283,14 @@ public class AddDrinkViewModel extends AndroidViewModel {
 
     public void handleImage(Context context, String albumName, Uri imageUri, int sizeForScale, boolean deleteSource){
         mIsImageRemoved = false;
-        removeImageFile(context, getDrink().getValue() == null ? null : getDrink().getValue().image,
+        removeImageFile(context, getDrink().getValue() == null ? null : getDrink().getValue().getImage(),
                 getCurrentImagePath().getValue(), false);
-        mRepository.saveImageToAlbum(context, albumName, imageUri, sizeForScale, deleteSource, false);
+        mRepository.saveImageToAlbum(albumName, imageUri, sizeForScale, deleteSource, false);
     }
 
     public void removeCurrentImage(Context context) {
         mIsImageRemoved = true;
-        removeImageFile(context, getDrink().getValue() == null ? null : getDrink().getValue().image,
+        removeImageFile(context, getDrink().getValue() == null ? null : getDrink().getValue().getImage(),
                 getCurrentImagePath().getValue(), false);
         getCurrentImagePath().setValue(null);
     }
@@ -311,7 +309,7 @@ public class AddDrinkViewModel extends AndroidViewModel {
             }
         }
 
-        if (deletePath != null) BarApp.getInstance().getRepository().deleteImage(context, deletePath);
+        if (deletePath != null) BarApp.getInstance().getRepository().deleteImage(deletePath);
     }
 
 
@@ -319,16 +317,16 @@ public class AddDrinkViewModel extends AndroidViewModel {
 
     public void saveDrink(Context context, String name, String description, List<WholeCocktail> ingredients){
 
-        removeImageFile(context, getDrink().getValue() == null ? null : getDrink().getValue().image,
+        removeImageFile(context, getDrink().getValue() == null ? null : getDrink().getValue().getImage(),
                 getCurrentImagePath().getValue(), true);
 
         Drink drink = mObservableDrink.getValue();
         if(drink == null) drink = new Drink();
 
-        drink.image = mObservableCurrentImagePath.getValue();
-        drink.name = name != null ? name : "name stub";
-        drink.description = description != null ? description : "description stub";
-        drink.tastes = mCurrentTastesList.getValue() != null ? mCurrentTastesList.getValue() : null;
+        drink.setImage(mObservableCurrentImagePath.getValue());
+        drink.setName(name != null ? name : "name stub");
+        drink.setDescription(description != null ? description : "description stub");
+        drink.setTastes(mCurrentTastesList.getValue() != null ? mCurrentTastesList.getValue() : null);
         List<DrinkIngredientJoin> ingredientsList = WholeCocktailToDrinkIngredientJoinMapper.getInstance().reverseMap(ingredients);
         mRepository.insertDrink(drink, ingredientsList);
     }
@@ -349,7 +347,7 @@ public class AddDrinkViewModel extends AndroidViewModel {
         ArrayList<Integer> tastesList = new ArrayList<>();
         if (mCurrentTastesList.getValue() != null) {
             for (Taste taste : mCurrentTastesList.getValue()) {
-                int pos = Arrays.asList(tastesArray).indexOf(taste.text);
+                int pos = Arrays.asList(tastesArray).indexOf(taste.getText());
                 if (pos >= 0) tastesList.add(pos);
             }
         }

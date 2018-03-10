@@ -82,7 +82,7 @@ public class SelectableIngredientsAdapter extends RecyclerView.Adapter<Selectabl
 
                         @Override
                         public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
-                            return mIngredientsList.get(oldItemPosition).id == ingredients.get(newItemPosition).id;
+                            return mIngredientsList.get(oldItemPosition).getId() == ingredients.get(newItemPosition).getId();
                         }
 
                         @Override
@@ -115,10 +115,10 @@ public class SelectableIngredientsAdapter extends RecyclerView.Adapter<Selectabl
 
         public void bind(Context mContext, final Ingredient item, final OnItemClickListener listener) {
 
-            if(item.name != null)ingredientName.setText(item.name);
+            if(item.getName() != null)ingredientName.setText(item.getName());
 
             Glide.with(mContext)
-                    .load(item.image != null ? item.image : R.drawable.camera_placeholder)
+                    .load(item.getImage() != null ? item.getImage() : R.drawable.camera_placeholder)
                     .apply(RequestOptions.circleCropTransform())
                     .into(ingredientImage);
 
@@ -134,12 +134,11 @@ public class SelectableIngredientsAdapter extends RecyclerView.Adapter<Selectabl
             protected FilterResults performFiltering(CharSequence charSequence) {
                 String charString = charSequence.toString();
                 if (charString.isEmpty()) {
-                    //mFilteredIngredientsList.clear();
                     mFilteredIngredientsList = mIngredientsList;
                 } else {
                     List<Ingredient> filteredList = new ArrayList<>();
                     for (Ingredient  ingredient: mIngredientsList) {
-                        if (ingredient.name.toLowerCase().contains(charString.toLowerCase())) {
+                        if (ingredient.getName().toLowerCase().contains(charString.toLowerCase())) {
                             filteredList.add(ingredient);
                         }
                     }

@@ -43,7 +43,7 @@ public class BarApp extends Application {
     }
 
     public DataRepository getRepository() {
-        return DataRepository.getInstance(getDatabase(),mAppExecutors);
+        return DataRepository.getInstance(getDatabase(), mAppExecutors, getApplicationContext());
     }
 
     public AppExecutors getExecutors() {

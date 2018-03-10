@@ -112,13 +112,13 @@ public class AddDrinkFragment extends Fragment implements BackButtonListener,
         if(!drinkModel.getIsNewDrink()) {
             drinkModel.getDrink().observe(this, drink -> {
                 if(drink != null && drinkModel.getCurrentImagePath().getValue() == null) {
-                    if (drink.image != null && !drinkModel.getIsImageRemoved()){
-                        drinkModel.getCurrentImagePath().setValue(drink.image);
+                    if (drink.getImage() != null && !drinkModel.getIsImageRemoved()){
+                        drinkModel.getCurrentImagePath().setValue(drink.getImage());
                     }
-                    if (drink.name != null) mEtName.setText(drink.name);
-                    if (drink.description != null) mEtDescription.setText(drink.description);
-                    if (drink.tastes != null) {
-                            drinkModel.getTastesList().setValue(drink.tastes);
+                    if (drink.getName() != null) mEtName.setText(drink.getName());
+                    if (drink.getDescription() != null) mEtDescription.setText(drink.getDescription());
+                    if (drink.getTastes() != null) {
+                            drinkModel.getTastesList().setValue(drink.getTastes());
                       };
                 }
             });
@@ -146,9 +146,9 @@ public class AddDrinkFragment extends Fragment implements BackButtonListener,
 
         drinkModel.getTastesList().observe(this, tastes -> {
             if (tastes != null && tastes.size() != 0) {
-                String tastesStr = tastes.get(0).text;
+                String tastesStr = tastes.get(0).getText();
                 for (int i = 1; i < tastes.size(); i++){
-                    tastesStr += ", " + tastes.get(i).text;
+                    tastesStr += ", " + tastes.get(i).getText();
                 }
                 mTvTastes.setText(tastesStr);
             }

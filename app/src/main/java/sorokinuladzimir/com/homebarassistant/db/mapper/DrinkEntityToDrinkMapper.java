@@ -26,14 +26,12 @@ public class DrinkEntityToDrinkMapper extends Mapper<Drink,DrinkEntity> {
     @Override
     public Drink reverseMap(DrinkEntity value) {
         Drink drink = new Drink();
-        drink.name = value.name;
-        drink.tastes = value.tastes;
-        drink.description = value.description;
-        drink.image = Constants.Uri.ABSOLUT_DRINKS_IMAGE_ROOT + value.id + ".png";
-        drink.ingredients = IngredientEntityToIngredientMapper.getInstance().reverseMap(value.ingredients);
-        /* TODO
-        *  подумать как состыковать стаканы и зачем мне матчить ингридиенты если они не пойдут в базу...или пойдут...))
-        * */
+        drink.setName(value.getName());
+        drink.setTastes(value.getTastes());
+        drink.setDescription(value.getDescription());
+        drink.setImage(Constants.Uri.ABSOLUT_DRINKS_IMAGE_ROOT + value.getId() + ".png");
+        drink.setIngredients(IngredientEntityToIngredientMapper.getInstance().reverseMap(value.getIngredients()));
+        drink.setRating(value.getRating());
 
         return drink;
     }

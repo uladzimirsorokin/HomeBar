@@ -66,11 +66,11 @@ public class SingleDrinkIngredientItemAdapter extends RecyclerView.Adapter<Singl
 
         public void bind(final Ingredient item, final OnItemClickListener listener) {
 
-            if(item.name != null)ingredientName.setText(item.name);
+            if(item.getName() != null)ingredientName.setText(item.getName());
 
-            if(item.image != null){
+            if(item.getImage() != null){
                 Glide.with(ingredientImage.getContext())
-                        .load(item.image)
+                        .load(item.getImage())
                         .apply(RequestOptions.centerCropTransform())
                         .into(ingredientImage);
             }

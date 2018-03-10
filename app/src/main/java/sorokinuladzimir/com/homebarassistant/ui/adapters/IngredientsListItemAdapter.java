@@ -2,10 +2,8 @@ package sorokinuladzimir.com.homebarassistant.ui.adapters;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.os.AsyncTask;
 import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.RecyclerView;
-import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,7 +23,7 @@ import java.util.List;
 import sorokinuladzimir.com.homebarassistant.BarApp;
 import sorokinuladzimir.com.homebarassistant.R;
 import sorokinuladzimir.com.homebarassistant.db.entity.Ingredient;
-import sorokinuladzimir.com.homebarassistant.ui.animator.FlipAnimator;
+
 
 
 public class IngredientsListItemAdapter extends RecyclerView.Adapter<IngredientsListItemAdapter.IngredientViewHolder>
@@ -61,7 +59,6 @@ public class IngredientsListItemAdapter extends RecyclerView.Adapter<Ingredients
                 mFilteredIngredientsList.get(position),
                 listener,
                 isIngredientSelected(position));
-        //selectedIngredients.get(mFilteredIngredientsList.get(position).hashCode(), false)
     }
 
     @Override
@@ -91,7 +88,7 @@ public class IngredientsListItemAdapter extends RecyclerView.Adapter<Ingredients
 
                             @Override
                             public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
-                                return mIngredientsList.get(oldItemPosition).id == ingredients.get(newItemPosition).id;
+                                return mIngredientsList.get(oldItemPosition).getId() == ingredients.get(newItemPosition).getId();
                             }
 
                             @Override
@@ -130,7 +127,7 @@ public class IngredientsListItemAdapter extends RecyclerView.Adapter<Ingredients
 
         public void bind(Context mContext, final Ingredient item, final OnItemClickListener listener, boolean selected) {
 
-            if(item.name != null) ingredientName.setText(item.name);
+            if(item.getName() != null) ingredientName.setText(item.getName());
 
             if (selected) {
                 itemView.setActivated(true);
@@ -145,7 +142,7 @@ public class IngredientsListItemAdapter extends RecyclerView.Adapter<Ingredients
                 imageBack.setAlpha(1);
 
                 Glide.with(mContext)
-                        .load(item.image != null ? item.image : R.drawable.camera_placeholder)
+                        .load(item.getImage() != null ? item.getImage() : R.drawable.camera_placeholder)
                         .apply(RequestOptions.circleCropTransform())
                         .into(ingredientImage);
 
@@ -162,10 +159,10 @@ public class IngredientsListItemAdapter extends RecyclerView.Adapter<Ingredients
         if (position != -1){
             if (selectedSet.contains(item)) {
                 selectedSet.remove(item);
-                selectedIds.remove(item.id);
+                selectedIds.remove(item.getId());
             } else {
                 selectedSet.add(item);
-                selectedIds.add(item.id);
+                selectedIds.add(item.getId());
             }
             notifyItemChanged(position);
         }
@@ -187,7 +184,7 @@ public class IngredientsListItemAdapter extends RecyclerView.Adapter<Ingredients
     public void restoreSelection(){
         if (selectedSet.isEmpty()) {
             for (Ingredient ingredient : mFilteredIngredientsList) {
-                if (selectedIds.indexOf(ingredient.id) != -1){
+                if (selectedIds.indexOf(ingredient.getId()) != -1){
                     selectedSet.add(ingredient);
                     notifyItemChanged(mFilteredIngredientsList.indexOf(ingredient));
                 }
@@ -206,7 +203,7 @@ public class IngredientsListItemAdapter extends RecyclerView.Adapter<Ingredients
                 } else {
                     List<Ingredient> filteredList = new ArrayList<>();
                     for (Ingredient  ingredient: mIngredientsList) {
-                        if (ingredient.name.toLowerCase().contains(charString.toLowerCase())) {
+                        if (ingredient.getName().toLowerCase().contains(charString.toLowerCase())) {
                             filteredList.add(ingredient);
                         }
                     }
