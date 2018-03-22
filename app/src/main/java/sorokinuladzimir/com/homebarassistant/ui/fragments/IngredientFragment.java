@@ -1,9 +1,9 @@
 package sorokinuladzimir.com.homebarassistant.ui.fragments;
 
-import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
@@ -11,28 +11,27 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 
 import sorokinuladzimir.com.homebarassistant.R;
-import sorokinuladzimir.com.homebarassistant.db.entity.Drink;
 
-import sorokinuladzimir.com.homebarassistant.db.entity.Ingredient;
 import sorokinuladzimir.com.homebarassistant.ui.subnavigation.BackButtonListener;
 import sorokinuladzimir.com.homebarassistant.ui.subnavigation.RouterProvider;
-import sorokinuladzimir.com.homebarassistant.viewmodel.DrinkViewModel;
 import sorokinuladzimir.com.homebarassistant.viewmodel.IngredientViewModel;
 
 
 public class IngredientFragment extends Fragment implements BackButtonListener {
 
+    public static final String MENU_ITEM_EDIT = "Edit";
     private final String TAG = "IngredientFragment";
 
     private static final String EXTRA_NAME = "extra_name";
@@ -48,6 +47,10 @@ public class IngredientFragment extends Fragment implements BackButtonListener {
     private IngredientViewModel mViewModel;
     private TextView mNotesText;
 
+    private Menu collapsedMenu;
+    private AppBarLayout mAppBarLayout;
+    private boolean appBarExpanded = true;
+
 
     @Nullable
     @Override
@@ -60,7 +63,6 @@ public class IngredientFragment extends Fragment implements BackButtonListener {
 
         return rootView;
     }
-
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
@@ -111,8 +113,38 @@ public class IngredientFragment extends Fragment implements BackButtonListener {
         Toolbar toolbar = view.findViewById(R.id.singleIngredientToolbar);
         ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
         mToolbar = ((AppCompatActivity) getActivity()).getSupportActionBar();
-        if(mToolbar != null)
-            mToolbar.setDisplayHomeAsUpEnabled(true);
+        if(mToolbar != null) mToolbar.setDisplayHomeAsUpEnabled(true);
+
+        mAppBarLayout = view.findViewById(R.id.singleIngredientAppbar);
+        mAppBarLayout.addOnOffsetChangedListener((appBarLayout1, verticalOffset) -> {
+            if (Math.abs(verticalOffset) > mAppBarLayout.getTotalScrollRange() - 140) {
+                appBarExpanded = false;
+                getActivity().invalidateOptionsMenu();
+            } else {
+                appBarExpanded = true;
+                getActivity().invalidateOptionsMenu();
+            }
+        });
+    }
+
+    @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        if (collapsedMenu != null && !appBarExpanded) {
+            //collapsed
+            collapsedMenu.add(MENU_ITEM_EDIT)
+                    .setIcon(R.drawable.ic_edit_done)
+                    .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+        } else {
+            //expanded
+        }
+        super.onPrepareOptionsMenu(collapsedMenu);
+    }
+
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.list_without_search_menu, menu);
+        collapsedMenu = menu;
     }
 
     private void initViews(View rootView) {
@@ -134,6 +166,12 @@ public class IngredientFragment extends Fragment implements BackButtonListener {
         if(item.getItemId() == android.R.id.home){
             ((RouterProvider)getParentFragment()).getRouter().exit();
             return true;
+        }
+        if (item.getItemId() == R.id.action_about) {
+            ((RouterProvider)getParentFragment()).getRouter().navigateTo(Screens.ABOUT, "Ingredient fragment about text");
+        }
+        if (item.getTitle() == MENU_ITEM_EDIT) {
+            ((RouterProvider)getParentFragment()).getRouter().navigateTo(Screens.ADD_INGREDIENT, mIngredientId);
         }
         return false;
     }

@@ -43,8 +43,11 @@ public interface DrinkDao {
     @Query("SELECT * FROM Drink WHERE id = :id")
     Drink getDrink(Long id);
 
-    @Query("SELECT * FROM Drink")
+    @Query("SELECT * FROM Drink ORDER BY name ASC")
     LiveData<List<Drink>> loadAllDrinks();
+
+    @Query("SELECT * FROM Drink WHERE name LIKE :query ORDER BY name ASC")
+    LiveData<List<Drink>> searchDrinksByName(String query);
 
     @Insert(onConflict = REPLACE)
     Long insertDrink(Drink drink);

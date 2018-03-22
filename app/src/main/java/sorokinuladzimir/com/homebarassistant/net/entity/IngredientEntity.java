@@ -14,6 +14,8 @@ public class IngredientEntity implements Serializable {
     @SerializedName("textPlain")
     private String name;
 
+    private String text;
+
     private String description;
 
     private String url;
@@ -40,5 +42,13 @@ public class IngredientEntity implements Serializable {
 
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    public String getText() {
+        return text;
+    }
+
+    public void setText(String text) {
+        this.text = text;
     }
 }

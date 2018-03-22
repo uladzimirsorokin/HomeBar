@@ -118,7 +118,7 @@ public class AddDrinkIngredientsFragment extends Fragment implements BackButtonL
         mToolbar = ((AppCompatActivity) getActivity()).getSupportActionBar();
         if(mToolbar != null){
             mToolbar.setDisplayHomeAsUpEnabled(true);
-            mToolbar.setTitle("Выбор ингридиентов");
+            mToolbar.setTitle(R.string.title_choose_ingredients);
         }
     }
 
@@ -126,7 +126,7 @@ public class AddDrinkIngredientsFragment extends Fragment implements BackButtonL
         final RecyclerView recyclerView = rootView.findViewById(R.id.recycler_view);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        mAdapter = new IngredientsListItemAdapter(getContext(), ingredient -> {
+        mAdapter = new IngredientsListItemAdapter(getContext(),getArguments().getString(EXTRA_NAME) , ingredient -> {
             toggleSelection(ingredient);
         });
         recyclerView.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));
@@ -174,6 +174,9 @@ public class AddDrinkIngredientsFragment extends Fragment implements BackButtonL
         if(item.getItemId() == android.R.id.home){
             onBackPressed();
             return true;
+        }
+        if (item.getItemId() == R.id.action_about) {
+            ((RouterProvider)getParentFragment()).getRouter().navigateTo(Screens.ABOUT, "Drink ingredientrs fragment about text");
         }
         if(item.getItemId() == R.id.ab_add){
             mSharedIngredientsViewModel.selectIds(mAdapter.getSelectedIds());

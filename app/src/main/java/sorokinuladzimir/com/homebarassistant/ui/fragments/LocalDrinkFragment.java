@@ -1,20 +1,14 @@
 package sorokinuladzimir.com.homebarassistant.ui.fragments;
 
 import android.arch.lifecycle.ViewModelProviders;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.graphics.Palette;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -30,8 +24,6 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
-import com.bumptech.glide.request.target.SimpleTarget;
-import com.bumptech.glide.request.transition.Transition;
 
 import sorokinuladzimir.com.homebarassistant.R;
 import sorokinuladzimir.com.homebarassistant.ui.adapters.LocalDrinkIngredientItemAdapter;
@@ -41,8 +33,6 @@ import sorokinuladzimir.com.homebarassistant.viewmodel.DrinkViewModel;
 
 
 public class LocalDrinkFragment extends Fragment implements BackButtonListener {
-
-    private final String TAG = "LocalDrinkFragment";
 
     private static final String EXTRA_NAME = "extra_name";
     private static final String EXTRA_ID = "extra_id";
@@ -149,10 +139,9 @@ public class LocalDrinkFragment extends Fragment implements BackButtonListener {
 
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
-        if (collapsedMenu != null
-                && (!appBarExpanded || collapsedMenu.size() != 1)) {
+        if (collapsedMenu != null && !appBarExpanded) {
             //collapsed
-            collapsedMenu.add("Edit")
+            collapsedMenu.add(R.string.menu_edit)
                     .setIcon(R.drawable.ic_edit_done)
                     .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
         } else {
@@ -164,7 +153,7 @@ public class LocalDrinkFragment extends Fragment implements BackButtonListener {
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.drink_menu, menu);
+        inflater.inflate(R.menu.list_without_search_menu, menu);
         collapsedMenu = menu;
     }
 
@@ -194,7 +183,10 @@ public class LocalDrinkFragment extends Fragment implements BackButtonListener {
             ((RouterProvider)getParentFragment()).getRouter().exit();
             return true;
         }
-        if (item.getTitle() == "Edit") {
+        if (item.getItemId() == R.id.action_about) {
+            ((RouterProvider)getParentFragment()).getRouter().navigateTo(Screens.ABOUT, "Local drink fragment anbout text");
+        }
+        if (item.getTitle() == getString(R.string.menu_edit)) {
             editPressed();
         }
         return false;

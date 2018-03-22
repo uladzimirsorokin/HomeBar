@@ -21,13 +21,11 @@ import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MediatorLiveData;
 import android.arch.lifecycle.MutableLiveData;
-import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModel;
 import android.arch.lifecycle.ViewModelProvider;
 import android.content.Context;
 import android.net.Uri;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
 import sorokinuladzimir.com.homebarassistant.BarApp;
 import sorokinuladzimir.com.homebarassistant.DataRepository;
@@ -100,20 +98,20 @@ public class AddIngredientViewModel extends AndroidViewModel {
         return mIsImageRemoved;
     }
 
-    public Uri createPhotoFile(Context context, String albumName) {
-        mPhotoUri = BarApp.getInstance().getRepository().createImageFile(context, albumName);
+    public Uri createPhotoFile() {
+        mPhotoUri = mRepository.createImageFile();
         return mPhotoUri;
     }
 
-    public void handleImage(Context context, String albumName, Uri imageUri, int sizeForScale, boolean deleteSource){
+    public void handleImage(Uri imageUri, int sizeForScale, boolean deleteSource){
         mIsImageRemoved = false;
-        removeImageFile(context, getIngredient().getValue() == null ? null : getIngredient().getValue().getImage(),
+        removeImageFile(getIngredient().getValue() == null ? null : getIngredient().getValue().getImage(),
                 getCurrentImagePath().getValue(), false);
-        mRepository.saveImageToAlbum(albumName, imageUri, sizeForScale, deleteSource, true);
+        mRepository.saveImageToAlbum(imageUri, sizeForScale, deleteSource, true);
     }
 
-    public void saveIngredient(Context context, String name, String description, String notes){
-        removeImageFile(context, getIngredient().getValue() == null ? null : getIngredient().getValue().getImage(),
+    public void saveIngredient(String name, String description, String notes){
+        removeImageFile(getIngredient().getValue() == null ? null : getIngredient().getValue().getImage(),
                 getCurrentImagePath().getValue(), true);
         Ingredient ingredient = mObservableIngredient.getValue();
         if(ingredient == null) ingredient = new Ingredient();
@@ -125,17 +123,17 @@ public class AddIngredientViewModel extends AndroidViewModel {
     }
 
     public int deleteIngredient() {
-        return BarApp.getInstance().getRepository().deleteIngredient(mIngredientId);
+        return mRepository.deleteIngredient(mIngredientId);
     }
 
-    public void removeCurrentImage(Context context) {
+    public void removeCurrentImage() {
         mIsImageRemoved = true;
-        removeImageFile(context, getIngredient().getValue() == null ? null : getIngredient().getValue().getImage(),
+        removeImageFile(getIngredient().getValue() == null ? null : getIngredient().getValue().getImage(),
                 getCurrentImagePath().getValue(), false);
         getCurrentImagePath().setValue(null);
     }
 
-    public void removeImageFile(Context context, String dbPath, String currentPath, Boolean savingIngredient){
+    public void removeImageFile(String dbPath, String currentPath, Boolean savingIngredient){
 
         String deletePath = null;
 

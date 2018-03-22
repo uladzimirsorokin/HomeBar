@@ -19,133 +19,176 @@
         android:scrollbarAlwaysDrawVerticalTrack="true"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <android.support.constraint.ConstraintLayout
+        <LinearLayout
             android:id="@+id/coord_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:orientation="vertical"
             android:fitsSystemWindows="true">
 
 
-
-            <TextView
-                android:id="@+id/tv_drink_name_title"
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/list_subheader_height"
-                style="@style/SubheaderTextStyle"
-                android:text="@string/ingredient_name_title"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent" />
+                android:layout_height="@dimen/dense_list_item_height"
+                android:orientation="horizontal"
+                android:layout_marginTop="@dimen/list_top_padding">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginStart="16dp"
+                    android:layout_centerVertical="true"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/ic_drink_name"
+                    android:alpha="0.6"/>
+
+                <EditText
+                    android:id="@+id/et_drink_name"
+                    android:hint="Drink name"
+                    android:layout_gravity="center_vertical"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    style="@style/SinglelineEditTextStyle"
+                    android:layout_marginEnd="@dimen/list_item_right_padding"
+                    android:layout_marginStart="@dimen/list_item_left_padding"/>
+
+            </RelativeLayout>
 
 
-            <EditText
-                android:id="@+id/et_drink_name"
-                android:hint="Drink name"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                style="@style/SinglelineEditTextStyle"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tv_drink_name_title" />
-
-            <TextView
-                android:id="@+id/tv_preparation_title"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/list_subheader_height"
-                android:layout_marginTop="8dp"
-                style="@style/SubheaderTextStyle"
-                android:text="@string/ingredient_description_title"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/et_drink_name" />
-
-            <EditText
-                android:id="@+id/et_preparation"
-                android:hint="1. Fill glass with ice cubes..."
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                style="@style/MultilineEditTextStyle"
-                android:nestedScrollingEnabled="false"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tv_preparation_title" />
-
-            <TextView
-                android:id="@+id/tv_ingredients_title"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/list_subheader_height"
-                android:layout_marginTop="8dp"
-                style="@style/SubheaderTextStyle"
-                android:text="Ингридиенты"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/et_preparation" />
-
-            <TextView
-                android:id="@+id/tv_add_ingredient"
-                style="@style/TextStyle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:paddingStart="16dp"
-                android:layout_marginTop="8dp"
-                android:drawableStart="@drawable/ic_add_drink_ingredients"
-                android:text=" add ingredients"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintHorizontal_bias="0.2"
-                app:layout_constraintTop_toBottomOf="@id/tv_ingredients_title"/>
-
-
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/rv_ingredients"
+            <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:nestedScrollingEnabled="false"
-                android:padding="8dp"
-                android:layout_marginTop="8dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tv_add_ingredient" />
+                android:orientation="horizontal"
+                android:layout_marginTop="@dimen/list_top_padding">
 
-            <TextView
-                android:id="@+id/tv_tastes_title"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/list_subheader_height"
-                android:layout_marginTop="8dp"
-                style="@style/SubheaderTextStyle"
-                android:text="Вкусы"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/rv_ingredients" />
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_centerVertical="true"
+                    android:scaleType="fitStart"
+                    android:src="@drawable/ic_drink_description"
+                    android:alpha="0.6"/>
 
-            <TextView
-                android:id="@+id/tv_add_tastes"
-                style="@style/TextStyle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:paddingStart="16dp"
-                android:layout_marginTop="8dp"
-                android:drawableStart="@drawable/ic_add_drink_ingredients"
-                android:text=" add tastes"
-                android:layout_marginBottom="16dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintHorizontal_bias="0.2"
-                app:layout_constraintTop_toBottomOf="@id/tv_tastes_title"/>
+                <EditText
+                    android:id="@+id/et_preparation"
+                    android:hint="1. Fill glass with ice cubes..."
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    style="@style/MultilineEditTextStyle"
+                    android:nestedScrollingEnabled="false"
+                    android:layout_marginEnd="@dimen/list_item_right_padding"
+                    android:layout_marginStart="@dimen/list_item_left_padding"/>
+            </FrameLayout>
 
-            <TextView
-                android:id="@+id/tv_tastes"
+            <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingStart="16dp"
-                android:paddingEnd="16dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="16dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tv_add_tastes"/>
+                android:layout_marginTop="@dimen/list_top_padding">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="8dp"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/ic_drink_ingredients"
+                    android:alpha="0.7"/>
+
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/rv_ingredients"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/list_item_right_padding"
+                    android:layout_marginStart="@dimen/list_item_left_padding"
+                    android:nestedScrollingEnabled="false" />
+
+                <TextView
+                    android:id="@+id/tv_add_ingredient"
+                    style="@style/TextStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/list_item_right_padding"
+                    android:layout_marginStart="@dimen/list_item_left_padding"
+                    android:layout_marginTop="8dp"
+                    android:drawableStart="@drawable/ic_add_drink_ingredients"
+                    android:text=" ingredients"
+                    android:background="?selectableItemBackground"
+                    android:layout_below="@+id/rv_ingredients"/>
+            </RelativeLayout>
 
 
-        </android.support.constraint.ConstraintLayout>
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/list_top_padding">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="8dp"
+                    android:src="@drawable/taste"
+                    android:alpha="0.8"/>
+
+                <TextView
+                    android:id="@+id/tv_tastes"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Choose some tastes"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="@dimen/list_item_right_padding"
+                    android:layout_marginStart="@dimen/list_item_left_padding"/>
+
+                <TextView
+                    android:id="@+id/tv_add_tastes"
+                    style="@style/TextStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/list_item_right_padding"
+                    android:layout_marginStart="@dimen/list_item_left_padding"
+                    android:layout_marginTop="8dp"
+                    android:drawableStart="@drawable/ic_add_drink_ingredients"
+                    android:background="?selectableItemBackground"
+                    android:text=" tastes"
+                    android:layout_below="@+id/tv_tastes"/>
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/list_item_height"
+                android:orientation="horizontal"
+                android:layout_marginTop="@dimen/list_top_padding">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_alignParentBottom="true"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginBottom="16dp"
+                    android:src="@drawable/ic_drink_rating"
+                    android:alpha="0.6"/>
+
+                <com.appyvet.materialrangebar.RangeBar
+                    xmlns:app="http://schemas.android.com/apk/res-auto"
+                    android:id="@+id/rb_drink_rating"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/list_item_height"
+                    android:layout_marginEnd="@dimen/list_item_right_padding"
+                    android:layout_marginStart="@dimen/list_item_left_padding"
+                    app:mrb_tickEnd="100"
+                    app:mrb_tickInterval="5"
+                    app:mrb_tickStart="0"
+                    app:mrb_rangeBar="false"
+                    app:mrb_pinMaxFont="10sp"
+                    app:mrb_pinRadius="12dp"
+                    app:mrb_selectorSize="8dp"/>
+
+            </RelativeLayout>
+
+        </LinearLayout>
     </android.support.v4.widget.NestedScrollView>
 
     <android.support.design.widget.AppBarLayout
@@ -179,6 +222,7 @@
             <android.support.v7.widget.Toolbar
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
+                android:background="?selectableItemBackground"
                 android:layout_height="?attr/actionBarSize"
                 app:layout_collapseMode="pin"
                 app:popupTheme="@style/ThemeOverlay.AppCompat.Light"

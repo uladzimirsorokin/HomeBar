@@ -21,16 +21,14 @@ import sorokinuladzimir.com.homebarassistant.db.entity.Drink;
 import sorokinuladzimir.com.homebarassistant.db.entity.DrinkIngredientJoin;
 import sorokinuladzimir.com.homebarassistant.db.entity.Ingredient;
 import sorokinuladzimir.com.homebarassistant.db.entity.WholeCocktail;
+import sorokinuladzimir.com.homebarassistant.db.mapper.RawIngredientToWholeCocktailMapper;
 import sorokinuladzimir.com.homebarassistant.ui.utils.ImageHandler;
-
-import static android.support.v4.content.FileProvider.getUriForFile;
+import sorokinuladzimir.com.homebarassistant.ui.utils.IngredientParcer;
 
 public class DataRepository {
 
     private static DataRepository sInstance;
     private Context mContext;
-
-    private static final String AUTHORITY = BuildConfig.APPLICATION_ID + ".provider";
 
     private final CocktailsDatabase mDatabase;
 
@@ -83,9 +81,7 @@ public class DataRepository {
         return sInstance;
     }
 
-    /**
-     * Get the list of products from the database and get notified when the data changes.
-     */
+
     public LiveData<List<Drink>> getDrinks() {
         return mObservableDrinks;
     }
@@ -129,26 +125,11 @@ public class DataRepository {
         return mDatabase.getCocktailDao().findAllIngredientsByDrinkId(drinkId);
     }
 
-    public Uri createImageFile(Context context, String albumName){
-        File photoFile = null;
-
-        try {
-            photoFile = imageHandler.createImageFile(albumName);
-        } catch (IOException ex) {
-
-        }
-
-        if (photoFile != null) {
-            return getUriForFile(context,
-                    AUTHORITY,
-                    photoFile);
-        }
-
-        return null;
+    public Uri createImageFile(){
+        return imageHandler.createImageFile(mContext);
     }
 
-    public void saveImageToAlbum(String albumName,
-                                 Uri imageUri,
+    public void saveImageToAlbum(Uri imageUri,
                                  int sizeForScale,
                                  boolean deleteSource,
                                  boolean ingredientImage) {
@@ -159,9 +140,9 @@ public class DataRepository {
                 Bitmap bitmap = imageHandler.getBitmapFromUri(mContext, imageUri, sizeForScale);
                 if (deleteSource) imageHandler.deleteImage(mContext, imageUri);
                 if (ingredientImage) {
-                    mObservableIngredientImagePath.postValue(imageHandler.saveImage(bitmap, albumName));
+                    mObservableIngredientImagePath.postValue(imageHandler.saveImage(bitmap));
                 } else {
-                    mObservableDrinkImagePath.postValue(imageHandler.saveImage(bitmap, albumName));
+                    mObservableDrinkImagePath.postValue(imageHandler.saveImage(bitmap));
                 }
             } catch (IOException e) {
                 e.printStackTrace();
@@ -214,7 +195,7 @@ public class DataRepository {
                 File imageFile = new File(imagePath);
                 if (imageFile.exists()) {
                     Uri photoUri = FileProvider.getUriForFile(mContext,
-                            AUTHORITY,
+                            Constants.Strings.AUTHORITY,
                             imageFile);
                     imageHandler.deleteImage(mContext, photoUri);
                 }
@@ -223,24 +204,34 @@ public class DataRepository {
     }
 
     //TODO: parse addb responce somehow to get amout/unit/ingredient separately
-    public void saveDrinkFromNet(Drink drink, Bitmap bitmap, String albumName) {
+    public void saveDrinkFromNet(Drink drink, Bitmap bitmap) {
         mExecutors.diskIO().execute(()->{
             try {
-                drink.setImage(imageHandler.saveImage(bitmap, albumName));
+                drink.setImage(imageHandler.saveImage(bitmap));
             } catch (IOException e) {
                 e.printStackTrace();
+            }
+
+            List<WholeCocktail> wholeCocktailList = RawIngredientToWholeCocktailMapper.getInstance().reverseMap(drink.getIngredients());
+
+            for (Ingredient ingredient : drink.getIngredients()) {
+                ingredient.setName(IngredientParcer.parseName(ingredient.getName()));
+            }
+
+            for (Ingredient ingredient : drink.getIngredients()) {
+                ingredient.setName(IngredientParcer.parseName(ingredient.getName()));
             }
 
             Long[] ingredientIds = mDatabase.getIngredientDao().insertOrReplaceIngredient(drink.getIngredients());
             Long drinkId = mDatabase.getDrinkDao().insertDrink(drink);
 
             List<DrinkIngredientJoin> list = new ArrayList<>();
-            for (Long ingredientId: ingredientIds) {
+            for (int i = 0; i < ingredientIds.length; i++) {
                 DrinkIngredientJoin item = new DrinkIngredientJoin();
-                item.setIngredientId(ingredientId);
+                item.setIngredientId(ingredientIds[i]);
                 item.setDrinkId(drinkId);
-                item.setAmount("" + list.size());
-                item.setUnit("ml");
+                item.setAmount(wholeCocktailList.get(i).getAmount());
+                item.setUnit(wholeCocktailList.get(i).getUnit());
                 list.add(item);
             }
 
@@ -255,5 +246,13 @@ public class DataRepository {
 
     public void resetDrinkImagePath() {
         mObservableDrinkImagePath.setValue(null);
+    }
+
+    public LiveData<List<Drink>> searchDrinksByName(String query) {
+        return mDatabase.getDrinkDao().searchDrinksByName('%'+query+'%');
+    }
+
+    public LiveData<List<Ingredient>> searchIngredients(String query) {
+        return mDatabase.getIngredientDao().searchIngredientsByName('%'+query+'%');
     }
 }

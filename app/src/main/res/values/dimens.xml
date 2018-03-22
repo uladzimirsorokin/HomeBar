@@ -13,5 +13,12 @@
 
     <dimen name="text_margin">16dp</dimen>
 
+    <dimen name="icon_left_padding">16dp</dimen>
+    <dimen name="list_item_left_padding">72dp</dimen>
+    <dimen name="list_item_right_padding">16dp</dimen>
+    <dimen name="list_top_padding">8dp</dimen>
+    <dimen name="dense_list_item_height">48dp</dimen>
+    <dimen name="list_item_height">72dp</dimen>
+
 
 </resources>

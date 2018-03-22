@@ -8,6 +8,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
 import android.support.annotation.Nullable;
+import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
@@ -17,8 +18,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,6 +35,7 @@ import com.bumptech.glide.request.transition.Transition;
 import sorokinuladzimir.com.homebarassistant.Constants;
 import sorokinuladzimir.com.homebarassistant.R;
 
+import sorokinuladzimir.com.homebarassistant.db.mapper.RawIngredientToWholeCocktailMapper;
 import sorokinuladzimir.com.homebarassistant.net.entity.DrinkEntity;
 
 import sorokinuladzimir.com.homebarassistant.ui.adapters.SingleDrinkIngredientItemAdapter;
@@ -47,12 +50,9 @@ import sorokinuladzimir.com.homebarassistant.viewmodel.SingleDrinkViewModel;
 
 public class SingleDrinkFragment extends Fragment implements BackButtonListener {
 
-    private final String TAG = "SingleDrinkFragment";
-
     private static final String EXTRA_NAME = "extra_name";
     private static final String EXTRA_BUNDLE = "extra_bundle";
 
-    private static final String ALBUM_NAME = "HomeBar";
 
     private ImageView mDrinkImage;
     private SingleDrinkIngredientItemAdapter mAdapter;
@@ -62,6 +62,11 @@ public class SingleDrinkFragment extends Fragment implements BackButtonListener 
 
 
     private SingleDrinkViewModel mViewModel;
+
+    private Menu collapsedMenu;
+    private AppBarLayout mAppBarLayout;
+    private boolean appBarExpanded = true;
+
 
     @Nullable
     @Override
@@ -102,15 +107,16 @@ public class SingleDrinkFragment extends Fragment implements BackButtonListener 
                                 mDrinkImage.setDrawingCacheEnabled(true);
                             }
                         });
-                if (drink.getIngredients() != null) mAdapter.setData(drink.getIngredients());
+                if (drink.getIngredients() != null) mAdapter.setData(
+                        RawIngredientToWholeCocktailMapper.getInstance().reverseMap(drink.getIngredients()));
                 if (drink.getDescription() != null) mDescriptionText.setText(drink.getDescription());
                 if (drink.getName() != null) mCollapsingToolbarLayout.setTitle(drink.getName());
             }
         });
     }
 
-    private void addDrinkToDb(String albumName){
-        mViewModel.saveDrink(albumName);
+    private void addDrinkToDb(){
+        mViewModel.saveDrink();
     }
 
     public static SingleDrinkFragment getNewInstance(String name, Bundle bundle) {
@@ -129,8 +135,38 @@ public class SingleDrinkFragment extends Fragment implements BackButtonListener 
         Toolbar toolbar = view.findViewById(R.id.singleDrinkToolbar);
         ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
         ActionBar mToolbar = ((AppCompatActivity) getActivity()).getSupportActionBar();
-        if(mToolbar != null)
-            mToolbar.setDisplayHomeAsUpEnabled(true);
+        if(mToolbar != null) mToolbar.setDisplayHomeAsUpEnabled(true);
+
+        mAppBarLayout = view.findViewById(R.id.singleDrinkAppbar);
+        mAppBarLayout.addOnOffsetChangedListener((appBarLayout1, verticalOffset) -> {
+            if (Math.abs(verticalOffset) > mAppBarLayout.getTotalScrollRange() - 140) {
+                appBarExpanded = false;
+                getActivity().invalidateOptionsMenu();
+            } else {
+                appBarExpanded = true;
+                getActivity().invalidateOptionsMenu();
+            }
+        });
+    }
+
+    @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        if (collapsedMenu != null && !appBarExpanded) {
+            //collapsed
+            collapsedMenu.add(getString(R.string.menu_add))
+                    .setIcon(R.drawable.ic_add)
+                    .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+        } else {
+            //expanded
+        }
+        super.onPrepareOptionsMenu(collapsedMenu);
+    }
+
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.list_without_search_menu, menu);
+        collapsedMenu = menu;
     }
 
     private void initViews(View rootView) {
@@ -143,7 +179,7 @@ public class SingleDrinkFragment extends Fragment implements BackButtonListener 
         rvIngredients.setHasFixedSize(true);
         rvIngredients.setLayoutManager(new LinearLayoutManager(getContext()));
         mAdapter = new SingleDrinkIngredientItemAdapter(ingredientItem ->
-                Toast.makeText(getContext(), ingredientItem.getName(), Toast.LENGTH_LONG).show());
+                Toast.makeText(getContext(), ingredientItem.getIngredientName(), Toast.LENGTH_LONG).show());
         rvIngredients.setAdapter(mAdapter);
 
     }
@@ -152,7 +188,7 @@ public class SingleDrinkFragment extends Fragment implements BackButtonListener 
         mFab = view.findViewById(R.id.single_drink_fab);
         mFab.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_add));
         mFab.setOnClickListener(view1 -> {
-            addDrinkToDb(ALBUM_NAME);
+            addDrinkToDb();
             mFab.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_done));
             mFab.setEnabled(false);
         });
@@ -163,6 +199,12 @@ public class SingleDrinkFragment extends Fragment implements BackButtonListener 
         if(item.getItemId() == android.R.id.home){
             onBackPressed();
             return true;
+        }
+        if (item.getItemId() == R.id.action_about) {
+            ((RouterProvider)getParentFragment()).getRouter().navigateTo(Screens.ABOUT, "Single drink fragment anbout text");
+        }
+        if (item.getTitle() == getString(R.string.menu_add)) {
+            addDrinkToDb();
         }
         return false;
     }

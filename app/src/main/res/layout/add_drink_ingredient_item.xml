@@ -12,7 +12,6 @@
         android:id="@+id/tv_ingredient_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
         android:paddingTop="16dp"
         android:singleLine="true"
         android:ellipsize="end"
@@ -21,7 +20,6 @@
         android:textColor="#f3000000"
         android:fontFamily="sans-serif"
         android:text="Grey goose vodka"
-        android:padding="8dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -29,14 +27,12 @@
         android:id="@+id/et_ingredient_amount"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
         android:ems="3"
         android:maxEms="3"
         android:maxLength="4"
         android:hint="10"
         android:gravity="bottom"
         android:inputType="numberDecimal"
-        android:padding="8dp"
         android:singleLine="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -46,9 +42,11 @@
         android:id="@+id/spin_ingridient_unit"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
         android:layout_marginLeft="4dp"
         android:layout_marginTop="8dp"
         android:padding="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@id/et_ingredient_amount"
         app:layout_constraintTop_toBottomOf="@+id/tv_ingredient_name" />
 

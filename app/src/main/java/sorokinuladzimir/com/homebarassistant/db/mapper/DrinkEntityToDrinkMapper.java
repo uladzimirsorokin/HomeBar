@@ -27,6 +27,9 @@ public class DrinkEntityToDrinkMapper extends Mapper<Drink,DrinkEntity> {
     public Drink reverseMap(DrinkEntity value) {
         Drink drink = new Drink();
         drink.setName(value.getName());
+
+
+
         drink.setTastes(value.getTastes());
         drink.setDescription(value.getDescription());
         drink.setImage(Constants.Uri.ABSOLUT_DRINKS_IMAGE_ROOT + value.getId() + ".png");

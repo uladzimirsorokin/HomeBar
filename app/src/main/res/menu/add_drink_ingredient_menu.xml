@@ -7,14 +7,18 @@
         android:icon="@android:drawable/ic_menu_search"
         app:showAsAction="always|collapseActionView"
         app:actionViewClass="android.support.v7.widget.SearchView"
-        android:title="Search" />
+        android:title="@string/menu_search" />
 
     <item
-        android:title="ВЫБРАТЬ"
+        android:title="@string/menu_choose"
         android:id="@+id/ab_add"
         app:showAsAction="ifRoom"
         android:icon="@drawable/ic_done"/>
 
+    <item android:id="@+id/action_about"
+        android:orderInCategory="1000"
+        android:title="@string/menu_about"
+        app:showAsAction="never"/>
 
 
 </menu>

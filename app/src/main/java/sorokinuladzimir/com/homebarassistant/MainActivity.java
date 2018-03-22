@@ -1,5 +1,7 @@
 package sorokinuladzimir.com.homebarassistant;
 
+import android.Manifest;
+import android.annotation.SuppressLint;
 import android.graphics.Color;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -9,14 +11,13 @@ import android.widget.Toast;
 
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigation;
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigationItem;
+import com.tbruyelle.rxpermissions2.RxPermissions;
 
 import ru.terrakok.cicerone.Navigator;
 import ru.terrakok.cicerone.commands.Back;
 import ru.terrakok.cicerone.commands.Command;
 import ru.terrakok.cicerone.commands.Replace;
 import ru.terrakok.cicerone.commands.SystemMessage;
-import sorokinuladzimir.com.homebarassistant.BarApp;
-import sorokinuladzimir.com.homebarassistant.R;
 import sorokinuladzimir.com.homebarassistant.ui.fragments.Screens;
 import sorokinuladzimir.com.homebarassistant.ui.fragments.TabContainerFragment;
 import sorokinuladzimir.com.homebarassistant.ui.subnavigation.BackButtonListener;
@@ -29,6 +30,7 @@ public class MainActivity extends AppCompatActivity {
     private TabContainerFragment drinksTabFragment;
     private TabContainerFragment ingredientsTabFragment;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,7 +42,10 @@ public class MainActivity extends AppCompatActivity {
         if (savedInstanceState == null) {
             bottomNavigation.setCurrentItem(1);
         }
+
+        checkPermissons();
     }
+
 
     private Navigator navigator = new Navigator() {
         @Override
@@ -89,6 +94,21 @@ public class MainActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
         BarApp.getInstance().getNavigatorHolder().removeNavigator();
+    }
+
+    @SuppressLint("CheckResult")
+    private void checkPermissons() {
+        RxPermissions rxPermissions = new RxPermissions(this);
+        // Must be done during an initialization phase like onCreate
+        rxPermissions
+                .request(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                .subscribe(granted -> {
+                    if (granted) {
+
+                    } else {
+                        Toast.makeText(this,"Permisson denied, photo capture disabled",Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 
     private void initBottomNavigation(){

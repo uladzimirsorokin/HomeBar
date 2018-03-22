@@ -1,5 +1,6 @@
 package sorokinuladzimir.com.homebarassistant.ui.fragments;
 
+import android.Manifest;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.net.Uri;
@@ -26,21 +27,23 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.appyvet.materialrangebar.RangeBar;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.tbruyelle.rxpermissions2.RxPermissions;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import sorokinuladzimir.com.homebarassistant.R;
-import sorokinuladzimir.com.homebarassistant.db.entity.Taste;
 import sorokinuladzimir.com.homebarassistant.ui.adapters.AddDrinkIngredientItemAdapter;
 import sorokinuladzimir.com.homebarassistant.ui.subnavigation.BackButtonListener;
 import sorokinuladzimir.com.homebarassistant.ui.subnavigation.RouterProvider;
+import sorokinuladzimir.com.homebarassistant.ui.utils.TastesHelper;
 import sorokinuladzimir.com.homebarassistant.viewmodel.AddDrinkViewModel;
 import sorokinuladzimir.com.homebarassistant.viewmodel.SharedViewModel;
 
 import static android.app.Activity.RESULT_OK;
+import static sorokinuladzimir.com.homebarassistant.Constants.Values.DEFAULT_IMAGE_SIZE;
 
 
 /**
@@ -58,9 +61,6 @@ public class AddDrinkFragment extends Fragment implements BackButtonListener,
 
     private static final int OPEN_PICTURE_CODE = 2;
 
-    private static final String ALBUM_NAME = "HomeBar";
-
-    private static final int DEFAULT_IMAGE_SIZE = 750;
 
     private ActionBar mToolbar;
     private RecyclerView mRvIngredients;
@@ -74,6 +74,7 @@ public class AddDrinkFragment extends Fragment implements BackButtonListener,
     private EditText mEtDescription;
     private TextView mTvAddTastes;
     private TextView mTvTastes;
+    private RangeBar mRangebarRating;
 
     @Nullable
     @Override
@@ -117,9 +118,8 @@ public class AddDrinkFragment extends Fragment implements BackButtonListener,
                     }
                     if (drink.getName() != null) mEtName.setText(drink.getName());
                     if (drink.getDescription() != null) mEtDescription.setText(drink.getDescription());
-                    if (drink.getTastes() != null) {
-                            drinkModel.getTastesList().setValue(drink.getTastes());
-                      };
+                    if (drink.getTastes() != null) drinkModel.getTastesList().setValue(drink.getTastes());
+                    mRangebarRating.setRangePinsByValue(0, drink.getRating());
                 }
             });
         }
@@ -145,13 +145,7 @@ public class AddDrinkFragment extends Fragment implements BackButtonListener,
         });
 
         drinkModel.getTastesList().observe(this, tastes -> {
-            if (tastes != null && tastes.size() != 0) {
-                String tastesStr = tastes.get(0).getText();
-                for (int i = 1; i < tastes.size(); i++){
-                    tastesStr += ", " + tastes.get(i).getText();
-                }
-                mTvTastes.setText(tastesStr);
-            }
+             mTvTastes.setText(TastesHelper.tastesToString(tastes));
         });
 
         sharedIngredients.getSelectedIds().observe(this, list -> {
@@ -175,7 +169,24 @@ public class AddDrinkFragment extends Fragment implements BackButtonListener,
         });
 
         mDrinkImage = view.findViewById(R.id.image_add_drink);
-        mDrinkImage.setOnClickListener(image -> showAddImageDialog());
+
+        RxPermissions rxPermissions = new RxPermissions(getActivity());
+        mDrinkImage.setOnClickListener(image -> {
+            rxPermissions
+                    .requestEach(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                    .subscribe(permission -> {
+                        if (permission.granted) {
+                            showAddImageDialog();
+                        } else if (permission.shouldShowRequestPermissionRationale) {
+                            // Denied permission with ask never again
+                            Toast.makeText(getContext(), "denied",Toast.LENGTH_SHORT).show();
+                        } else {
+                            // Denied permission with ask never again
+                            // Need to go to the settings
+                            Toast.makeText(getContext(), "denied, ask never again",Toast.LENGTH_SHORT).show();
+                        }
+                    });
+        });
 
         mRvIngredients = view.findViewById(R.id.rv_ingredients);
         mRvIngredients.setHasFixedSize(true);
@@ -197,6 +208,8 @@ public class AddDrinkFragment extends Fragment implements BackButtonListener,
             mSharedIngredientsViewModel.selectIds(mViewModel.getIngredientIds());
             ((RouterProvider)getParentFragment()).getRouter().navigateTo(Screens.ADD_DRINK_INGREDIENTS);
         });
+
+        mRangebarRating = view.findViewById(R.id.rb_drink_rating);
     }
 
     public static AddDrinkFragment getNewInstance(String name, Long drinkId) {
@@ -226,9 +239,9 @@ public class AddDrinkFragment extends Fragment implements BackButtonListener,
             mToolbar.setHomeAsUpIndicator(R.drawable.ic_close);
 
             if(mViewModel.getIsNewDrink()){
-                mToolbar.setTitle("Новый коктейль");
+                mToolbar.setTitle(R.string.title_new_cocktail);
             } else {
-                mToolbar.setTitle("Редактирование");
+                mToolbar.setTitle(R.string.title_edit_cocktail);
             }
         }
     }
@@ -250,11 +263,11 @@ public class AddDrinkFragment extends Fragment implements BackButtonListener,
     }
 
     private void handleChoosenPicture(Uri imageUri){
-        mViewModel.handleImage(getContext(), ALBUM_NAME, imageUri, DEFAULT_IMAGE_SIZE, false);
+        mViewModel.handleImage(imageUri, DEFAULT_IMAGE_SIZE, false);
     }
 
     private void handleTakenPicture(Uri imageUri){
-        mViewModel.handleImage(getContext(), ALBUM_NAME, imageUri, DEFAULT_IMAGE_SIZE, true);
+        mViewModel.handleImage(imageUri, DEFAULT_IMAGE_SIZE, true);
     }
 
     void showAddImageDialog() {
@@ -265,7 +278,7 @@ public class AddDrinkFragment extends Fragment implements BackButtonListener,
     }
 
     void showAddTastesDialog() {
-        DialogFragment newFragment = AddTastesDialogFragment.newInstance("Choose tastes",
+        DialogFragment newFragment = AddTastesDialogFragment.newInstance(getString(R.string.title_choose_tastes),
                 mViewModel.getTastes(getResources().getStringArray(R.array.taste_name)));
         newFragment.setTargetFragment(this,911);
         newFragment.show(getFragmentManager(), "dialog");
@@ -286,7 +299,7 @@ public class AddDrinkFragment extends Fragment implements BackButtonListener,
                 dispatchChoosePictureIntent();
                 break;
             case 2:
-                mViewModel.removeCurrentImage(getContext());
+                mViewModel.removeCurrentImage();
                 break;
             default:
                 Log.d(getContext().getClass().getSimpleName(),"Some strange type of taking photo");
@@ -298,7 +311,7 @@ public class AddDrinkFragment extends Fragment implements BackButtonListener,
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         // Ensure that there's a camera activity to handle the intent
         if (takePictureIntent.resolveActivity(getContext().getPackageManager()) != null) {
-            if (mViewModel.createPhotoFile(getContext(), ALBUM_NAME) != null) {
+            if (mViewModel.createPhotoFile() != null) {
                 takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, mViewModel.getPhotoUri());
                 startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
             }
@@ -316,7 +329,8 @@ public class AddDrinkFragment extends Fragment implements BackButtonListener,
         mViewModel.saveDrink(getContext(),
                 mEtName.getText().toString(),
                 mEtDescription.getText().toString(),
-                mAdapter.getIngredients());
+                mAdapter.getIngredients(),
+                Integer.valueOf(mRangebarRating.getRightPinValue()));
         onBackPressed();
     }
 
@@ -324,10 +338,10 @@ public class AddDrinkFragment extends Fragment implements BackButtonListener,
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.add_edit_item_menu, menu);
         if(mViewModel.getIsNewDrink()){
-            menu.findItem(R.id.ab_add).setTitle("Добавить");
+            menu.findItem(R.id.ab_add).setTitle(R.string.menu_drink_add);
             menu.findItem(R.id.ab_delete).setVisible(false);
         } else {
-            menu.findItem(R.id.ab_add).setTitle("Сохранить");
+            menu.findItem(R.id.ab_add).setTitle(R.string.menu_save);
         }
 
     }
@@ -347,7 +361,7 @@ public class AddDrinkFragment extends Fragment implements BackButtonListener,
                 ((RouterProvider)getParentFragment()).getRouter().navigateTo(Screens.DRINKS_LIST);
                 return true;
             case R.id.ab_about:
-                Toast.makeText(getContext(),"about app",Toast.LENGTH_SHORT).show();
+                ((RouterProvider)getParentFragment()).getRouter().navigateTo(Screens.ABOUT, "Add drink fragment anbout text");
                 return true;
             default:
                 Toast.makeText(getContext(),"Unknown menu item",Toast.LENGTH_SHORT).show();

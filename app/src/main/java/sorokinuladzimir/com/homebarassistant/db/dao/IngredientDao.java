@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ru.terrakok.cicerone.commands.Replace;
+import sorokinuladzimir.com.homebarassistant.db.entity.Drink;
 import sorokinuladzimir.com.homebarassistant.db.entity.DrinkIngredientJoin;
 import sorokinuladzimir.com.homebarassistant.db.entity.Ingredient;
 import sorokinuladzimir.com.homebarassistant.db.entity.WholeCocktail;
@@ -40,6 +41,9 @@ public interface IngredientDao {
 
     @Query("SELECT * FROM Ingredient")
     LiveData<List<Ingredient>> loadIngredients();
+
+    @Query("SELECT * FROM Ingredient WHERE name LIKE :query ORDER BY name ASC")
+    LiveData<List<Ingredient>> searchIngredientsByName(String query);
 
     @Query("SELECT id, name FROM Ingredient WHERE id IN (:ingredientIds)")
     LiveData<List<Ingredient>> loadIngredients(List<Long> ingredientIds);

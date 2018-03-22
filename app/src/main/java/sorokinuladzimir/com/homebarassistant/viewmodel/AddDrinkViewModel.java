@@ -44,6 +44,7 @@ import sorokinuladzimir.com.homebarassistant.db.entity.Taste;
 import sorokinuladzimir.com.homebarassistant.db.entity.WholeCocktail;
 import sorokinuladzimir.com.homebarassistant.db.mapper.IngredientToWholeCocktailMapper;
 import sorokinuladzimir.com.homebarassistant.db.mapper.WholeCocktailToDrinkIngredientJoinMapper;
+import sorokinuladzimir.com.homebarassistant.ui.utils.TastesHelper;
 
 
 public class AddDrinkViewModel extends AndroidViewModel {
@@ -193,20 +194,6 @@ public class AddDrinkViewModel extends AndroidViewModel {
 
         if (adapterCocktailList.size() == 0) adapterCocktailList = new ArrayList<>(tempIngredients.values());
 
-        /*
-        setIngredients(newIngredients, false);
-
-        for (WholeCocktail cocktail : adapterCocktailList) {
-            if (tempIngredients.containsKey(cocktail.ingredientId)){
-                tempIngredients.get(cocktail.ingredientId).unit = cocktail.unit;
-                tempIngredients.get(cocktail.ingredientId).amount = cocktail.amount;
-                //anyway delete all previous insted of updating
-                //tempIngredients.get(cocktail.ingredientId).jointableId = cocktail.jointableId;
-            }
-        }
-
-        exposeIngredients();*/
-
         boolean isListChangedFlag = false;
 
         List<Long> oldIds = new ArrayList<>(tempIngredients.keySet());
@@ -276,26 +263,26 @@ public class AddDrinkViewModel extends AndroidViewModel {
         return mObservableCurrentImagePath;
     }
 
-    public Uri createPhotoFile(Context context, String albumName) {
-        mPhotoUri = BarApp.getInstance().getRepository().createImageFile(context, albumName);
+    public Uri createPhotoFile() {
+        mPhotoUri = BarApp.getInstance().getRepository().createImageFile();
         return mPhotoUri;
     }
 
-    public void handleImage(Context context, String albumName, Uri imageUri, int sizeForScale, boolean deleteSource){
+    public void handleImage(Uri imageUri, int sizeForScale, boolean deleteSource){
         mIsImageRemoved = false;
-        removeImageFile(context, getDrink().getValue() == null ? null : getDrink().getValue().getImage(),
+        removeImageFile(getDrink().getValue() == null ? null : getDrink().getValue().getImage(),
                 getCurrentImagePath().getValue(), false);
-        mRepository.saveImageToAlbum(albumName, imageUri, sizeForScale, deleteSource, false);
+        mRepository.saveImageToAlbum(imageUri, sizeForScale, deleteSource, false);
     }
 
-    public void removeCurrentImage(Context context) {
+    public void removeCurrentImage() {
         mIsImageRemoved = true;
-        removeImageFile(context, getDrink().getValue() == null ? null : getDrink().getValue().getImage(),
+        removeImageFile(getDrink().getValue() == null ? null : getDrink().getValue().getImage(),
                 getCurrentImagePath().getValue(), false);
         getCurrentImagePath().setValue(null);
     }
 
-    public void removeImageFile(Context context, String dbPath, String currentPath, Boolean save){
+    public void removeImageFile(String dbPath, String currentPath, Boolean save){
 
         String deletePath = null;
 
@@ -315,9 +302,9 @@ public class AddDrinkViewModel extends AndroidViewModel {
 
     // save/delete operations with whole cocktail
 
-    public void saveDrink(Context context, String name, String description, List<WholeCocktail> ingredients){
+    public void saveDrink(Context context, String name, String description, List<WholeCocktail> ingredients, int rating){
 
-        removeImageFile(context, getDrink().getValue() == null ? null : getDrink().getValue().getImage(),
+        removeImageFile(getDrink().getValue() == null ? null : getDrink().getValue().getImage(),
                 getCurrentImagePath().getValue(), true);
 
         Drink drink = mObservableDrink.getValue();
@@ -327,6 +314,7 @@ public class AddDrinkViewModel extends AndroidViewModel {
         drink.setName(name != null ? name : "name stub");
         drink.setDescription(description != null ? description : "description stub");
         drink.setTastes(mCurrentTastesList.getValue() != null ? mCurrentTastesList.getValue() : null);
+        drink.setRating(rating);
         List<DrinkIngredientJoin> ingredientsList = WholeCocktailToDrinkIngredientJoinMapper.getInstance().reverseMap(ingredients);
         mRepository.insertDrink(drink, ingredientsList);
     }
@@ -336,23 +324,11 @@ public class AddDrinkViewModel extends AndroidViewModel {
     }
 
     public void setTastes(List<Integer> selectedIngredients, String[] tastesArray) {
-        ArrayList<Taste> tastes = new ArrayList<>();
-        for(int i : selectedIngredients) {
-            tastes.add(new Taste(tastesArray[i]));
-        }
-        mCurrentTastesList.setValue(tastes);
+        mCurrentTastesList.setValue(TastesHelper.toTastesList(selectedIngredients, tastesArray));
     }
 
     public ArrayList<Integer> getTastes(String[] tastesArray) {
-        ArrayList<Integer> tastesList = new ArrayList<>();
-        if (mCurrentTastesList.getValue() != null) {
-            for (Taste taste : mCurrentTastesList.getValue()) {
-                int pos = Arrays.asList(tastesArray).indexOf(taste.getText());
-                if (pos >= 0) tastesList.add(pos);
-            }
-        }
-
-        return  tastesList;
+         return  TastesHelper.getAsIntegerList(mCurrentTastesList.getValue(), tastesArray);
     }
 
     public static class Factory extends ViewModelProvider.NewInstanceFactory {

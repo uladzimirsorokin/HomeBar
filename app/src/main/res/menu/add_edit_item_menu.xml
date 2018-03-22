@@ -3,17 +3,17 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:title="ADD"
+        android:title="@string/menu_add"
         android:id="@+id/ab_add"
         app:showAsAction="ifRoom"/>
 
     <item
         android:id="@+id/ab_delete"
-        android:title="Удалить"
+        android:title="@string/menu_delete"
         app:showAsAction="never"/>
 
     <item
         android:id="@+id/ab_about"
-        android:title="Инфо"
+        android:title="@string/menu_about"
         app:showAsAction="never"/>
 </menu>

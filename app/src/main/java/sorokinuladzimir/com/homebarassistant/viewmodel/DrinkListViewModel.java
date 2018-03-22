@@ -33,6 +33,8 @@ public class DrinkListViewModel extends AndroidViewModel {
 
     // MediatorLiveData can observe other LiveData objects and react on their emissions.
     private final MediatorLiveData<List<Drink>> mObservableDrinks;
+    private final LiveData<List<Drink>> mLiveDrinks;
+    private LiveData<List<Drink>> mLiveSearchDrinks;
     //private final List<Ingredient> mIngredients;
 
     public DrinkListViewModel(Application application) {
@@ -43,13 +45,9 @@ public class DrinkListViewModel extends AndroidViewModel {
         // set by default null, until we get data from the database.
         mObservableDrinks.setValue(null);
 
-        LiveData<List<Drink>> liveDrinks = BarApp.getInstance().getRepository()
-                .getDrinks();
+        mLiveDrinks = BarApp.getInstance().getRepository().getDrinks();
 
-        //mIngredients = ((App) application).getRepository().loadIngredients();
-
-        // observe the changes of the products from the database and forward them
-        mObservableDrinks.addSource(liveDrinks, drinks -> mObservableDrinks.setValue(drinks));
+        mObservableDrinks.addSource(mLiveDrinks, drinks -> mObservableDrinks.setValue(drinks));
     }
 
     /**
@@ -59,4 +57,16 @@ public class DrinkListViewModel extends AndroidViewModel {
         return mObservableDrinks;
     }
 
+    public void searchDrinks(String query) {
+        if (query != null && !query.equals("")){
+            mObservableDrinks.removeSource(mLiveDrinks);
+            mLiveSearchDrinks = BarApp.getInstance().getRepository().searchDrinksByName(query);
+            mObservableDrinks.addSource(mLiveSearchDrinks, drinks -> mObservableDrinks.setValue(drinks));
+        } else {
+            mObservableDrinks.removeSource(mLiveSearchDrinks);
+            mObservableDrinks.removeSource(mLiveDrinks);
+            mObservableDrinks.addSource(mLiveDrinks, drinks -> mObservableDrinks.setValue(drinks));
+        }
+
+    }
 }

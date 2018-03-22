@@ -20,13 +20,10 @@ import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MediatorLiveData;
-import android.util.SparseBooleanArray;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import sorokinuladzimir.com.homebarassistant.BarApp;
-import sorokinuladzimir.com.homebarassistant.db.entity.Drink;
 import sorokinuladzimir.com.homebarassistant.db.entity.Ingredient;
 
 
@@ -34,6 +31,8 @@ public class IngredientListViewModel extends AndroidViewModel {
 
     // MediatorLiveData can observe other LiveData objects and react on their emissions.
     private final MediatorLiveData<List<Ingredient>> mObservableIngredients;
+    private final LiveData<List<Ingredient>> mLiveIngredients;
+    private LiveData<List<Ingredient>> mLiveSearchIngredients;
 
     public IngredientListViewModel(Application application) {
         super(application);
@@ -42,24 +41,26 @@ public class IngredientListViewModel extends AndroidViewModel {
         // set by default null, until we get data from the database.
         mObservableIngredients.setValue(null);
 
-        LiveData<List<Ingredient>> liveIngredients = BarApp.getInstance().getRepository()
+        mLiveIngredients = BarApp.getInstance().getRepository()
                 .getIngredients();
 
-        // observe the changes of the products from the database and forward them
-        mObservableIngredients.addSource(liveIngredients, ingredients -> mObservableIngredients.setValue(ingredients));
+        mObservableIngredients.addSource(mLiveIngredients, ingredients -> mObservableIngredients.setValue(ingredients));
     }
 
-    public void addIngredient(Ingredient ingredient){
-        BarApp.getInstance().getRepository().insertIngredient(ingredient);
-    }
-
-    /**
-     * Expose the LiveData Products query so the UI can observe it.
-     */
     public LiveData<List<Ingredient>> getIngredients() {
         return mObservableIngredients;
     }
 
+    public void searchIngredients(String query) {
+        mObservableIngredients.removeSource(mLiveIngredients);
+        mObservableIngredients.removeSource(mLiveSearchIngredients);
+        if (query != null && !query.equals("")){
+            mLiveSearchIngredients = BarApp.getInstance().getRepository().searchIngredients(query);
+            mObservableIngredients.addSource(mLiveSearchIngredients, ingredients -> mObservableIngredients.setValue(ingredients));
+        } else {
+            mObservableIngredients.addSource(mLiveIngredients, ingredients -> mObservableIngredients.setValue(ingredients));
+        }
 
+    }
 
 }

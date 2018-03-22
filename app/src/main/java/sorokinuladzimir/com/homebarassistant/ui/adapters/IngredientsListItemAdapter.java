@@ -15,19 +15,31 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.turingtechnologies.materialscrollbar.INameableAdapter;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.HashSet;
 import java.util.List;
 
 import sorokinuladzimir.com.homebarassistant.BarApp;
 import sorokinuladzimir.com.homebarassistant.R;
 import sorokinuladzimir.com.homebarassistant.db.entity.Ingredient;
-
+import sorokinuladzimir.com.homebarassistant.ui.fragments.Screens;
 
 
 public class IngredientsListItemAdapter extends RecyclerView.Adapter<IngredientsListItemAdapter.IngredientViewHolder>
-        implements Filterable{
+        implements Filterable, INameableAdapter {
+
+    @Override
+    public Character getCharacterForElement(int element) {
+        Character c = mFilteredIngredientsList.get(element).getName().charAt(0);
+        if(Character.isDigit(c)) {
+            c = '#';
+        }
+        return c;
+    }
 
     public interface OnItemClickListener {
         void onItemClick(Ingredient item);
@@ -36,20 +48,26 @@ public class IngredientsListItemAdapter extends RecyclerView.Adapter<Ingredients
     private List<Ingredient> mIngredientsList = new ArrayList();
     private List<Ingredient> mFilteredIngredientsList = new ArrayList();
     private Context mContext;
+    private String mContainerName;
     private final OnItemClickListener listener;
 
     private HashSet<Ingredient> selectedSet = new HashSet<>();
     private List<Long> selectedIds = new ArrayList<>();
 
-    public IngredientsListItemAdapter(Context context, OnItemClickListener listener) {
+    private Deque<List<Ingredient>> pendingUpdates = new ArrayDeque<>();
+
+    public IngredientsListItemAdapter(Context context, String containerName, OnItemClickListener listener) {
         this.listener = listener;
         this.mContext = context;
+        this.mContainerName = containerName;
     }
 
     @Override
     public IngredientViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         return new IngredientViewHolder(LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.ingredients_list_single_ingredient_item, parent,false));
+                .inflate(mContainerName.equals(Screens.INGREDIENTS) ? R.layout.ingredients_list_ingredient_item :
+                                R.layout.ingredients_list_single_ingredient_item,
+                        parent,false));
     }
 
     @Override
@@ -63,15 +81,19 @@ public class IngredientsListItemAdapter extends RecyclerView.Adapter<Ingredients
 
     @Override
     public int getItemCount() {
-        return mFilteredIngredientsList.size();
+        return mContainerName.equals(Screens.INGREDIENTS) ? mIngredientsList.size() : mFilteredIngredientsList.size();
     }
 
     @SuppressLint("StaticFieldLeak")
     public void setIngredients(final List<Ingredient> ingredients) {
+        pendingUpdates.push(ingredients);
+        if (pendingUpdates.size() > 1) {
+            return;
+        }
         if (mIngredientsList == null) {
             mIngredientsList = ingredients;
             mFilteredIngredientsList = ingredients;
-            notifyItemRangeInserted(0, ingredients.size());
+            notifyItemRangeInserted(0, mFilteredIngredientsList.size()-1);
         } else {
             BarApp.getInstance().getExecutors().diskIO().execute(
                     () -> {
@@ -98,16 +120,20 @@ public class IngredientsListItemAdapter extends RecyclerView.Adapter<Ingredients
                         });
 
                         BarApp.getInstance().getExecutors().mainThread().execute(() -> {
+                            pendingUpdates.remove(ingredients);
                             mIngredientsList = ingredients;
                             mFilteredIngredientsList = ingredients;
                             restoreSelection();
                             diffResult.dispatchUpdatesTo(IngredientsListItemAdapter.this);
+                            if (pendingUpdates.size() > 0) {
+                                List<Ingredient> latest = pendingUpdates.pop();
+                                pendingUpdates.clear();
+                                setIngredients(latest);
+                            }
                         });
                     }
             );
-
         }
-
     }
 
     public static class IngredientViewHolder extends RecyclerView.ViewHolder{

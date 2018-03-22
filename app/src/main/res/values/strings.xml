@@ -30,6 +30,26 @@
     <string name="ingredient_name_title">Название</string>
     <string name="drinks_list_fragment_title">Мои коктейли</string>
     <string name="search_cocktails_toolbar_title">Поиск коктейлей</string>
+    <string name="menu_about">about</string>
+    <string name="menu_settings">settings</string>
+    <string name="menu_search">ИСКАТЬ</string>
+    <string name="menu_delete">Удалить</string>
+    <string name="menu_add">ADD</string>
+    <string name="menu_choose">ВЫБРАТЬ</string>
+    <string name="title_new_cocktail">Новый коктейль</string>
+    <string name="title_edit_cocktail">Редактирование</string>
+    <string name="title_choose_tastes">Choose tastes</string>
+    <string name="menu_save">Сохранить</string>
+    <string name="menu_drink_add">Добавить</string>
+    <string name="title_choose_ingredients">Выбор ингридиентов</string>
+    <string name="take_photo">Take Photo</string>
+    <string name="choose_from_library">Choose from Library</string>
+    <string name="remove_picture">Remove picture</string>
+    <string name="negative_button">Close</string>
+    <string name="title_new_ingredient">Новый ингредиент</string>
+    <string name="title_ingredient_edit">Редактирование</string>
+    <string name="positive_button">Ok</string>
+    <string name="menu_edit">Edit</string>
 
 
 </resources>

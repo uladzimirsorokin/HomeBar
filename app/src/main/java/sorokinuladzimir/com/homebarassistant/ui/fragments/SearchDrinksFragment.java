@@ -3,7 +3,6 @@ package sorokinuladzimir.com.homebarassistant.ui.fragments;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
-import android.support.annotation.ColorInt;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
@@ -31,6 +30,7 @@ import sorokinuladzimir.com.homebarassistant.Constants;
 import sorokinuladzimir.com.homebarassistant.R;
 import sorokinuladzimir.com.homebarassistant.ui.subnavigation.BackButtonListener;
 import sorokinuladzimir.com.homebarassistant.ui.subnavigation.RouterProvider;
+import sorokinuladzimir.com.homebarassistant.ui.utils.DrinksPathManager;
 
 
 /**
@@ -54,7 +54,7 @@ public class SearchDrinksFragment extends Fragment implements BackButtonListener
     private ImageView mViewColor;
     private Spinner mSpGlass;
     private Spinner mSpTaste;
-    private Spinner mSpIngridient;
+    private Spinner mSpIngredient;
     private int mSkill;
     private Switch mSwIsAlcoholic;
     private SeekBar mSbSkill;
@@ -65,17 +65,7 @@ public class SearchDrinksFragment extends Fragment implements BackButtonListener
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fr_search_drinks, container, false);
 
-        if(savedInstanceState != null) {
-            mMaxRating = savedInstanceState.getInt(Constants.Extra.MAX_RATING);
-            mMinRating = savedInstanceState.getInt(Constants.Extra.MIN_RATING);
-            mGlassId = savedInstanceState.getInt(Constants.Extra.GLASS_ID);
-            mTasteId = savedInstanceState.getInt(Constants.Extra.TASTE_ID);
-            mIngredientId = savedInstanceState.getInt(Constants.Extra.INGREDIENT_ID);
-            mColor = savedInstanceState.getInt(Constants.Extra.COLOR);
-            mSkill = savedInstanceState.getInt(Constants.Extra.SKILL);
-            mIsAlcoholic = savedInstanceState.getBoolean(Constants.Extra.ALCOHOLIC);
-            mIsCarbonated = savedInstanceState.getBoolean(Constants.Extra.CARBONATED);
-        }
+        if(savedInstanceState != null) restoreState(savedInstanceState);
 
         initToolbar(rootView);
         initViews(rootView);
@@ -118,12 +108,12 @@ public class SearchDrinksFragment extends Fragment implements BackButtonListener
         mSpTaste.setAdapter(adapterTaste);
         mSpTaste.setOnItemSelectedListener(adapterListener);
 
-        mSpIngridient = rootView.findViewById(R.id.spin_ingridient_type);
+        mSpIngredient = rootView.findViewById(R.id.spin_ingridient_type);
         ArrayAdapter<CharSequence> adapterIngridient = ArrayAdapter.createFromResource(getContext(),
                 R.array.ingridient_name, android.R.layout.simple_spinner_item);
         adapterIngridient.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        mSpIngridient.setAdapter(adapterIngridient);
-        mSpIngridient.setOnItemSelectedListener(adapterListener);
+        mSpIngredient.setAdapter(adapterIngridient);
+        mSpIngredient.setOnItemSelectedListener(adapterListener);
 
         mSwIsCarbonated = rootView.findViewById(R.id.sw_search_carbonated);
         mSwIsCarbonated.setOnCheckedChangeListener(switchListener);
@@ -139,8 +129,6 @@ public class SearchDrinksFragment extends Fragment implements BackButtonListener
         mTvSkill = rootView.findViewById(R.id.tv_skill_container);
     }
 
-
-
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.searchfragment_menu, menu);
@@ -152,28 +140,55 @@ public class SearchDrinksFragment extends Fragment implements BackButtonListener
             ((RouterProvider)getParentFragment()).getRouter().exit();
             return true;
         }
+        if (item.getItemId() == R.id.action_about) {
+            ((RouterProvider)getParentFragment()).getRouter().navigateTo(Screens.ABOUT, "Search drink fragment about text");
+        }
         if(item.getItemId() == R.id.ab_search){
             Bundle bundle = new Bundle();
-            bundle.putInt(Constants.Extra.GLASS_ID, mGlassId);
-            bundle.putInt(Constants.Extra.TASTE_ID, mTasteId);
-            bundle.putInt(Constants.Extra.INGREDIENT_ID, mIngredientId);
-            bundle.putInt(Constants.Extra.MIN_RATING, mMinRating);
-            bundle.putInt(Constants.Extra.MAX_RATING, mMaxRating);
-            bundle.putInt(Constants.Extra.SKILL, mSkill);
-            bundle.putInt(Constants.Extra.COLOR, mColor);
-            bundle.putBoolean(Constants.Extra.CARBONATED, mIsCarbonated);
-            bundle.putBoolean(Constants.Extra.ALCOHOLIC, mIsAlcoholic);
+            bundle.putString(Constants.Extra.REQUEST_CONDITIONS, getPathManager().getPath());
             ((RouterProvider)getParentFragment()).getRouter().replaceScreen(Screens.FOUND_DRINKS, bundle);
             return true;
         }
         return false;
     }
 
-    @Override
-    public boolean onBackPressed() {
-        ((RouterProvider)getParentFragment()).getRouter().exit();
-        return true;
+    private DrinksPathManager getPathManager() {
+        String glass = getResources().getStringArray(R.array.glass_id)[mGlassId];
+        if(mGlassId == 0) glass = null;
+        String taste = getResources().getStringArray(R.array.taste_id)[mTasteId];
+        String ingredient = getResources().getStringArray(R.array.ingridient_type)[mIngredientId];
+        if(mIngredientId == 0) ingredient = null;
+        String[] tastes = {taste};
+        if(mTasteId == 0) tastes = null;
+        String[] ingredients = {ingredient};
+        if(mIngredientId == 0) ingredients = null;
+        String[] skills = new String[mSkill+1];
+        for (int i = 0; i < mSkill + 1; i++)
+            skills[i] = String.valueOf(i+1);
+        int[] colors = getResources().getIntArray(R.array.colors);
+        int colorId = 0;
+        for (int i = 0; i < colors.length; i++) {
+            if(colors[i] == mColor) {
+                colorId = i;
+            }
+        }
+        String colorResult = null;
+        if(colorId > 0) colorResult = getResources().getStringArray(R.array.colors_name)[colorId];
+
+        final DrinksPathManager pathManager = new DrinksPathManager.Builder()
+                .setGlassType(glass)
+                .setIngredient(ingredients)
+                .setTaste(tastes)
+                .setRating(mMinRating, mMaxRating)
+                .setSkill(skills)
+                .setCarbonated(mIsCarbonated)
+                .setAlcoholic(mIsAlcoholic)
+                .setColor(colorResult)
+                .build();
+
+        return pathManager;
     }
+
 
     private AdapterView.OnItemSelectedListener adapterListener = new AdapterView.OnItemSelectedListener() {
         @Override
@@ -185,7 +200,7 @@ public class SearchDrinksFragment extends Fragment implements BackButtonListener
             if(parentId == mSpTaste.getId()){
                 mTasteId = position;
             }
-            if(parentId == mSpIngridient.getId()){
+            if(parentId == mSpIngredient.getId()){
                 mIngredientId = position;
             }
         }
@@ -264,6 +279,12 @@ public class SearchDrinksFragment extends Fragment implements BackButtonListener
     };
 
     @Override
+    public boolean onBackPressed() {
+        ((RouterProvider)getParentFragment()).getRouter().exit();
+        return true;
+    }
+
+    @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putInt(Constants.Extra.MAX_RATING, mMaxRating);
@@ -275,6 +296,18 @@ public class SearchDrinksFragment extends Fragment implements BackButtonListener
         outState.putBoolean(Constants.Extra.ALCOHOLIC,mIsAlcoholic);
         outState.putInt(Constants.Extra.COLOR,mColor);
         outState.putInt(Constants.Extra.SKILL,mSkill);
+    }
+
+    private void restoreState(Bundle savedInstanceState) {
+        mMaxRating = savedInstanceState.getInt(Constants.Extra.MAX_RATING);
+        mMinRating = savedInstanceState.getInt(Constants.Extra.MIN_RATING);
+        mGlassId = savedInstanceState.getInt(Constants.Extra.GLASS_ID);
+        mTasteId = savedInstanceState.getInt(Constants.Extra.TASTE_ID);
+        mIngredientId = savedInstanceState.getInt(Constants.Extra.INGREDIENT_ID);
+        mColor = savedInstanceState.getInt(Constants.Extra.COLOR);
+        mSkill = savedInstanceState.getInt(Constants.Extra.SKILL);
+        mIsAlcoholic = savedInstanceState.getBoolean(Constants.Extra.ALCOHOLIC);
+        mIsCarbonated = savedInstanceState.getBoolean(Constants.Extra.CARBONATED);
     }
 
 }

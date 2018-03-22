@@ -1,5 +1,9 @@
 package sorokinuladzimir.com.homebarassistant.ui.adapters;
 
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,6 +13,9 @@ import android.widget.RatingBar;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
+import com.bumptech.glide.request.target.SimpleTarget;
+import com.bumptech.glide.request.transition.Transition;
 
 import java.util.ArrayList;
 
@@ -17,33 +24,38 @@ import sorokinuladzimir.com.homebarassistant.R;
 import sorokinuladzimir.com.homebarassistant.db.entity.Taste;
 import sorokinuladzimir.com.homebarassistant.net.entity.DrinkEntity;
 
-
-/**
- * Created by 1 on 10/12/2016.
- */
-
 public class DrinkCardItemAdapter extends RecyclerView.Adapter<DrinkCardItemAdapter.CardViewHolder> {
-
-    public DrinkCardItemAdapter(OnItemClickListener listener) {
-        this.listener = listener;
-    }
 
     public interface OnItemClickListener {
         void onItemClick(DrinkEntity item);
     }
 
+    public interface LoadMoreListener {
+        void loadMoreCocktails();
+    }
+
     private ArrayList<DrinkEntity> mData = new ArrayList();
     private final OnItemClickListener listener;
+    private final LoadMoreListener loadMoreListener;
+
+
+    public DrinkCardItemAdapter(OnItemClickListener listener, LoadMoreListener loadMoreListener) {
+        this.listener = listener;
+        this.loadMoreListener = loadMoreListener;
+    }
+
+
     
     @Override
     public CardViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         return new CardViewHolder(LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.card_view_cocktail_item,parent,false));
+                .inflate(R.layout.card_view_cocktail_item, parent,false));
     }
 
     @Override
     public void onBindViewHolder(CardViewHolder holder, int position) {
         holder.bind(mData.get(position),listener);
+        if (position == getItemCount()-1) loadMoreListener.loadMoreCocktails();
     }
 
     @Override
@@ -77,8 +89,8 @@ public class DrinkCardItemAdapter extends RecyclerView.Adapter<DrinkCardItemAdap
 
             Glide.with(cardImage.getContext())
                     .load(Constants.Uri.ABSOLUT_DRINKS_IMAGE_ROOT + drinkItem.getId() + ".png")
+                    .apply(RequestOptions.placeholderOf(R.drawable.camera_placeholder))
                     .into(cardImage);
-
 
             title.setText(drinkItem.getName());
 
@@ -94,15 +106,7 @@ public class DrinkCardItemAdapter extends RecyclerView.Adapter<DrinkCardItemAdap
 
             rating.setProgress(drinkItem.getRating() / 10);
 
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    listener.onItemClick(drinkItem);
-                }
-            });
+            itemView.setOnClickListener(v -> listener.onItemClick(drinkItem));
         }
-
-
-
     }
 }

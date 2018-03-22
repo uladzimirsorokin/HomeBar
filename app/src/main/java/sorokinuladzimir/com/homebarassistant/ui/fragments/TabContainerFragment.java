@@ -52,7 +52,6 @@ public class TabContainerFragment extends Fragment implements RouterProvider, Ba
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fr_tab_container, container, false);
-        Context context = getContext();
         return rootView;
     }
 
@@ -113,6 +112,8 @@ public class TabContainerFragment extends Fragment implements RouterProvider, Ba
                             return AddIngredientFragment.getNewInstance(getContainerName(), (Long) data);
                         case Screens.ADD_DRINK_INGREDIENTS:
                             return AddDrinkIngredientsFragment.getNewInstance(getContainerName());
+                        case Screens.ABOUT:
+                            return AboutFragment.getNewInstance(getContainerName(), (String) data);
                         default:
                             return null;
                     }

@@ -8,6 +8,10 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="SplashTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:windowBackground">@drawable/background_splash</item>
+    </style>
+
     <style name="CollapsedAppBar" parent="@android:style/TextAppearance.Medium">
         <item name="android:textSize">24sp</item>
         <item name="android:textColor">@color/white</item>
@@ -26,26 +30,20 @@
         <item name="android:textColor">@color/subheader_text</item>
         <item name="android:fontFamily">sans-serif-medium</item>
         <item name="android:gravity">center_vertical</item>
-        <item name="android:paddingLeft">16dp</item>
-        <item name="android:paddingRight">16dp</item>
+        <item name="android:paddingLeft">@dimen/icon_left_padding</item>
+        <item name="android:paddingRight">@dimen/list_item_right_padding</item>
         <item name="android:textIsSelectable">false</item>
     </style>
 
     <style name="SinglelineEditTextStyle" parent="@android:style/TextAppearance.Large">
         <item name="android:fontFamily">sans-serif</item>
         <item name="android:textSize">18sp</item>
-        <item name="android:paddingLeft">16dp</item>
-        <item name="android:paddingRight">16dp</item>
         <item name="android:ems">15</item>
-        <item name="android:paddingTop">8dp</item>
     </style>
 
     <style name="MultilineEditTextStyle" parent="@android:style/TextAppearance.Large">
-        <item name="android:paddingLeft">16dp</item>
-        <item name="android:paddingRight">16dp</item>
         <item name="android:textSize">18sp</item>
         <item name="android:ems">15</item>
-        <item name="android:paddingTop">8dp</item>
         <item name="android:inputType">textMultiLine</item>
         <item name="android:lines">7</item>
         <item name="android:minLines">1</item>

@@ -1,12 +1,14 @@
 package sorokinuladzimir.com.homebarassistant.ui.fragments;
 
 
+import android.Manifest;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
+import android.support.design.widget.AppBarLayout;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
@@ -25,6 +27,7 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.tbruyelle.rxpermissions2.RxPermissions;
 
 import sorokinuladzimir.com.homebarassistant.R;
 import sorokinuladzimir.com.homebarassistant.ui.subnavigation.BackButtonListener;
@@ -33,23 +36,18 @@ import sorokinuladzimir.com.homebarassistant.viewmodel.AddIngredientViewModel;
 
 
 import static android.app.Activity.RESULT_OK;
+import static sorokinuladzimir.com.homebarassistant.Constants.Values.DEFAULT_IMAGE_SIZE;
 
 
 public class AddIngredientFragment extends Fragment implements BackButtonListener, AddImageDialogFragment.AddImageDialogFragmentCallback {
 
     private final String TAG = "AddIngredientFragment";
-
     private static final String EXTRA_NAME = "extra_name";
-
     private static final String EXTRA_ID = "extra_id";
 
     static final int REQUEST_IMAGE_CAPTURE = 1;
 
     private static final int OPEN_PICTURE_CODE = 2;
-
-    private static final String ALBUM_NAME = "HomeBar";
-
-    private static final int DEFAULT_IMAGE_SIZE = 750;
 
     private ImageView mIngredientImage;
     private EditText mName;
@@ -57,6 +55,7 @@ public class AddIngredientFragment extends Fragment implements BackButtonListene
     private EditText mNotes;
 
     private AddIngredientViewModel mViewModel;
+
 
 
     @Nullable
@@ -136,9 +135,9 @@ public class AddIngredientFragment extends Fragment implements BackButtonListene
             mToolbar.setHomeAsUpIndicator(R.drawable.ic_close);
 
             if(mViewModel.getIsNewIngredient()){
-                mToolbar.setTitle("Новый ингредиент");
+                mToolbar.setTitle(R.string.title_new_ingredient);
             } else {
-                mToolbar.setTitle("Редактирование");
+                mToolbar.setTitle(R.string.title_ingredient_edit);
             }
         }
     }
@@ -149,7 +148,23 @@ public class AddIngredientFragment extends Fragment implements BackButtonListene
         mDesc = view.findViewById(R.id.et_ingredient_description);
         mNotes = view.findViewById(R.id.et_ingredient_notes);
 
-        mIngredientImage.setOnClickListener(view1 -> showAddImageDialog());
+        RxPermissions rxPermissions = new RxPermissions(getActivity());
+        mIngredientImage.setOnClickListener(view1 -> {
+            rxPermissions
+                    .requestEach(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                    .subscribe(permission -> {
+                        if (permission.granted) {
+                            showAddImageDialog();
+                        } else if (permission.shouldShowRequestPermissionRationale) {
+                            // Denied permission with ask never again
+                            Toast.makeText(getContext(), "denied",Toast.LENGTH_SHORT).show();
+                        } else {
+                            // Denied permission with ask never again
+                            // Need to go to the settings
+                            Toast.makeText(getContext(), "denied, ask never again",Toast.LENGTH_SHORT).show();
+                        }
+                    });
+        });
     }
 
     @Override
@@ -169,11 +184,11 @@ public class AddIngredientFragment extends Fragment implements BackButtonListene
     }
 
     private void handleChoosenPicture(Uri imageUri){
-        mViewModel.handleImage(getContext(), ALBUM_NAME, imageUri, DEFAULT_IMAGE_SIZE, false);
+        mViewModel.handleImage(imageUri, DEFAULT_IMAGE_SIZE, false);
     }
 
     private void handleTakenPicture(Uri imageUri){
-        mViewModel.handleImage(getContext(), ALBUM_NAME, imageUri, DEFAULT_IMAGE_SIZE, true);
+        mViewModel.handleImage(imageUri, DEFAULT_IMAGE_SIZE, true);
     }
 
     void showAddImageDialog() {
@@ -193,7 +208,7 @@ public class AddIngredientFragment extends Fragment implements BackButtonListene
                 dispatchChoosePictureIntent();
                 break;
             case 2:
-                mViewModel.removeCurrentImage(getContext());
+                mViewModel.removeCurrentImage();
                 break;
             default:
                 Log.d(TAG,"Some strange type of taking photo");
@@ -206,7 +221,7 @@ public class AddIngredientFragment extends Fragment implements BackButtonListene
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         // Ensure that there's a camera activity to handle the intent
         if (takePictureIntent.resolveActivity(getContext().getPackageManager()) != null) {
-            if (mViewModel.createPhotoFile(getContext(), ALBUM_NAME) != null) {
+            if (mViewModel.createPhotoFile() != null) {
                 takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, mViewModel.getPhotoUri());
                 startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
             }
@@ -221,9 +236,8 @@ public class AddIngredientFragment extends Fragment implements BackButtonListene
     }
 
     private void saveIngredient() {
-        mViewModel.saveIngredient(getContext(), mName.getText().toString(),
+        mViewModel.saveIngredient(mName.getText().toString(),
                 mDesc.getText().toString(), mNotes.getText().toString());
-        //((RouterProvider)getParentFragment()).getRouter().navigateTo(Screens.INGREDIENTS_LIST);
         onBackPressed();
     }
 
@@ -231,10 +245,10 @@ public class AddIngredientFragment extends Fragment implements BackButtonListene
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.add_edit_item_menu, menu);
         if(mViewModel.getIsNewIngredient()){
-            menu.findItem(R.id.ab_add).setTitle("Добавить");
+            menu.findItem(R.id.ab_add).setTitle(R.string.menu_drink_add);
             menu.findItem(R.id.ab_delete).setVisible(false);
         } else {
-            menu.findItem(R.id.ab_add).setTitle("Сохранить");
+            menu.findItem(R.id.ab_add).setTitle(R.string.menu_save);
         }
 
     }
@@ -256,7 +270,8 @@ public class AddIngredientFragment extends Fragment implements BackButtonListene
                 ((RouterProvider)getParentFragment()).getRouter().navigateTo(Screens.INGREDIENTS_LIST);
                 return true;
             case R.id.ab_about:
-                Toast.makeText(getContext(),"about app",Toast.LENGTH_SHORT).show();
+                 ((RouterProvider)getParentFragment()).getRouter().navigateTo(Screens.ABOUT, "Add ingredient fragment anbout text");
+
                 return true;
             default:
                 Toast.makeText(getContext(),"Unknown menu item",Toast.LENGTH_SHORT).show();

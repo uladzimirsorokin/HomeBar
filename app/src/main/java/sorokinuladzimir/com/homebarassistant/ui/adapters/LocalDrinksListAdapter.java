@@ -13,8 +13,11 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.turingtechnologies.materialscrollbar.INameableAdapter;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.List;
 
 import sorokinuladzimir.com.homebarassistant.BarApp;
@@ -23,14 +26,19 @@ import sorokinuladzimir.com.homebarassistant.db.entity.Drink;
 import sorokinuladzimir.com.homebarassistant.db.entity.Taste;
 
 
-/**
- * Created by 1 on 10/12/2016.
- */
-
-public class LocalDrinksListAdapter extends RecyclerView.Adapter<LocalDrinksListAdapter.CardViewHolder> {
+public class LocalDrinksListAdapter extends RecyclerView.Adapter<LocalDrinksListAdapter.CardViewHolder> implements INameableAdapter {
 
     public LocalDrinksListAdapter(OnItemClickListener listener) {
         this.listener = listener;
+    }
+
+    @Override
+    public Character getCharacterForElement(int element) {
+        Character c = mDrinkList.get(element).getName().charAt(0);
+        if(Character.isDigit(c)) {
+            c = '#';
+        }
+        return c;
     }
 
     public interface OnItemClickListener {
@@ -39,6 +47,8 @@ public class LocalDrinksListAdapter extends RecyclerView.Adapter<LocalDrinksList
 
     private List<Drink> mDrinkList;
     private final OnItemClickListener listener;
+
+    private Deque<List<Drink>> pendingUpdates = new ArrayDeque<>();
 
     @Override
     public CardViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -58,9 +68,19 @@ public class LocalDrinksListAdapter extends RecyclerView.Adapter<LocalDrinksList
 
     @SuppressLint("StaticFieldLeak")
     public void setDrinks(final List<Drink> drinks) {
+        pendingUpdates.push(drinks);
+        if (pendingUpdates.size() > 1) {
+            return;
+        }
         if (mDrinkList == null) {
+            pendingUpdates.remove(drinks);
             mDrinkList = drinks;
-            notifyItemRangeInserted(0, drinks.size());
+            notifyItemRangeInserted(0, mDrinkList.size()-1);
+            if (pendingUpdates.size() > 0) {
+                List<Drink> latest = pendingUpdates.pop();
+                pendingUpdates.clear();
+                setDrinks(latest);
+            }
         } else {
             BarApp.getInstance().getExecutors().diskIO().execute(
                     () -> {
@@ -87,8 +107,14 @@ public class LocalDrinksListAdapter extends RecyclerView.Adapter<LocalDrinksList
                         });
 
                         BarApp.getInstance().getExecutors().mainThread().execute(() -> {
+                            pendingUpdates.remove(drinks);
                             mDrinkList = drinks;
                             diffResult.dispatchUpdatesTo(LocalDrinksListAdapter.this);
+                            if (pendingUpdates.size() > 0) {
+                                List<Drink> latest = pendingUpdates.pop();
+                                pendingUpdates.clear();
+                                setDrinks(latest);
+                            }
                         });
                     }
             );
@@ -130,14 +156,9 @@ public class LocalDrinksListAdapter extends RecyclerView.Adapter<LocalDrinksList
                 subtitle.setText(tastesStr);
             }
 
-            rating.setProgress(90 / 10);
+            rating.setProgress(drinkItem.getRating() / 10);
 
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    listener.onItemClick(drinkItem);
-                }
-            });
+            itemView.setOnClickListener(v -> listener.onItemClick(drinkItem));
         }
 
 

@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
 
+import sorokinuladzimir.com.homebarassistant.R;
 
 
 public class AddImageDialogFragment extends DialogFragment {
@@ -27,8 +28,9 @@ public class AddImageDialogFragment extends DialogFragment {
         String title = getArguments().getString("title");
         Boolean allowDelete = getArguments().getBoolean("allowDelete");
 
-        final CharSequence[] items = allowDelete ? new CharSequence[] { "Take Photo", "Choose from Library", "Remove picture"} :
-                new CharSequence[]{ "Take Photo", "Choose from Library"};
+        final CharSequence[] items = allowDelete ? new CharSequence[] { getString(R.string.take_photo),
+                getString(R.string.choose_from_library), getString(R.string.remove_picture)} :
+                new CharSequence[]{ getString(R.string.take_photo), getString(R.string.choose_from_library)};
 
         AddImageDialogFragmentCallback callback =
                 (AddImageDialogFragmentCallback) getTargetFragment();
@@ -37,7 +39,7 @@ public class AddImageDialogFragment extends DialogFragment {
                 .setTitle(title)
                 .setItems(items, (dialog, item) -> {
                     callback.addImageDialogCallback(item);
-                }).setNegativeButton("Close",
+                }).setNegativeButton(R.string.negative_button,
                         (dialog, whichButton) -> dialog.dismiss()
                 )
                 .create();

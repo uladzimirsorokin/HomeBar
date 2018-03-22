@@ -8,7 +8,8 @@ public class Constants {
 
     public static class Uri {
         public static final String ABSOLUT_DRINKS_ROOT = "http://addb.absolutdrinks.com";
-        public static final String ABSOLUT_DRINKS_IMAGE_ROOT = "http://assets.absolutdrinks.com/drinks/transparent-background-white/soft-shadow/floor-reflection/600x800/";
+        public static final String ABSOLUT_DRINKS_IMAGE_ROOT =
+                "http://assets.absolutdrinks.com/drinks/transparent-background-white/soft-shadow/floor-reflection/600x800/";
     }
 
     public static class Keys {
@@ -18,10 +19,12 @@ public class Constants {
 
     public static class Strings {
         public static final String ALBUM_NAME = "HomeBar";
+        public static final String AUTHORITY = BuildConfig.APPLICATION_ID + ".provider";
     }
 
     public static class Values {
-        public static final int DEFAULT_ITEM_AMOUNT = 10;
+        public static final int DEFAULT_ITEM_AMOUNT = 5;
+        public static final int DEFAULT_IMAGE_SIZE = 750;
     }
 
     public static class Extra {
@@ -35,7 +38,7 @@ public class Constants {
         public static final String SKILL = "skill";
         public static final String COLOR = "color";
         public static final String COCKTAIL = "cocktail";
-        public static final String INGREDIENT = "ingredient";
+        public static final String REQUEST_CONDITIONS = "request conditions";
     }
 
 

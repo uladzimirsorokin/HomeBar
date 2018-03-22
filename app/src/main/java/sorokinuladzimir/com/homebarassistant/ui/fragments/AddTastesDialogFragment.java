@@ -15,7 +15,6 @@ import sorokinuladzimir.com.homebarassistant.viewmodel.SharedViewModel;
 
 public class AddTastesDialogFragment extends DialogFragment {
 
-    private SharedViewModel mSharedViewModel;
 
     private final ArrayList<Integer> mSelection = new ArrayList<>();
     private boolean[] selection;
@@ -46,18 +45,16 @@ public class AddTastesDialogFragment extends DialogFragment {
             mSelection.addAll(getArguments().getIntegerArrayList("selection"));
         }
 
-
-
         AddTastesDialogFragmentCallback callback = (AddTastesDialogFragmentCallback) getTargetFragment();
 
         tastes = getResources().getStringArray(R.array.taste_name);
         selection = new boolean[tastes.length];
         Arrays.fill(selection, false);
-       if (mSelection.size() != 0) {
+        if (mSelection.size() != 0) {
            for (int i : mSelection) {
                selection[i] = true;
            }
-       }
+        }
 
         return new AlertDialog.Builder(getContext())
                 .setTitle(title)
@@ -67,9 +64,9 @@ public class AddTastesDialogFragment extends DialogFragment {
                     } else {
                         mSelection.add(item);
                     }
-                }).setNegativeButton("Close",
+                }).setNegativeButton(getString(R.string.negative_button),
                         (dialog, whichButton) -> dialog.dismiss()
-                ).setPositiveButton("Ok",
+                ).setPositiveButton(getString(R.string.positive_button),
                         (dialog, whichButton) -> {
                     callback.addTastesDialogCallback(mSelection);
                     dialog.dismiss();

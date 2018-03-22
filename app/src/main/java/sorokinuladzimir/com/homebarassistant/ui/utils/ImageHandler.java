@@ -25,6 +25,10 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 
+import sorokinuladzimir.com.homebarassistant.Constants;
+
+import static android.support.v4.content.FileProvider.getUriForFile;
+
 
 public final class ImageHandler {
 
@@ -44,21 +48,21 @@ public final class ImageHandler {
         return false;
     }
 
-    public File getAlbumStorageDir(String albumName) {
+    public File getAlbumStorageDir() {
         // Get the directory for the user's public pictures directory.
         File file = new File(Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_PICTURES), albumName);
+                Environment.DIRECTORY_PICTURES), Constants.Strings.ALBUM_NAME);
         if (!file.mkdirs()) {
             Log.e(TAG, "Directory not created");
         }
         return file;
     }
 
-    public File createImageFile(String albumName) throws IOException {
+    public File createImageFile() throws IOException {
         // Create an image file name
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         String imageFileName = IMG_FILE_PREFIX + timeStamp + "_";
-        File albumF = getAlbumStorageDir(albumName);
+        File albumF = getAlbumStorageDir();
         File imageF = File.createTempFile(imageFileName, JPEG_FILE_SUFFIX, albumF);
         return imageF;
     }
@@ -83,15 +87,17 @@ public final class ImageHandler {
     }
 
     //Save in PNG
-    public String saveImage(Bitmap bitmap, String albumName) throws IOException {
+    public String saveImage(Bitmap bitmap) throws IOException {
 
         if(isExternalStorageWritable()){
 
-            File imageFile = createImageFile(albumName);
+            File imageFile = createImageFile();
 
             try {
                 FileOutputStream fos = new FileOutputStream(imageFile);
-                bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos);
+                if (bitmap != null){
+                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos);
+                }
                 fos.close();
                 return imageFile.getAbsolutePath();
             } catch (FileNotFoundException e) {
@@ -104,12 +110,12 @@ public final class ImageHandler {
         return null;
     }
 
-    public String copyImage(Context context, Uri imgUri, String albumName) throws IOException {
+    public String copyImage(Context context, Uri imgUri) throws IOException {
         if(isExternalStorageWritable()){
             final int chunkSize = 1024;  // We'll read in one kB at a time
             byte[] imageData = new byte[chunkSize];
 
-            File imageFile = createImageFile(albumName);
+            File imageFile = createImageFile();
 
             try {
                 InputStream in = context.getContentResolver().openInputStream(imgUri);
@@ -128,6 +134,24 @@ public final class ImageHandler {
             } catch (Exception e) {
                 Log.e(TAG, e.toString());
             }
+        }
+
+        return null;
+    }
+
+    public Uri createImageFile(Context context) {
+        File photoFile = null;
+
+        try {
+            photoFile = createImageFile();
+        } catch (IOException ex) {
+
+        }
+
+        if (photoFile != null) {
+            return getUriForFile(context,
+                    Constants.Strings.AUTHORITY,
+                    photoFile);
         }
 
         return null;

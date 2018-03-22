@@ -65,8 +65,8 @@ public class SingleDrinkViewModel extends AndroidViewModel {
         this.mBitmap = mBitmap;
     }
 
-    public void saveDrink(String albumName) {
-        BarApp.getInstance().getRepository().saveDrinkFromNet(mObservableDrink.getValue(), mBitmap, albumName);
+    public void saveDrink() {
+        BarApp.getInstance().getRepository().saveDrinkFromNet(mObservableDrink.getValue(), mBitmap);
     }
 
     public static class Factory extends ViewModelProvider.NewInstanceFactory {

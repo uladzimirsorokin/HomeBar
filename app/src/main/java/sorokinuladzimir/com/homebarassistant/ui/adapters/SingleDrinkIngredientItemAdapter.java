@@ -15,7 +15,9 @@ import java.util.List;
 
 import sorokinuladzimir.com.homebarassistant.R;
 import sorokinuladzimir.com.homebarassistant.db.entity.Ingredient;
+import sorokinuladzimir.com.homebarassistant.db.entity.WholeCocktail;
 import sorokinuladzimir.com.homebarassistant.net.entity.IngredientEntity;
+import sorokinuladzimir.com.homebarassistant.ui.utils.IngredientParcer;
 
 
 public class SingleDrinkIngredientItemAdapter extends RecyclerView.Adapter<SingleDrinkIngredientItemAdapter.IngredientViewHolder> {
@@ -25,10 +27,10 @@ public class SingleDrinkIngredientItemAdapter extends RecyclerView.Adapter<Singl
     }
 
     public interface OnItemClickListener {
-        void onItemClick(Ingredient item);
+        void onItemClick(WholeCocktail item);
     }
 
-    private ArrayList<Ingredient> mData = new ArrayList();
+    private ArrayList<WholeCocktail> mData = new ArrayList();
     private final OnItemClickListener listener;
     
     @Override
@@ -47,7 +49,7 @@ public class SingleDrinkIngredientItemAdapter extends RecyclerView.Adapter<Singl
         return mData.size();
     }
 
-    public void setData(List<Ingredient> ingredients) {
+    public void setData(List<WholeCocktail> ingredients) {
         mData.clear();
         mData.addAll(ingredients);
         notifyDataSetChanged();
@@ -56,17 +58,25 @@ public class SingleDrinkIngredientItemAdapter extends RecyclerView.Adapter<Singl
     public static class IngredientViewHolder extends RecyclerView.ViewHolder{
 
         final TextView ingredientName;
+        final TextView ingredientUnit;
+        final TextView ingredientAmount;
         final ImageView ingredientImage;
 
         public IngredientViewHolder(View itemView) {
             super(itemView);
             ingredientName = itemView.findViewById(R.id.tv_singledrink_ingredient);
+            ingredientUnit = itemView.findViewById(R.id.tv_singledrink_unit);
+            ingredientAmount = itemView.findViewById(R.id.tv_singledrink_amount);
             ingredientImage = itemView.findViewById(R.id.image_singledrink_ingredient_item);
         }
 
-        public void bind(final Ingredient item, final OnItemClickListener listener) {
+        public void bind(final WholeCocktail item, final OnItemClickListener listener) {
 
-            if(item.getName() != null)ingredientName.setText(item.getName());
+            if(item.getIngredientName() != null)ingredientName.setText(item.getIngredientName());
+
+            if(item.getAmount() != null) ingredientAmount.setText(item.getAmount());
+
+            if(item.getUnit() != null) ingredientUnit.setText(item.getUnit());
 
             if(item.getImage() != null){
                 Glide.with(ingredientImage.getContext())
@@ -75,12 +85,7 @@ public class SingleDrinkIngredientItemAdapter extends RecyclerView.Adapter<Singl
                         .into(ingredientImage);
             }
 
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    listener.onItemClick(item);
-                }
-            });
+            itemView.setOnClickListener(v -> listener.onItemClick(item));
         }
     }
 }
