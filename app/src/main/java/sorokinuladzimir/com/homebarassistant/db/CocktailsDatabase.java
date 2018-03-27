@@ -60,13 +60,9 @@ public abstract class CocktailsDatabase extends RoomDatabase {
                     @Override
                     public void onCreate(@NonNull SupportSQLiteDatabase db) {
                         super.onCreate(db);
-                        executors.diskIO().execute(new Runnable() {
-                            @Override
-                            public void run() {
-
-                                final CocktailsDatabase database = CocktailsDatabase.getInstance(appContext, executors);
-                                       database.setDatabaseCreated();
-                            }
+                        executors.diskIO().execute(() -> {
+                            final CocktailsDatabase database = CocktailsDatabase.getInstance(appContext, executors);
+                                   database.setDatabaseCreated();
                         });
                     }
                 }).build();

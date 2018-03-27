@@ -2,11 +2,15 @@ package sorokinuladzimir.com.homebarassistant;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.TypedValue;
 import android.widget.Toast;
 
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigation;
@@ -21,6 +25,7 @@ import ru.terrakok.cicerone.commands.SystemMessage;
 import sorokinuladzimir.com.homebarassistant.ui.fragments.Screens;
 import sorokinuladzimir.com.homebarassistant.ui.fragments.TabContainerFragment;
 import sorokinuladzimir.com.homebarassistant.ui.subnavigation.BackButtonListener;
+import sorokinuladzimir.com.homebarassistant.ui.utils.ThemeUtils;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -34,6 +39,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        ThemeUtils.onActivityCreateSetTheme(this);
+
         setContentView(R.layout.activity_main);
 
         initBottomNavigation();
@@ -113,7 +121,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void initBottomNavigation(){
         bottomNavigation = findViewById(R.id.bottom_navigation);
-        bottomNavigation.setDefaultBackgroundColor(getResources().getColor(R.color.colorPrimaryDark));
+        bottomNavigation.setDefaultBackgroundColor(fetchPrimaryColor());
         bottomNavigation.setAccentColor(Color.parseColor("#FFFFFF"));
         AHBottomNavigationItem item1 = new AHBottomNavigationItem("search", R.drawable.ic_search);
         AHBottomNavigationItem item2 = new AHBottomNavigationItem("drinks", R.drawable.cocktail);
@@ -148,6 +156,17 @@ public class MainActivity extends AppCompatActivity {
                 // Manage the new y position
             }
         });
+    }
+
+    private int fetchPrimaryColor() {
+        TypedValue typedValue = new TypedValue();
+
+        TypedArray a = this.obtainStyledAttributes(typedValue.data, new int[] { R.attr.colorPrimary });
+        int color = a.getColor(0, 0);
+
+        a.recycle();
+
+        return color;
     }
 
     @Override

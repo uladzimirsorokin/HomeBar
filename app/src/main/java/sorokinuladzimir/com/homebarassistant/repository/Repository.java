@@ -2,20 +2,18 @@ package sorokinuladzimir.com.homebarassistant.repository;
 
 import java.util.List;
 
-import sorokinuladzimir.com.homebarassistant.db.entity.Drink;
-import sorokinuladzimir.com.homebarassistant.db.entity.Ingredient;
-import sorokinuladzimir.com.homebarassistant.db.entity.WholeCocktail;
+public interface Repository<T> {
+    void add(T item);
 
-public interface Repository {
-    List<Drink> getAllDrinks();
-    Drink getDrink(Long drinkId);
-    void deleteDrink(Long drinkId);
-    void updateDrink(Drink drink);
+    void add(Iterable<T> items);
 
-    List<Ingredient> getAllIngredients();
-    Ingredient getIngredient(Long ingredientId);
-    void deleteIngredient(Long ingredientId);
-    void updateIngredient(Ingredient drink);
+    void update(T item);
 
-    List<WholeCocktail> getDrinkIngredients(Long drinkId);
+    void remove(T item);
+
+    void remove(Specification specification);
+
+    List<T> query(Specification specification);
+
+    List<T> getAll(Specification specification);
 }

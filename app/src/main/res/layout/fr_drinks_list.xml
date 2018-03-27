@@ -50,7 +50,6 @@
         android:layout_gravity="bottom|end"
         android:layout_margin="16dp"
         android:clickable="true"
-        app:backgroundTint="@color/colorFAB1"
         app:elevation="6dp" />
 
 </android.support.design.widget.CoordinatorLayout>

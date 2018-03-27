@@ -1,6 +1,8 @@
 package sorokinuladzimir.com.homebarassistant.ui.fragments;
 
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import android.support.annotation.Nullable;
@@ -20,13 +22,17 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.turingtechnologies.materialscrollbar.AlphabetIndicator;
 import com.turingtechnologies.materialscrollbar.DragScrollBar;
 
+import sorokinuladzimir.com.homebarassistant.BarApp;
+import sorokinuladzimir.com.homebarassistant.MainActivity;
 import sorokinuladzimir.com.homebarassistant.R;
 import sorokinuladzimir.com.homebarassistant.ui.adapters.LocalDrinksListAdapter;
 import sorokinuladzimir.com.homebarassistant.ui.subnavigation.RouterProvider;
+import sorokinuladzimir.com.homebarassistant.ui.utils.ThemeUtils;
 import sorokinuladzimir.com.homebarassistant.viewmodel.DrinkListViewModel;
 
 
@@ -43,6 +49,7 @@ public class DrinksListFragment extends Fragment {
     private ActionBar mToolbar;
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private SearchView searchView;
+
 
     @Nullable
     @Override
@@ -136,7 +143,11 @@ public class DrinksListFragment extends Fragment {
         if (item.getItemId() == R.id.action_about) {
             ((RouterProvider)getParentFragment()).getRouter().navigateTo(Screens.ABOUT, "Drinks list fragment anbout text");
         }
-        return super.onOptionsItemSelected(item);
+        if (item.getItemId() == R.id.action_settings) {
+            int theme = (getActivity().getPreferences(Context.MODE_PRIVATE).getInt("currentTheme", 0)+1)%3;
+            ThemeUtils.changeToTheme(getActivity(), theme);
+        }
+        return false;
     }
 
     private void initFAB(View view){
