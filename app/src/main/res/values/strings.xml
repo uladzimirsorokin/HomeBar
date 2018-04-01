@@ -50,6 +50,8 @@
     <string name="title_ingredient_edit">Редактирование</string>
     <string name="positive_button">Ok</string>
     <string name="menu_edit">Edit</string>
+    <string name="bt_add_ingredients">ingredients</string>
+    <string name="bt_add_tastes">tastes</string>
 
 
 </resources>

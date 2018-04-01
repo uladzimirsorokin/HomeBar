@@ -3,6 +3,7 @@ package sorokinuladzimir.com.homebarassistant.ui.fragments;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
@@ -25,6 +26,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.thebluealliance.spectrum.SpectrumDialog;
+
+import java.util.Objects;
 
 import sorokinuladzimir.com.homebarassistant.Constants;
 import sorokinuladzimir.com.homebarassistant.R;
@@ -62,7 +65,7 @@ public class SearchDrinksFragment extends Fragment implements BackButtonListener
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fr_search_drinks, container, false);
 
         if(savedInstanceState != null) restoreState(savedInstanceState);
@@ -86,16 +89,17 @@ public class SearchDrinksFragment extends Fragment implements BackButtonListener
     private void initToolbar(View view){
         setHasOptionsMenu(true);
         Toolbar toolbar = view.findViewById(R.id.toolbar);
-        ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
+        ((AppCompatActivity) Objects.requireNonNull(getActivity())).setSupportActionBar(toolbar);
         ActionBar mToolbar = ((AppCompatActivity) getActivity()).getSupportActionBar();
-        if(mToolbar != null)
+        if(mToolbar != null){
             mToolbar.setDisplayHomeAsUpEnabled(true);
-        mToolbar.setTitle(R.string.search_cocktails_toolbar_title);
+            mToolbar.setTitle(R.string.search_cocktails_toolbar_title);
+        }
     }
 
     private void initViews(View rootView) {
         mSpGlass = rootView.findViewById(R.id.spin_glass_type);
-        ArrayAdapter<CharSequence> adapterGlass = ArrayAdapter.createFromResource(getContext(),
+        ArrayAdapter<CharSequence> adapterGlass = ArrayAdapter.createFromResource(Objects.requireNonNull(getContext()),
                 R.array.glass_name, android.R.layout.simple_spinner_item);
         adapterGlass.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mSpGlass.setAdapter(adapterGlass);
@@ -137,11 +141,15 @@ public class SearchDrinksFragment extends Fragment implements BackButtonListener
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if(item.getItemId() == android.R.id.home){
-            ((RouterProvider)getParentFragment()).getRouter().exit();
+            if (getParentFragment() != null) {
+                ((RouterProvider)getParentFragment()).getRouter().exit();
+            }
             return true;
         }
         if (item.getItemId() == R.id.action_about) {
-            ((RouterProvider)getParentFragment()).getRouter().navigateTo(Screens.ABOUT, "Search drink fragment about text");
+            if (getParentFragment() != null) {
+                ((RouterProvider)getParentFragment()).getRouter().navigateTo(Screens.ABOUT, "Search drink fragment about text");
+            }
         }
         if(item.getItemId() == R.id.ab_search){
             Bundle bundle = new Bundle();
@@ -175,7 +183,7 @@ public class SearchDrinksFragment extends Fragment implements BackButtonListener
         String colorResult = null;
         if(colorId > 0) colorResult = getResources().getStringArray(R.array.colors_name)[colorId];
 
-        final DrinksPathManager pathManager = new DrinksPathManager.Builder()
+        return new DrinksPathManager.Builder()
                 .setGlassType(glass)
                 .setIngredient(ingredients)
                 .setTaste(tastes)
@@ -185,8 +193,6 @@ public class SearchDrinksFragment extends Fragment implements BackButtonListener
                 .setAlcoholic(mIsAlcoholic)
                 .setColor(colorResult)
                 .build();
-
-        return pathManager;
     }
 
 
@@ -274,18 +280,20 @@ public class SearchDrinksFragment extends Fragment implements BackButtonListener
                         } else {
                             Toast.makeText(getContext(), "Dialog cancelled", Toast.LENGTH_SHORT).show();
                         }
-                    }).build().show(getFragmentManager(), "dialog_color");
+                    }).build().show(Objects.requireNonNull(getFragmentManager()), "dialog_color");
         }
     };
 
     @Override
     public boolean onBackPressed() {
-        ((RouterProvider)getParentFragment()).getRouter().exit();
+        if (getParentFragment() != null) {
+            ((RouterProvider)getParentFragment()).getRouter().exit();
+        }
         return true;
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putInt(Constants.Extra.MAX_RATING, mMaxRating);
         outState.putInt(Constants.Extra.MIN_RATING, mMinRating);

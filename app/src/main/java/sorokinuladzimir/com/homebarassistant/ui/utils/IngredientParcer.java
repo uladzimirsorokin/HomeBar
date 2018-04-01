@@ -5,7 +5,10 @@ import java.util.regex.Pattern;
 
 public final class IngredientParcer {
 
-    private static final String REGEX_AMOUNT = "[^0-9]";
+    private static final String REGEX_AMOUNT = "(^[0-9]+(/[0-9]+)? ([0-9]+/[0-9]+)?)(.*)\\[(.*)";
+    private static final String REGEX_AMOUNT2 = "^[0-9]+(\\/[0-9]+)?( [0-9]+\\/[0-9]+)?";
+
+    private static final String REGEX_AMOUNT3 = "[^0-9](.*)\\[(.*)]";
 
     private static final String REGEX_UNIT = " (\\w*?) ";
 
@@ -32,6 +35,17 @@ public final class IngredientParcer {
     }
 
     public static String parseAmount(String name){
-        return name.replaceAll(REGEX_AMOUNT, "");
+        Pattern pattern = Pattern.compile(REGEX_AMOUNT);
+        Matcher matcher = pattern.matcher(name);
+        if (matcher.find())       {
+            for(int i = 0; i < matcher.groupCount(); i++){
+                String group = matcher.group(i);
+                if (group != null) group.length();
+            }
+            return matcher.group(1);
+        }
+
+        return "";
+        //return name.replaceAll(REGEX_AMOUNT, "");
     }
 }

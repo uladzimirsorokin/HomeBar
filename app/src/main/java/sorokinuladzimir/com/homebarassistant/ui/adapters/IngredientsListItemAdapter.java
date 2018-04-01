@@ -2,6 +2,7 @@ package sorokinuladzimir.com.homebarassistant.ui.adapters;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -22,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Deque;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 
 import sorokinuladzimir.com.homebarassistant.BarApp;
 import sorokinuladzimir.com.homebarassistant.R;
@@ -62,8 +64,9 @@ public class IngredientsListItemAdapter extends RecyclerView.Adapter<Ingredients
         this.mContainerName = containerName;
     }
 
+    @NonNull
     @Override
-    public IngredientViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public IngredientViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         return new IngredientViewHolder(LayoutInflater.from(parent.getContext())
                 .inflate(mContainerName.equals(Screens.INGREDIENTS) ? R.layout.ingredients_list_ingredient_item :
                                 R.layout.ingredients_list_single_ingredient_item,
@@ -71,7 +74,7 @@ public class IngredientsListItemAdapter extends RecyclerView.Adapter<Ingredients
     }
 
     @Override
-    public void onBindViewHolder(IngredientViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull IngredientViewHolder holder, int position) {
 
         holder.bind(mContext,
                 mFilteredIngredientsList.get(position),
@@ -110,7 +113,7 @@ public class IngredientsListItemAdapter extends RecyclerView.Adapter<Ingredients
 
                             @Override
                             public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
-                                return mIngredientsList.get(oldItemPosition).getId() == ingredients.get(newItemPosition).getId();
+                                return Objects.equals(mIngredientsList.get(oldItemPosition).getId(), ingredients.get(newItemPosition).getId());
                             }
 
                             @Override
@@ -136,14 +139,14 @@ public class IngredientsListItemAdapter extends RecyclerView.Adapter<Ingredients
         }
     }
 
-    public static class IngredientViewHolder extends RecyclerView.ViewHolder{
+    static class IngredientViewHolder extends RecyclerView.ViewHolder{
 
         final TextView ingredientName;
         final ImageView ingredientImage;
         final RelativeLayout imageBack;
         final RelativeLayout imageFront;
 
-        public IngredientViewHolder(View itemView) {
+        IngredientViewHolder(View itemView) {
             super(itemView);
             ingredientName = itemView.findViewById(R.id.tv_ingredient_item);
             ingredientImage = itemView.findViewById(R.id.image_ingredient_item);
@@ -151,7 +154,7 @@ public class IngredientsListItemAdapter extends RecyclerView.Adapter<Ingredients
             imageFront = itemView.findViewById(R.id.image_front);
         }
 
-        public void bind(Context mContext, final Ingredient item, final OnItemClickListener listener, boolean selected) {
+        void bind(Context mContext, final Ingredient item, final OnItemClickListener listener, boolean selected) {
 
             if(item.getName() != null) ingredientName.setText(item.getName());
 
@@ -174,9 +177,7 @@ public class IngredientsListItemAdapter extends RecyclerView.Adapter<Ingredients
 
             }
 
-            itemView.setOnClickListener(v -> {
-                listener.onItemClick(item);
-            });
+            itemView.setOnClickListener(v -> listener.onItemClick(item));
         }
     }
 
@@ -207,7 +208,7 @@ public class IngredientsListItemAdapter extends RecyclerView.Adapter<Ingredients
         this.selectedIds.addAll(selectedIds);
     }
 
-    public void restoreSelection(){
+    private void restoreSelection(){
         if (selectedSet.isEmpty()) {
             for (Ingredient ingredient : mFilteredIngredientsList) {
                 if (selectedIds.indexOf(ingredient.getId()) != -1){
@@ -243,7 +244,7 @@ public class IngredientsListItemAdapter extends RecyclerView.Adapter<Ingredients
 
             @Override
             protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
-                mFilteredIngredientsList = (ArrayList<Ingredient>) filterResults.values ;
+                mFilteredIngredientsList = (ArrayList<Ingredient>) filterResults.values;
                 notifyDataSetChanged();
             }
         };

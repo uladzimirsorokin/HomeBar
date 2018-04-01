@@ -12,7 +12,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
 
@@ -112,12 +111,10 @@ public class DataRepository {
 
 
     public void insertIngredient(final Ingredient ingredient) {
-      mExecutors.diskIO().execute(()->{
-          mDatabase.getIngredientDao().insertOrReplaceIngredient(ingredient);
-      });
+      mExecutors.diskIO().execute(()-> mDatabase.getIngredientDao().insertOrReplaceIngredient(ingredient));
     }
 
-    public void insertDrinkIngredientJoin(final List<DrinkIngredientJoin> items) {
+    private void insertDrinkIngredientJoin(final List<DrinkIngredientJoin> items) {
         mExecutors.diskIO().execute(() -> mDatabase.getCocktailDao().insertDrinkIngredients(items));
     }
 
@@ -161,8 +158,7 @@ public class DataRepository {
         mExecutors.diskIO().execute(() -> {
             if (drink.getId() != null) mDatabase.getCocktailDao().deleteDrinkIngredientsById(drink.getId());
             Long drinkId = mDatabase.getDrinkDao().insertDrink(drink);
-            for (final ListIterator<DrinkIngredientJoin> i = drinkIngredients.listIterator(); i.hasNext();) {
-                final DrinkIngredientJoin item = i.next();
+            for (final DrinkIngredientJoin item : drinkIngredients) {
                 item.setDrinkId(drinkId);
             }
             mDatabase.getCocktailDao().insertDrinkIngredients(drinkIngredients);
@@ -180,9 +176,7 @@ public class DataRepository {
 
         try {
             return future.get();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
+        } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }
         return 0;

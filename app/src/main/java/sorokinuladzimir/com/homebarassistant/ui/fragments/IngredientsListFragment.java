@@ -2,6 +2,7 @@ package sorokinuladzimir.com.homebarassistant.ui.fragments;
 
 import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
@@ -24,6 +25,8 @@ import android.view.ViewGroup;
 import com.turingtechnologies.materialscrollbar.AlphabetIndicator;
 import com.turingtechnologies.materialscrollbar.DragScrollBar;
 
+import java.util.Objects;
+
 import sorokinuladzimir.com.homebarassistant.R;
 import sorokinuladzimir.com.homebarassistant.ui.adapters.IngredientsListItemAdapter;
 import sorokinuladzimir.com.homebarassistant.ui.subnavigation.RouterProvider;
@@ -39,8 +42,6 @@ public class IngredientsListFragment extends Fragment {
     private static final String EXTRA_NAME = "ilf_extra_name";
 
     private IngredientsListItemAdapter mAdapter;
-    private ActionBar mToolbar;
-    private FloatingActionButton mFab;
     private IngredientListViewModel mViewModel;
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private SearchView searchView;
@@ -48,7 +49,7 @@ public class IngredientsListFragment extends Fragment {
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fr_drinks_list, container, false);
 
         initFAB(rootView);
@@ -57,6 +58,7 @@ public class IngredientsListFragment extends Fragment {
         initViews(rootView);
 
         mViewModel = ViewModelProviders.of(this).get(IngredientListViewModel.class);
+        mViewModel.restoreSources();
 
         return rootView;
     }
@@ -77,8 +79,6 @@ public class IngredientsListFragment extends Fragment {
         model.getIngredients().observe(this, ingredients -> {
             if (ingredients != null) {
                 mAdapter.setIngredients(ingredients);
-            } else {
-
             }
             mSwipeRefreshLayout.setRefreshing(false);
         });
@@ -95,30 +95,35 @@ public class IngredientsListFragment extends Fragment {
     }
 
     private void initFAB(View view){
-        mFab = view.findViewById(R.id.fab);
-        mFab.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_add));
+        FloatingActionButton mFab = view.findViewById(R.id.fab);
+        mFab.setImageDrawable(ContextCompat.getDrawable(Objects.requireNonNull(getContext()), R.drawable.ic_add));
         mFab.setOnClickListener(view1 -> {
-            ((RouterProvider)getParentFragment()).getRouter().navigateTo(Screens.ADD_INGREDIENT,null);
+            if (getParentFragment() != null) {
+                ((RouterProvider) getParentFragment()).getRouter().navigateTo(Screens.ADD_INGREDIENT, null);
+            }
         });
     }
 
     private void initToolbar(View view) {
         setHasOptionsMenu(true);
         Toolbar toolbar = view.findViewById(R.id.toolbar);
-        ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
-        mToolbar = ((AppCompatActivity) getActivity()).getSupportActionBar();
-        mToolbar.setTitle(R.string.ingredients_list_toolbar_title);
+        ((AppCompatActivity) Objects.requireNonNull(getActivity())).setSupportActionBar(toolbar);
+        ActionBar mToolbar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+        if (mToolbar != null) {
+            mToolbar.setTitle(R.string.ingredients_list_toolbar_title);
+        }
     }
 
     private void initRecyclerView(View rootView) {
         final RecyclerView recyclerView = rootView.findViewById(R.id.recycler_view);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        mAdapter = new IngredientsListItemAdapter(getContext(), getArguments().getString(EXTRA_NAME), ingredient ->{
-            mViewModel.searchIngredients("");
-            ((RouterProvider)getParentFragment()).getRouter().navigateTo(Screens.LOCAL_INGREDIENT, ingredient.getId());
+        mAdapter = new IngredientsListItemAdapter(getContext(), Objects.requireNonNull(getArguments()).getString(EXTRA_NAME), ingredient ->{
+            if (getParentFragment() != null) {
+                ((RouterProvider)getParentFragment()).getRouter().navigateTo(Screens.LOCAL_INGREDIENT, ingredient.getId());
+            }
         });
-        recyclerView.addItemDecoration(new DividerItemDecoration(getContext(),DividerItemDecoration.VERTICAL));
+        recyclerView.addItemDecoration(new DividerItemDecoration(Objects.requireNonNull(getContext()),DividerItemDecoration.VERTICAL));
         recyclerView.setAdapter(mAdapter);
         ((DragScrollBar) rootView.findViewById(R.id.dragScrollBar))
                 .setIndicator(new AlphabetIndicator(getContext()), true);
@@ -150,7 +155,9 @@ public class IngredientsListFragment extends Fragment {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.action_about) {
-            ((RouterProvider)getParentFragment()).getRouter().navigateTo(Screens.ABOUT, "Found drinks fragment anbout text");
+            if (getParentFragment() != null) {
+                ((RouterProvider)getParentFragment()).getRouter().navigateTo(Screens.ABOUT, "Found drinks fragment anbout text");
+            }
         }
         return super.onOptionsItemSelected(item);
     }

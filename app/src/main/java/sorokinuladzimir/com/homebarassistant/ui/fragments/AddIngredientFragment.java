@@ -7,8 +7,8 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.AppBarLayout;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
@@ -28,6 +28,8 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.tbruyelle.rxpermissions2.RxPermissions;
+
+import java.util.Objects;
 
 import sorokinuladzimir.com.homebarassistant.R;
 import sorokinuladzimir.com.homebarassistant.ui.subnavigation.BackButtonListener;
@@ -60,11 +62,11 @@ public class AddIngredientFragment extends Fragment implements BackButtonListene
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fr_add_ingredient, container, false);
 
-        AddIngredientViewModel.Factory factory = new AddIngredientViewModel.Factory(getActivity().getApplication(),
-                getArguments().getLong(EXTRA_ID));
+        AddIngredientViewModel.Factory factory = new AddIngredientViewModel.Factory(Objects.requireNonNull(getActivity()).getApplication(),
+                Objects.requireNonNull(getArguments()).getLong(EXTRA_ID));
         mViewModel = ViewModelProviders.of(this, factory).get(AddIngredientViewModel.class);
 
         initToolbar(rootView);
@@ -86,12 +88,11 @@ public class AddIngredientFragment extends Fragment implements BackButtonListene
 
     private void subscribeUi(AddIngredientViewModel mViewModel) {
 
-        mViewModel.getCurrentImagePath().observe(this, imagePath -> {
-                Glide.with(getContext())
+        mViewModel.getCurrentImagePath().observe(this, imagePath ->
+                Glide.with(Objects.requireNonNull(getContext()))
                         .load(imagePath != null ? imagePath : R.drawable.camera_placeholder)
                         .apply(RequestOptions.circleCropTransform())
-                        .into(mIngredientImage);
-        });
+                        .into(mIngredientImage));
 
         if(!mViewModel.getIsNewIngredient()) {
             mViewModel.getIngredient().observe(this, ingredient -> {
@@ -127,7 +128,7 @@ public class AddIngredientFragment extends Fragment implements BackButtonListene
     private void initToolbar(View view){
         setHasOptionsMenu(true);
         Toolbar toolbar = view.findViewById(R.id.toolbar);
-        ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
+        ((AppCompatActivity) Objects.requireNonNull(getActivity())).setSupportActionBar(toolbar);
         ActionBar mToolbar = ((AppCompatActivity) getActivity()).getSupportActionBar();
 
         if(mToolbar != null){
@@ -148,23 +149,22 @@ public class AddIngredientFragment extends Fragment implements BackButtonListene
         mDesc = view.findViewById(R.id.et_ingredient_description);
         mNotes = view.findViewById(R.id.et_ingredient_notes);
 
-        RxPermissions rxPermissions = new RxPermissions(getActivity());
-        mIngredientImage.setOnClickListener(view1 -> {
-            rxPermissions
-                    .requestEach(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                    .subscribe(permission -> {
-                        if (permission.granted) {
-                            showAddImageDialog();
-                        } else if (permission.shouldShowRequestPermissionRationale) {
-                            // Denied permission with ask never again
-                            Toast.makeText(getContext(), "denied",Toast.LENGTH_SHORT).show();
-                        } else {
-                            // Denied permission with ask never again
-                            // Need to go to the settings
-                            Toast.makeText(getContext(), "denied, ask never again",Toast.LENGTH_SHORT).show();
-                        }
-                    });
-        });
+        RxPermissions rxPermissions = new RxPermissions(Objects.requireNonNull(getActivity()));
+        mIngredientImage.setOnClickListener(view1 ->
+                rxPermissions
+                        .requestEach(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                        .subscribe(permission -> {
+                            if (permission.granted) {
+                                showAddImageDialog();
+                            } else if (permission.shouldShowRequestPermissionRationale) {
+                                // Denied permission with ask never again
+                                Toast.makeText(getContext(), "denied",Toast.LENGTH_SHORT).show();
+                            } else {
+                                // Denied permission with ask never again
+                                // Need to go to the settings
+                                Toast.makeText(getContext(), "denied, ask never again",Toast.LENGTH_SHORT).show();
+                            }
+                        }));
     }
 
     @Override
@@ -193,9 +193,11 @@ public class AddIngredientFragment extends Fragment implements BackButtonListene
 
     void showAddImageDialog() {
         DialogFragment newFragment = AddImageDialogFragment.newInstance("Change photo",
-                mViewModel.getCurrentImagePath().getValue() == null ? false : true );
+                mViewModel.getCurrentImagePath().getValue() != null);
         newFragment.setTargetFragment(this,911);
-        newFragment.show(getFragmentManager(), "dialog");
+        if (getFragmentManager() != null) {
+            newFragment.show(getFragmentManager(), "dialog");
+        }
     }
 
     @Override
@@ -220,7 +222,7 @@ public class AddIngredientFragment extends Fragment implements BackButtonListene
     private void dispatchTakePictureIntent() {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         // Ensure that there's a camera activity to handle the intent
-        if (takePictureIntent.resolveActivity(getContext().getPackageManager()) != null) {
+        if (takePictureIntent.resolveActivity(Objects.requireNonNull(getContext()).getPackageManager()) != null) {
             if (mViewModel.createPhotoFile() != null) {
                 takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, mViewModel.getPhotoUri());
                 startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
@@ -267,11 +269,14 @@ public class AddIngredientFragment extends Fragment implements BackButtonListene
                 int count = mViewModel.deleteIngredient();
                 if(count != 0) Toast.makeText(getContext(),
                         "Can't be deleted, used in " + count + "cocktails",Toast.LENGTH_SHORT).show();
-                ((RouterProvider)getParentFragment()).getRouter().navigateTo(Screens.INGREDIENTS_LIST);
+                if (getParentFragment() != null) {
+                    ((RouterProvider)getParentFragment()).getRouter().navigateTo(Screens.INGREDIENTS_LIST);
+                }
                 return true;
             case R.id.ab_about:
-                 ((RouterProvider)getParentFragment()).getRouter().navigateTo(Screens.ABOUT, "Add ingredient fragment anbout text");
-
+                if (getParentFragment() != null) {
+                    ((RouterProvider)getParentFragment()).getRouter().navigateTo(Screens.ABOUT, "Add ingredient fragment anbout text");
+                }
                 return true;
             default:
                 Toast.makeText(getContext(),"Unknown menu item",Toast.LENGTH_SHORT).show();
@@ -283,7 +288,9 @@ public class AddIngredientFragment extends Fragment implements BackButtonListene
 
     @Override
     public boolean onBackPressed() {
-        ((RouterProvider)getParentFragment()).getRouter().exit();
+        if (getParentFragment() != null) {
+            ((RouterProvider)getParentFragment()).getRouter().exit();
+        }
         return true;
     }
 

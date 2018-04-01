@@ -21,17 +21,12 @@ import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.MediatorLiveData;
 import android.arch.lifecycle.ViewModel;
 import android.arch.lifecycle.ViewModelProvider;
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.support.annotation.NonNull;
 
-import java.util.ArrayList;
-import java.util.List;
 
 import sorokinuladzimir.com.homebarassistant.BarApp;
 import sorokinuladzimir.com.homebarassistant.db.entity.Drink;
-import sorokinuladzimir.com.homebarassistant.db.entity.DrinkIngredientJoin;
-import sorokinuladzimir.com.homebarassistant.db.entity.Ingredient;
 import sorokinuladzimir.com.homebarassistant.db.mapper.DrinkEntityToDrinkMapper;
 import sorokinuladzimir.com.homebarassistant.net.entity.DrinkEntity;
 
@@ -45,13 +40,12 @@ public class SingleDrinkViewModel extends AndroidViewModel {
 
     private Bitmap mBitmap = null;
 
-    public SingleDrinkViewModel(@NonNull Application application, DrinkEntity drinkEntity) {
+    SingleDrinkViewModel(@NonNull Application application, DrinkEntity drinkEntity) {
         super(application);
 
         mDrinkEntity = drinkEntity;
 
         mObservableDrink = new MediatorLiveData<>();
-
 
         mObservableDrink.setValue(DrinkEntityToDrinkMapper.getInstance().reverseMap(mDrinkEntity));
 
@@ -81,8 +75,9 @@ public class SingleDrinkViewModel extends AndroidViewModel {
             mDrinkEntity = drinkEntity;
         }
 
+        @NonNull
         @Override
-        public <T extends ViewModel> T create(Class<T> modelClass) {
+        public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
             //noinspection unchecked
             return (T) new SingleDrinkViewModel(mApplication, mDrinkEntity);
         }

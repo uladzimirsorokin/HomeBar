@@ -2,9 +2,9 @@ package sorokinuladzimir.com.homebarassistant.ui.fragments;
 
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
@@ -22,13 +22,12 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.turingtechnologies.materialscrollbar.AlphabetIndicator;
 import com.turingtechnologies.materialscrollbar.DragScrollBar;
 
-import sorokinuladzimir.com.homebarassistant.BarApp;
-import sorokinuladzimir.com.homebarassistant.MainActivity;
+import java.util.Objects;
+
 import sorokinuladzimir.com.homebarassistant.R;
 import sorokinuladzimir.com.homebarassistant.ui.adapters.LocalDrinksListAdapter;
 import sorokinuladzimir.com.homebarassistant.ui.subnavigation.RouterProvider;
@@ -43,17 +42,15 @@ import sorokinuladzimir.com.homebarassistant.viewmodel.DrinkListViewModel;
 public class DrinksListFragment extends Fragment {
 
     private static final String EXTRA_NAME = "dlf_extra_name";
-    private FloatingActionButton mFab;
     private LocalDrinksListAdapter mAdapter;
     private DrinkListViewModel mViewModel;
-    private ActionBar mToolbar;
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private SearchView searchView;
 
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fr_drinks_list, container, false);
 
         initViews(rootView);
@@ -61,17 +58,20 @@ public class DrinksListFragment extends Fragment {
         initRecyclerView(rootView);
         initToolbar(rootView);
 
-        mViewModel = ViewModelProviders.of(getActivity()).get(DrinkListViewModel.class);
-        subscribeUi(mViewModel);
+        mViewModel = ViewModelProviders.of(Objects.requireNonNull(getActivity())).get(DrinkListViewModel.class);
+        mViewModel.restoreSources();
 
         return rootView;
     }
 
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        subscribeUi(mViewModel);
+    }
 
     private void subscribeUi(DrinkListViewModel viewModel) {
         mSwipeRefreshLayout.setRefreshing(true);
-        mViewModel.searchDrinks("");
-        // Update the list when the data changes
         viewModel.getDrinks().observe(this, drinks -> {
             if (drinks != null) {
                 mAdapter.setDrinks(drinks);
@@ -90,7 +90,9 @@ public class DrinksListFragment extends Fragment {
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         mAdapter = new LocalDrinksListAdapter(drink -> {
-            ((RouterProvider)getParentFragment()).getRouter().navigateTo(Screens.LOCAL_DRINK, drink.getId());
+            if (getParentFragment() != null) {
+                ((RouterProvider)getParentFragment()).getRouter().navigateTo(Screens.LOCAL_DRINK, drink.getId());
+            }
         });
         recyclerView.setAdapter(mAdapter);
         ((DragScrollBar) rootView.findViewById(R.id.dragScrollBar))
@@ -110,9 +112,11 @@ public class DrinksListFragment extends Fragment {
     private void initToolbar(View view) {
         setHasOptionsMenu(true);
         Toolbar toolbar = view.findViewById(R.id.toolbar);
-        ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
-        mToolbar = ((AppCompatActivity) getActivity()).getSupportActionBar();
-        mToolbar.setTitle(R.string.drinks_list_fragment_title);
+        ((AppCompatActivity) Objects.requireNonNull(getActivity())).setSupportActionBar(toolbar);
+        ActionBar mToolbar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+        if (mToolbar != null) {
+            mToolbar.setTitle(R.string.drinks_list_fragment_title);
+        }
     }
 
     @Override
@@ -141,20 +145,25 @@ public class DrinksListFragment extends Fragment {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.action_about) {
-            ((RouterProvider)getParentFragment()).getRouter().navigateTo(Screens.ABOUT, "Drinks list fragment anbout text");
+            if (getParentFragment() != null) {
+                ((RouterProvider)getParentFragment()).getRouter().navigateTo(Screens.ABOUT, "Drinks list fragment anbout text");
+            }
         }
         if (item.getItemId() == R.id.action_settings) {
-            int theme = (getActivity().getPreferences(Context.MODE_PRIVATE).getInt("currentTheme", 0)+1)%3;
+            int theme = (Objects.requireNonNull(getActivity()).getPreferences(Context.MODE_PRIVATE).getInt("currentTheme", 0)+1)%3;
             ThemeUtils.changeToTheme(getActivity(), theme);
         }
         return false;
     }
 
     private void initFAB(View view){
-        mFab = view.findViewById(R.id.fab);
-        mFab.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_add));
-        mFab.setOnClickListener(view1 ->
-                ((RouterProvider)getParentFragment()).getRouter().navigateTo(Screens.ADD_DRINK, -1L));
+        FloatingActionButton mFab = view.findViewById(R.id.fab);
+        mFab.setImageDrawable(ContextCompat.getDrawable(Objects.requireNonNull(getContext()), R.drawable.ic_add));
+        mFab.setOnClickListener(view1 -> {
+            if (getParentFragment() != null) {
+                ((RouterProvider) getParentFragment()).getRouter().navigateTo(Screens.ADD_DRINK, -1L);
+            }
+        });
     }
 
 

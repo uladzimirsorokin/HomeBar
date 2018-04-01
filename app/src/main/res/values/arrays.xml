@@ -91,6 +91,7 @@
     </string-array>
 
     <string-array name="ingredient_unit">
+        <item> </item>
         <item>ml</item>
         <item>cl</item>
         <item>oz</item>

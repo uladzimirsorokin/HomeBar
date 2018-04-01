@@ -21,28 +21,21 @@ import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MediatorLiveData;
 import android.arch.lifecycle.MutableLiveData;
-import android.arch.lifecycle.Transformations;
 import android.arch.lifecycle.ViewModel;
 import android.arch.lifecycle.ViewModelProvider;
-import android.content.Context;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 
 import sorokinuladzimir.com.homebarassistant.BarApp;
 import sorokinuladzimir.com.homebarassistant.DataRepository;
-import sorokinuladzimir.com.homebarassistant.R;
 import sorokinuladzimir.com.homebarassistant.db.entity.Drink;
 import sorokinuladzimir.com.homebarassistant.db.entity.DrinkIngredientJoin;
-import sorokinuladzimir.com.homebarassistant.db.entity.Ingredient;
 import sorokinuladzimir.com.homebarassistant.db.entity.Taste;
 import sorokinuladzimir.com.homebarassistant.db.entity.WholeCocktail;
-import sorokinuladzimir.com.homebarassistant.db.mapper.IngredientToWholeCocktailMapper;
 import sorokinuladzimir.com.homebarassistant.db.mapper.WholeCocktailToDrinkIngredientJoinMapper;
 import sorokinuladzimir.com.homebarassistant.ui.utils.TastesHelper;
 
@@ -85,7 +78,7 @@ public class AddDrinkViewModel extends AndroidViewModel {
     private final MediatorLiveData<ArrayList<Taste>> mCurrentTastesList = new MediatorLiveData<>();
 
 
-    public AddDrinkViewModel(Application application, Long drinkId) {
+    AddDrinkViewModel(Application application, Long drinkId) {
         super(application);
 
         mDrinkId = drinkId;
@@ -97,9 +90,7 @@ public class AddDrinkViewModel extends AndroidViewModel {
         mObservableCurrentImagePath = new MediatorLiveData<>();
         mObservableCurrentImagePath.setValue(null);
         mRepository.resetDrinkImagePath();
-        mObservableCurrentImagePath.addSource(mRepository.getObservableDrinkImagePath(), imagePath -> {
-            mObservableCurrentImagePath.setValue(imagePath);
-        });
+        mObservableCurrentImagePath.addSource(mRepository.getObservableDrinkImagePath(), mObservableCurrentImagePath::setValue);
 
         mObservableIngredients = new MediatorLiveData<>();
         mObservableIngredients.setValue(null);
@@ -108,9 +99,9 @@ public class AddDrinkViewModel extends AndroidViewModel {
         if(mDrinkId != -1L){
             mIsNewDrink = false;
             mLiveDrink = mRepository.loadDrink(mDrinkId);
-            mObservableDrink.addSource(mLiveDrink, ingredient -> mObservableDrink.setValue(ingredient));
+            mObservableDrink.addSource(mLiveDrink, mObservableDrink::setValue);
 
-            mInitialIngredients.addSource(mRepository.loadIngredients(mDrinkId), ingredients -> mInitialIngredients.setValue(ingredients));
+            mInitialIngredients.addSource(mRepository.loadIngredients(mDrinkId), mInitialIngredients::setValue);
         } else {
             mLiveDrink = null;
 
@@ -177,7 +168,7 @@ public class AddDrinkViewModel extends AndroidViewModel {
             if (mLiveListIngredients != null) mObservableLiveIngredients.removeSource(mLiveListIngredients);
             mLiveListIngredients = mRepository.loadCocktailIngredients(mIngredientIds);
             mObservableLiveIngredients.addSource(mLiveListIngredients,
-                    ingredients -> mObservableLiveIngredients.setValue(ingredients));
+                    mObservableLiveIngredients::setValue);
         }
     }
 
@@ -189,8 +180,7 @@ public class AddDrinkViewModel extends AndroidViewModel {
     */
     public void updateIngredients(List<WholeCocktail> newIngredients, List<WholeCocktail> adapterCocktailList) {
 
-        LinkedHashMap<Long,WholeCocktail> oldIngredientsList = new LinkedHashMap<>();
-        oldIngredientsList.putAll(tempIngredients);
+        LinkedHashMap<Long, WholeCocktail> oldIngredientsList = new LinkedHashMap<>(tempIngredients);
 
         if (adapterCocktailList.size() == 0) adapterCocktailList = new ArrayList<>(tempIngredients.values());
 
@@ -282,16 +272,16 @@ public class AddDrinkViewModel extends AndroidViewModel {
         getCurrentImagePath().setValue(null);
     }
 
-    public void removeImageFile(String dbPath, String currentPath, Boolean save){
+    private void removeImageFile(String dbPath, String currentPath, Boolean save){
 
         String deletePath = null;
 
         if (save) {
-            if (dbPath != null && currentPath != dbPath) {
+            if (dbPath != null && !currentPath.equals(dbPath)) {
                 deletePath = dbPath;
             }
         } else {
-            if (currentPath != null && currentPath != dbPath) {
+            if (currentPath != null && !currentPath.equals(dbPath)) {
                 deletePath = currentPath;
             }
         }
@@ -302,7 +292,7 @@ public class AddDrinkViewModel extends AndroidViewModel {
 
     // save/delete operations with whole cocktail
 
-    public void saveDrink(Context context, String name, String description, List<WholeCocktail> ingredients, int rating){
+    public void saveDrink(String name, String description, List<WholeCocktail> ingredients, int rating){
 
         removeImageFile(getDrink().getValue() == null ? null : getDrink().getValue().getImage(),
                 getCurrentImagePath().getValue(), true);
@@ -313,7 +303,7 @@ public class AddDrinkViewModel extends AndroidViewModel {
         drink.setImage(mObservableCurrentImagePath.getValue());
         drink.setName(name != null ? name : "name stub");
         drink.setDescription(description != null ? description : "description stub");
-        drink.setTastes(mCurrentTastesList.getValue() != null ? mCurrentTastesList.getValue() : null);
+        drink.setTastes(mCurrentTastesList.getValue());
         drink.setRating(rating);
         List<DrinkIngredientJoin> ingredientsList = WholeCocktailToDrinkIngredientJoinMapper.getInstance().reverseMap(ingredients);
         mRepository.insertDrink(drink, ingredientsList);
@@ -343,8 +333,9 @@ public class AddDrinkViewModel extends AndroidViewModel {
             mDrinkId = drinkId;
         }
 
+        @NonNull
         @Override
-        public <T extends ViewModel> T create(Class<T> modelClass) {
+        public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
             //noinspection unchecked
             return (T) new AddDrinkViewModel(mApplication, mDrinkId);
         }

@@ -44,7 +44,7 @@ public class IngredientListViewModel extends AndroidViewModel {
         mLiveIngredients = BarApp.getInstance().getRepository()
                 .getIngredients();
 
-        mObservableIngredients.addSource(mLiveIngredients, ingredients -> mObservableIngredients.setValue(ingredients));
+        mObservableIngredients.addSource(mLiveIngredients, mObservableIngredients::setValue);
     }
 
     public LiveData<List<Ingredient>> getIngredients() {
@@ -52,15 +52,31 @@ public class IngredientListViewModel extends AndroidViewModel {
     }
 
     public void searchIngredients(String query) {
-        mObservableIngredients.removeSource(mLiveIngredients);
-        mObservableIngredients.removeSource(mLiveSearchIngredients);
+        removeAllSources();
         if (query != null && !query.equals("")){
-            mLiveSearchIngredients = BarApp.getInstance().getRepository().searchIngredients(query);
-            mObservableIngredients.addSource(mLiveSearchIngredients, ingredients -> mObservableIngredients.setValue(ingredients));
+            addSearchResultSource(query);
         } else {
-            mObservableIngredients.addSource(mLiveIngredients, ingredients -> mObservableIngredients.setValue(ingredients));
+            restoreInitialSource();
         }
 
     }
 
+    private void removeAllSources() {
+        mObservableIngredients.removeSource(mLiveIngredients);
+        mObservableIngredients.removeSource(mLiveSearchIngredients);
+    }
+
+    private void addSearchResultSource(String query) {
+        mLiveSearchIngredients = BarApp.getInstance().getRepository().searchIngredients(query);
+        mObservableIngredients.addSource(mLiveSearchIngredients, mObservableIngredients::setValue);
+    }
+
+    private void restoreInitialSource() {
+        mObservableIngredients.addSource(mLiveIngredients, mObservableIngredients::setValue);
+    }
+
+    public void restoreSources() {
+        removeAllSources();
+        restoreInitialSource();
+    }
 }

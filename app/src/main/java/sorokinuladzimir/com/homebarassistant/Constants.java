@@ -8,7 +8,8 @@ public class Constants {
 
     public static class Uri {
         public static final String ABSOLUT_DRINKS_ROOT = "http://addb.absolutdrinks.com";
-        public static final String ABSOLUT_DRINKS_IMAGE_ROOT =
+        public static final String ABSOLUT_DRINKS_IMAGE_ROOT = "http://assets.absolutdrinks.com/drinks/600x800/";
+        public static final String ABSOLUT_DRINKS_CUSTOM_IMAGE_ROOT =
                 "http://assets.absolutdrinks.com/drinks/transparent-background-white/soft-shadow/floor-reflection/600x800/";
     }
 
@@ -24,7 +25,7 @@ public class Constants {
 
     public static class Values {
         public static final int DEFAULT_ITEM_AMOUNT = 5;
-        public static final int DEFAULT_IMAGE_SIZE = 750;
+        public static final int DEFAULT_IMAGE_SIZE = 500;
     }
 
     public static class Extra {

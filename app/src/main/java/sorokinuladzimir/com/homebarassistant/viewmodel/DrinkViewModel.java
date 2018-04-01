@@ -42,7 +42,7 @@ public class DrinkViewModel extends AndroidViewModel {
     private final LiveData<Drink> mLiveDrink;
     private final LiveData<List<WholeCocktail>> mLiveIngredients;
 
-    public DrinkViewModel(Application application, Long drinkId) {
+    DrinkViewModel(Application application, Long drinkId) {
         super(application);
 
         mDrinkId = drinkId;
@@ -57,8 +57,8 @@ public class DrinkViewModel extends AndroidViewModel {
         mLiveDrink = BarApp.getInstance().getRepository().loadDrink(mDrinkId);
         mLiveIngredients = BarApp.getInstance().getRepository().loadIngredients(mDrinkId);
 
-        mObservableDrink.addSource(mLiveDrink, drink -> mObservableDrink.setValue(drink));
-        mObservableIngredients.addSource(mLiveIngredients, ingredients -> mObservableIngredients.setValue(ingredients));
+        mObservableDrink.addSource(mLiveDrink, mObservableDrink::setValue);
+        mObservableIngredients.addSource(mLiveIngredients, mObservableIngredients::setValue);
     }
 
     public LiveData<Drink> getDrink() {
@@ -82,8 +82,9 @@ public class DrinkViewModel extends AndroidViewModel {
             mDrinkId = drinkId;
         }
 
+        @NonNull
         @Override
-        public <T extends ViewModel> T create(Class<T> modelClass) {
+        public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
             //noinspection unchecked
             return (T) new DrinkViewModel(mApplication, mDrinkId);
         }

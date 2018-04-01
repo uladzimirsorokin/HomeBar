@@ -2,13 +2,13 @@ package sorokinuladzimir.com.homebarassistant.ui.adapters;
 
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
@@ -45,14 +45,15 @@ public class AddDrinkIngredientItemAdapter extends RecyclerView.Adapter<AddDrink
         return mIngredients;
     }
 
+    @NonNull
     @Override
-    public IngredientViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public IngredientViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         return new IngredientViewHolder(LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.add_drink_ingredient_item, parent,false), new MyAmountListener(), new UnitListener());
     }
 
     @Override
-    public void onBindViewHolder(IngredientViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull IngredientViewHolder holder, int position) {
         holder.myAmountListener.updatePosition(holder.getAdapterPosition());
         WholeCocktail cocktail = mIngredients.get(holder.getAdapterPosition());
         if (cocktail.getAmount() != null){
@@ -65,6 +66,8 @@ public class AddDrinkIngredientItemAdapter extends RecyclerView.Adapter<AddDrink
 
         if (cocktail.getUnit() != null) {
             holder.unit.setSelection(Arrays.asList(unitArray).indexOf(cocktail.getUnit()));
+        } else {
+            holder.unit.setSelection(0);
         }
 
         holder.bind(holder.getAdapterPosition(), listener);
@@ -73,11 +76,6 @@ public class AddDrinkIngredientItemAdapter extends RecyclerView.Adapter<AddDrink
     @Override
     public int getItemCount() {
         return mIngredients.size();
-    }
-
-    public void deleteItem(int pos) {
-        mIngredients.remove(pos);
-        notifyDataSetChanged();
     }
 
     public void setData(List<WholeCocktail> cocktails) {
@@ -89,14 +87,14 @@ public class AddDrinkIngredientItemAdapter extends RecyclerView.Adapter<AddDrink
     public class IngredientViewHolder extends RecyclerView.ViewHolder {
 
         public TextView name;
-        public EditText amount;
+        EditText amount;
         public Spinner unit;
-        public View deleteButton;
-        public MyAmountListener myAmountListener;
-        public UnitListener unitListener;
+        View deleteButton;
+        MyAmountListener myAmountListener;
+        UnitListener unitListener;
 
 
-        public IngredientViewHolder(View itemView, MyAmountListener myAmountListener, UnitListener unitListener) {
+        IngredientViewHolder(View itemView, MyAmountListener myAmountListener, UnitListener unitListener) {
             super(itemView);
 
             name = itemView.findViewById(R.id.tv_ingredient_name);
@@ -113,7 +111,7 @@ public class AddDrinkIngredientItemAdapter extends RecyclerView.Adapter<AddDrink
             unit.setOnItemSelectedListener(unitListener);
         }
 
-        public void bind(final int position, final OnDeleteClickListener listener) {
+        void bind(final int position, final OnDeleteClickListener listener) {
             deleteButton.setOnClickListener(v -> listener.onDeleteItemClick(position, mIngredients.get(position)));
         }
 
@@ -123,7 +121,7 @@ public class AddDrinkIngredientItemAdapter extends RecyclerView.Adapter<AddDrink
 
         private int position;
 
-        public void updatePosition(int position) {
+        void updatePosition(int position) {
             this.position = position;
         }
 
@@ -142,7 +140,7 @@ public class AddDrinkIngredientItemAdapter extends RecyclerView.Adapter<AddDrink
 
         private int position;
 
-        public void updatePosition(int position) {
+        void updatePosition(int position) {
             this.position = position;
         }
 

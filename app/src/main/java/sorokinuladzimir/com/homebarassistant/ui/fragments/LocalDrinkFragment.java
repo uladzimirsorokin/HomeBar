@@ -2,6 +2,7 @@ package sorokinuladzimir.com.homebarassistant.ui.fragments;
 
 import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
@@ -25,6 +26,8 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 
+import java.util.Objects;
+
 import sorokinuladzimir.com.homebarassistant.R;
 import sorokinuladzimir.com.homebarassistant.ui.adapters.LocalDrinkIngredientItemAdapter;
 import sorokinuladzimir.com.homebarassistant.ui.subnavigation.BackButtonListener;
@@ -47,12 +50,11 @@ public class LocalDrinkFragment extends Fragment implements BackButtonListener {
     private LocalDrinkIngredientItemAdapter mAdapter;
     private TextView mDescriptionText;
     private CollapsingToolbarLayout mCollapsingToolbarLayout;
-    private DrinkViewModel mViewModel;
 
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fr_single_drink, container, false);
 
         initToolbar(rootView);
@@ -67,15 +69,14 @@ public class LocalDrinkFragment extends Fragment implements BackButtonListener {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        Long drinkId = getArguments().getLong(EXTRA_ID);
-        if((drinkId != null)){
-            mDrinkId = drinkId;
+        if (getArguments() != null) {
+            mDrinkId= getArguments().getLong(EXTRA_ID);
         }
 
         DrinkViewModel.Factory factory = new DrinkViewModel.Factory(
-                getActivity().getApplication(), mDrinkId);
+                Objects.requireNonNull(getActivity()).getApplication(), mDrinkId);
 
-        mViewModel = ViewModelProviders.of(this, factory).get(DrinkViewModel.class);
+        DrinkViewModel mViewModel = ViewModelProviders.of(this, factory).get(DrinkViewModel.class);
         subscribeUi(mViewModel);
     }
 
@@ -84,14 +85,12 @@ public class LocalDrinkFragment extends Fragment implements BackButtonListener {
         model.getIngredients().observe(this, ingredients -> {
             if (ingredients != null) {
                 mAdapter.setData(ingredients);
-            } else {
-
             }
         });
 
         model.getDrink().observe(this, drink -> {
             if (drink != null) {
-                Glide.with(getContext())
+                Glide.with(Objects.requireNonNull(getContext()))
                         .load(drink.getImage() != null ? drink.getImage() : R.drawable.camera_placeholder)
                         .apply(RequestOptions.centerCropTransform())
                         .into(mDrinkImage);
@@ -117,7 +116,7 @@ public class LocalDrinkFragment extends Fragment implements BackButtonListener {
     private void initToolbar(View view){
         setHasOptionsMenu(true);
         Toolbar toolbar = view.findViewById(R.id.singleDrinkToolbar);
-        ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
+        ((AppCompatActivity) Objects.requireNonNull(getActivity())).setSupportActionBar(toolbar);
         ActionBar mToolbar = ((AppCompatActivity) getActivity()).getSupportActionBar();
         if(mToolbar != null) mToolbar.setDisplayHomeAsUpEnabled(true);
 
@@ -133,9 +132,7 @@ public class LocalDrinkFragment extends Fragment implements BackButtonListener {
                 getActivity().invalidateOptionsMenu();
             }
         });
-
     }
-
 
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
@@ -144,8 +141,6 @@ public class LocalDrinkFragment extends Fragment implements BackButtonListener {
             collapsedMenu.add(R.string.menu_edit)
                     .setIcon(R.drawable.ic_edit_done)
                     .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
-        } else {
-            //expanded
         }
         super.onPrepareOptionsMenu(collapsedMenu);
     }
@@ -172,19 +167,21 @@ public class LocalDrinkFragment extends Fragment implements BackButtonListener {
 
     private void initFAB(View view){
         FloatingActionButton mFab = view.findViewById(R.id.single_drink_fab);
-        mFab.setOnClickListener(view1 -> {
-            editPressed();
-        });
+        mFab.setOnClickListener(view1 -> editPressed());
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if(item.getItemId() == android.R.id.home){
-            ((RouterProvider)getParentFragment()).getRouter().exit();
+            if (getParentFragment() != null) {
+                ((RouterProvider)getParentFragment()).getRouter().exit();
+            }
             return true;
         }
         if (item.getItemId() == R.id.action_about) {
-            ((RouterProvider)getParentFragment()).getRouter().navigateTo(Screens.ABOUT, "Local drink fragment anbout text");
+            if (getParentFragment() != null) {
+                ((RouterProvider)getParentFragment()).getRouter().navigateTo(Screens.ABOUT, "Local drink fragment anbout text");
+            }
         }
         if (item.getTitle() == getString(R.string.menu_edit)) {
             editPressed();
@@ -193,12 +190,16 @@ public class LocalDrinkFragment extends Fragment implements BackButtonListener {
     }
 
     private void editPressed(){
-        ((RouterProvider)getParentFragment()).getRouter().navigateTo(Screens.ADD_DRINK, mDrinkId);
+        if (getParentFragment() != null) {
+            ((RouterProvider)getParentFragment()).getRouter().navigateTo(Screens.ADD_DRINK, mDrinkId);
+        }
     }
 
     @Override
     public boolean onBackPressed() {
-        ((RouterProvider)getParentFragment()).getRouter().exit();
+        if (getParentFragment() != null) {
+            ((RouterProvider)getParentFragment()).getRouter().exit();
+        }
         return true;
     }
 }

@@ -11,11 +11,11 @@ public class TastesHelper {
 
     public static String tastesToString(ArrayList<Taste> tastes){
         if (tastes != null && tastes.size() != 0) {
-            String tastesStr = tastes.get(0).getText();
+            StringBuilder tastesStr = new StringBuilder(tastes.get(0).getText());
             for (int i = 1; i < tastes.size(); i++){
-                tastesStr += ", " + tastes.get(i).getText();
+                tastesStr.append(", ").append(tastes.get(i).getText());
             }
-            return tastesStr;
+            return tastesStr.toString();
         }
 
         return "";

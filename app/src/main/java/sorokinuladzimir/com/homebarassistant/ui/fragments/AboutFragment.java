@@ -1,6 +1,7 @@
 package sorokinuladzimir.com.homebarassistant.ui.fragments;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
@@ -12,6 +13,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import java.util.Objects;
+
 import sorokinuladzimir.com.homebarassistant.R;
 import sorokinuladzimir.com.homebarassistant.ui.subnavigation.BackButtonListener;
 import sorokinuladzimir.com.homebarassistant.ui.subnavigation.RouterProvider;
@@ -20,17 +23,17 @@ public class AboutFragment extends Fragment implements BackButtonListener {
 
     private static final String EXTRA_NAME = "extra_name";
     private static final String EXTRA_TEXT = "extra_text";
-    private ActionBar mToolbar;
-    private TextView mTvAbout;
     private String mAboutText;
 
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fr_about, container, false);
-        mAboutText = getArguments().getString(EXTRA_TEXT);
 
+        if (getArguments() != null) {
+            mAboutText = getArguments().getString(EXTRA_TEXT);
+        }
 
         initToolbar(rootView);
         initViews(rootView);
@@ -39,7 +42,7 @@ public class AboutFragment extends Fragment implements BackButtonListener {
     }
 
     private void initViews(View view) {
-        mTvAbout = view.findViewById(R.id.tv_about);
+        TextView mTvAbout = view.findViewById(R.id.tv_about);
         if (mAboutText != null) mTvAbout.setText(mAboutText);
     }
 
@@ -56,8 +59,8 @@ public class AboutFragment extends Fragment implements BackButtonListener {
     private void initToolbar(View view){
         setHasOptionsMenu(true);
         Toolbar toolbar = view.findViewById(R.id.toolbar);
-        ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
-        mToolbar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+        ((AppCompatActivity) Objects.requireNonNull(getActivity())).setSupportActionBar(toolbar);
+        ActionBar mToolbar = ((AppCompatActivity) getActivity()).getSupportActionBar();
         if(mToolbar != null) {
             mToolbar.setDisplayHomeAsUpEnabled(true);
             mToolbar.setTitle(R.string.menu_about);
@@ -76,7 +79,9 @@ public class AboutFragment extends Fragment implements BackButtonListener {
 
     @Override
     public boolean onBackPressed() {
-        ((RouterProvider)getParentFragment()).getRouter().exit();
+        if (getParentFragment() != null) {
+            ((RouterProvider)getParentFragment()).getRouter().exit();
+        }
         return true;
     }
 

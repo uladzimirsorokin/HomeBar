@@ -2,29 +2,25 @@
 
     <!-- Base application theme. -->
     <style name="BaseAppTheme" parent="Theme.AppCompat.Light.NoActionBar">
-        <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+
     </style>
 
     <style name="CustomAppTheme" parent="Theme.AppCompat.DayNight.NoActionBar">
-        <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary2</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark2</item>
         <item name="colorAccent">@color/colorAccent2</item>
     </style>
 
     <style name="BrightAppTheme" parent="Theme.AppCompat.Light.NoActionBar">
-        <!-- Customize your theme here. -->
         <item name="colorPrimary">#212121</item>
         <item name="colorPrimaryDark">#000000</item>
         <item name="colorAccent">#00e676</item>
-        <item name="android:textColorSecondary">#000000</item>
-        <item name="android:textColorPrimary">#ffffff</item>
+        <item name="android:textColorSecondary">#ffffff</item>
+        <item name="android:textColorPrimary">#000000</item>
     </style>
-
-
 
     <style name="SplashTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="android:windowBackground">@drawable/background_splash</item>
@@ -48,8 +44,8 @@
         <item name="android:textColor">@color/subheader_text</item>
         <item name="android:fontFamily">sans-serif-medium</item>
         <item name="android:gravity">center_vertical</item>
-        <item name="android:paddingLeft">@dimen/icon_left_padding</item>
-        <item name="android:paddingRight">@dimen/list_item_right_padding</item>
+        <item name="android:paddingLeft">@dimen/standard_spacing</item>
+        <item name="android:paddingRight">@dimen/large_spacing</item>
         <item name="android:textIsSelectable">false</item>
     </style>
 

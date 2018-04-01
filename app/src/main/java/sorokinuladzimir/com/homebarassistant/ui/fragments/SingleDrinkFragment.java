@@ -7,6 +7,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
@@ -31,6 +32,8 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.transition.Transition;
+
+import java.util.Objects;
 
 import sorokinuladzimir.com.homebarassistant.Constants;
 import sorokinuladzimir.com.homebarassistant.R;
@@ -70,11 +73,12 @@ public class SingleDrinkFragment extends Fragment implements BackButtonListener 
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fr_single_drink, container, false);
 
-        SingleDrinkViewModel.Factory factory = new SingleDrinkViewModel.Factory(getActivity().getApplication(),
-                (DrinkEntity) getArguments().getBundle(EXTRA_BUNDLE).getSerializable(Constants.Extra.COCKTAIL));
+        SingleDrinkViewModel.Factory factory = new SingleDrinkViewModel.Factory(Objects.requireNonNull(getActivity()).getApplication(),
+                (DrinkEntity) Objects.requireNonNull(Objects.requireNonNull(getArguments())
+                        .getBundle(EXTRA_BUNDLE)).getSerializable(Constants.Extra.COCKTAIL));
         mViewModel = ViewModelProviders.of(this, factory).get(SingleDrinkViewModel.class);
 
         initToolbar(rootView);
@@ -93,12 +97,12 @@ public class SingleDrinkFragment extends Fragment implements BackButtonListener 
     private void subscribeUi(SingleDrinkViewModel viewModel) {
         viewModel.getDrink().observe(this, drink -> {
             if (drink != null) {
-                Glide.with(getContext())
+                Glide.with(Objects.requireNonNull(getContext()))
                         .load(drink.getImage())
                         .into(new SimpleTarget<Drawable>() {
 
                             @Override
-                            public void onResourceReady(Drawable resource, Transition<? super Drawable> transition) {
+                            public void onResourceReady(@NonNull Drawable resource, Transition<? super Drawable> transition) {
                                 Bitmap bitmap = ((BitmapDrawable)resource).getBitmap();
                                 if (bitmap != null) {
                                     mViewModel.setBitmap(bitmap);
@@ -133,7 +137,7 @@ public class SingleDrinkFragment extends Fragment implements BackButtonListener 
     private void initToolbar(View view){
         setHasOptionsMenu(true);
         Toolbar toolbar = view.findViewById(R.id.singleDrinkToolbar);
-        ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
+        ((AppCompatActivity) Objects.requireNonNull(getActivity())).setSupportActionBar(toolbar);
         ActionBar mToolbar = ((AppCompatActivity) getActivity()).getSupportActionBar();
         if(mToolbar != null) mToolbar.setDisplayHomeAsUpEnabled(true);
 
@@ -156,8 +160,6 @@ public class SingleDrinkFragment extends Fragment implements BackButtonListener 
             collapsedMenu.add(getString(R.string.menu_add))
                     .setIcon(R.drawable.ic_add)
                     .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
-        } else {
-            //expanded
         }
         super.onPrepareOptionsMenu(collapsedMenu);
     }
@@ -186,7 +188,7 @@ public class SingleDrinkFragment extends Fragment implements BackButtonListener 
 
     private void initFAB(View view){
         mFab = view.findViewById(R.id.single_drink_fab);
-        mFab.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_add));
+        mFab.setImageDrawable(ContextCompat.getDrawable(Objects.requireNonNull(getContext()), R.drawable.ic_add));
         mFab.setOnClickListener(view1 -> {
             addDrinkToDb();
             mFab.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_done));
@@ -201,7 +203,9 @@ public class SingleDrinkFragment extends Fragment implements BackButtonListener 
             return true;
         }
         if (item.getItemId() == R.id.action_about) {
-            ((RouterProvider)getParentFragment()).getRouter().navigateTo(Screens.ABOUT, "Single drink fragment anbout text");
+            if (getParentFragment() != null) {
+                ((RouterProvider)getParentFragment()).getRouter().navigateTo(Screens.ABOUT, "Single drink fragment anbout text");
+            }
         }
         if (item.getTitle() == getString(R.string.menu_add)) {
             addDrinkToDb();
@@ -211,7 +215,9 @@ public class SingleDrinkFragment extends Fragment implements BackButtonListener 
 
     @Override
     public boolean onBackPressed() {
-        ((RouterProvider)getParentFragment()).getRouter().exit();
+        if (getParentFragment() != null) {
+            ((RouterProvider)getParentFragment()).getRouter().exit();
+        }
         return true;
     }
 

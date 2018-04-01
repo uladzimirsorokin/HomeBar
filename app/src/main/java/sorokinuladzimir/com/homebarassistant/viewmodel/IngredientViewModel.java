@@ -38,7 +38,7 @@ public class IngredientViewModel extends AndroidViewModel {
     private final Long mIngredientId;
     private final LiveData<Ingredient> mLiveIngredient;
 
-    public IngredientViewModel(Application application, Long ingredientId) {
+    IngredientViewModel(Application application, Long ingredientId) {
         super(application);
 
         mIngredientId = ingredientId;
@@ -52,7 +52,7 @@ public class IngredientViewModel extends AndroidViewModel {
         mLiveIngredient = BarApp.getInstance().getRepository().loadIngredient(mIngredientId);
 
         // observe the changes of the products from the database and forward them
-        mObservableIngredient.addSource(mLiveIngredient, ingredient -> mObservableIngredient.setValue(ingredient));
+        mObservableIngredient.addSource(mLiveIngredient, mObservableIngredient::setValue);
 
     }
 
@@ -75,8 +75,9 @@ public class IngredientViewModel extends AndroidViewModel {
             mIngredientId = ingredientId;
         }
 
+        @NonNull
         @Override
-        public <T extends ViewModel> T create(Class<T> modelClass) {
+        public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
             //noinspection unchecked
             return (T) new IngredientViewModel(mApplication, mIngredientId);
         }

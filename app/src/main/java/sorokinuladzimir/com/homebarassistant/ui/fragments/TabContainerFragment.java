@@ -1,12 +1,14 @@
 package sorokinuladzimir.com.homebarassistant.ui.fragments;
 
-import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import java.util.Objects;
 
 import ru.terrakok.cicerone.Cicerone;
 import ru.terrakok.cicerone.Navigator;
@@ -14,7 +16,6 @@ import ru.terrakok.cicerone.Router;
 import ru.terrakok.cicerone.android.SupportFragmentNavigator;
 import sorokinuladzimir.com.homebarassistant.BarApp;
 import sorokinuladzimir.com.homebarassistant.R;
-import sorokinuladzimir.com.homebarassistant.net.entity.DrinkEntity;
 import sorokinuladzimir.com.homebarassistant.ui.subnavigation.BackButtonListener;
 import sorokinuladzimir.com.homebarassistant.ui.subnavigation.LocalCiceroneHolder;
 import sorokinuladzimir.com.homebarassistant.ui.subnavigation.RouterProvider;
@@ -41,7 +42,7 @@ public class TabContainerFragment extends Fragment implements RouterProvider, Ba
     }
 
     private String getContainerName() {
-        return getArguments().getString(EXTRA_NAME);
+        return Objects.requireNonNull(getArguments()).getString(EXTRA_NAME);
     }
 
     private Cicerone<Router> getCicerone() {
@@ -50,9 +51,8 @@ public class TabContainerFragment extends Fragment implements RouterProvider, Ba
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fr_tab_container, container, false);
-        return rootView;
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.fr_tab_container, container, false);
     }
 
     @Override

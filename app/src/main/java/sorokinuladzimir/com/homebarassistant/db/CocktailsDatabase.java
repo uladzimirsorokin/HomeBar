@@ -9,9 +9,6 @@ import android.arch.persistence.room.RoomDatabase;
 import android.content.Context;
 import android.support.annotation.NonNull;
 
-import java.util.ArrayList;
-import java.util.Random;
-
 import sorokinuladzimir.com.homebarassistant.AppExecutors;
 import sorokinuladzimir.com.homebarassistant.db.dao.CocktailDao;
 import sorokinuladzimir.com.homebarassistant.db.dao.DrinkDao;
@@ -26,7 +23,7 @@ public abstract class CocktailsDatabase extends RoomDatabase {
 
     private static CocktailsDatabase sInstance;
 
-    public static final String DB_NAME = "cocktails_db";
+    private static final String DB_NAME = "cocktails_db";
 
     public abstract DrinkDao getDrinkDao();
 

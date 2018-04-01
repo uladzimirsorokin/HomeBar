@@ -2,6 +2,7 @@ package sorokinuladzimir.com.homebarassistant.ui.fragments;
 
 import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
@@ -22,6 +23,8 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 
+import java.util.Objects;
+
 import sorokinuladzimir.com.homebarassistant.R;
 
 import sorokinuladzimir.com.homebarassistant.ui.subnavigation.BackButtonListener;
@@ -32,7 +35,6 @@ import sorokinuladzimir.com.homebarassistant.viewmodel.IngredientViewModel;
 public class IngredientFragment extends Fragment implements BackButtonListener {
 
     public static final String MENU_ITEM_EDIT = "Edit";
-    private final String TAG = "IngredientFragment";
 
     private static final String EXTRA_NAME = "extra_name";
     private static final String EXTRA_ID = "extra_id";
@@ -40,11 +42,8 @@ public class IngredientFragment extends Fragment implements BackButtonListener {
     private Long mIngredientId;
 
     private ImageView mIngredientImage;
-    private ActionBar mToolbar;
     private TextView mDescriptionText;
     private CollapsingToolbarLayout mCollapsingToolbarLayout;
-    private FloatingActionButton mFab;
-    private IngredientViewModel mViewModel;
     private TextView mNotesText;
 
     private Menu collapsedMenu;
@@ -54,7 +53,7 @@ public class IngredientFragment extends Fragment implements BackButtonListener {
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fr_single_ingredient, container, false);
 
         initToolbar(rootView);
@@ -68,15 +67,16 @@ public class IngredientFragment extends Fragment implements BackButtonListener {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        Long ingredientId = getArguments().getLong(EXTRA_ID);
-        if((ingredientId != null)){
+        Long ingredientId;
+        if (getArguments() != null) {
+            ingredientId = getArguments().getLong(EXTRA_ID);
             mIngredientId = ingredientId;
         }
 
         IngredientViewModel.Factory factory = new IngredientViewModel.Factory(
-                getActivity().getApplication(), mIngredientId);
+                Objects.requireNonNull(getActivity()).getApplication(), mIngredientId);
 
-        mViewModel = ViewModelProviders.of(this, factory).get(IngredientViewModel.class);
+        IngredientViewModel mViewModel = ViewModelProviders.of(this, factory).get(IngredientViewModel.class);
         subscribeUi(mViewModel);
     }
 
@@ -84,7 +84,7 @@ public class IngredientFragment extends Fragment implements BackButtonListener {
 
         model.getIngredient().observe(this, ingredient -> {
             if (ingredient != null) {
-                Glide.with(getContext())
+                Glide.with(Objects.requireNonNull(getContext()))
                         .load(ingredient.getImage() != null ? ingredient.getImage() : R.drawable.camera_placeholder)
                         .apply(RequestOptions.centerCropTransform())
                         .into(mIngredientImage);
@@ -111,8 +111,8 @@ public class IngredientFragment extends Fragment implements BackButtonListener {
     private void initToolbar(View view){
         setHasOptionsMenu(true);
         Toolbar toolbar = view.findViewById(R.id.singleIngredientToolbar);
-        ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
-        mToolbar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+        ((AppCompatActivity) Objects.requireNonNull(getActivity())).setSupportActionBar(toolbar);
+        ActionBar mToolbar = ((AppCompatActivity) getActivity()).getSupportActionBar();
         if(mToolbar != null) mToolbar.setDisplayHomeAsUpEnabled(true);
 
         mAppBarLayout = view.findViewById(R.id.singleIngredientAppbar);
@@ -155,20 +155,26 @@ public class IngredientFragment extends Fragment implements BackButtonListener {
     }
 
     private void initFAB(View view){
-        mFab = view.findViewById(R.id.fab);
+        FloatingActionButton mFab = view.findViewById(R.id.fab);
         mFab.setOnClickListener(view1 -> {
-            ((RouterProvider)getParentFragment()).getRouter().navigateTo(Screens.ADD_INGREDIENT, mIngredientId);
+            if (getParentFragment() != null) {
+                ((RouterProvider)getParentFragment()).getRouter().navigateTo(Screens.ADD_INGREDIENT, mIngredientId);
+            }
         });
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if(item.getItemId() == android.R.id.home){
-            ((RouterProvider)getParentFragment()).getRouter().exit();
+            if (getParentFragment() != null) {
+                ((RouterProvider)getParentFragment()).getRouter().exit();
+            }
             return true;
         }
         if (item.getItemId() == R.id.action_about) {
-            ((RouterProvider)getParentFragment()).getRouter().navigateTo(Screens.ABOUT, "Ingredient fragment about text");
+            if (getParentFragment() != null) {
+                ((RouterProvider)getParentFragment()).getRouter().navigateTo(Screens.ABOUT, "Ingredient fragment about text");
+            }
         }
         if (item.getTitle() == MENU_ITEM_EDIT) {
             ((RouterProvider)getParentFragment()).getRouter().navigateTo(Screens.ADD_INGREDIENT, mIngredientId);
@@ -178,7 +184,9 @@ public class IngredientFragment extends Fragment implements BackButtonListener {
 
     @Override
     public boolean onBackPressed() {
-        ((RouterProvider)getParentFragment()).getRouter().exit();
+        if (getParentFragment() != null) {
+            ((RouterProvider)getParentFragment()).getRouter().exit();
+        }
         return true;
     }
 }

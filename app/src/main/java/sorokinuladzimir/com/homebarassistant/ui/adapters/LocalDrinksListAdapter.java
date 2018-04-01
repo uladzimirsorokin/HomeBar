@@ -1,7 +1,7 @@
 package sorokinuladzimir.com.homebarassistant.ui.adapters;
 
 import android.annotation.SuppressLint;
-import android.os.AsyncTask;
+import android.support.annotation.NonNull;
 import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -19,11 +19,13 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
+import java.util.Objects;
 
 import sorokinuladzimir.com.homebarassistant.BarApp;
 import sorokinuladzimir.com.homebarassistant.R;
 import sorokinuladzimir.com.homebarassistant.db.entity.Drink;
 import sorokinuladzimir.com.homebarassistant.db.entity.Taste;
+import sorokinuladzimir.com.homebarassistant.ui.utils.TastesHelper;
 
 
 public class LocalDrinksListAdapter extends RecyclerView.Adapter<LocalDrinksListAdapter.CardViewHolder> implements INameableAdapter {
@@ -50,14 +52,15 @@ public class LocalDrinksListAdapter extends RecyclerView.Adapter<LocalDrinksList
 
     private Deque<List<Drink>> pendingUpdates = new ArrayDeque<>();
 
+    @NonNull
     @Override
-    public CardViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public CardViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         return new CardViewHolder(LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.card_view_cocktail_item,parent,false));
     }
 
     @Override
-    public void onBindViewHolder(CardViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull CardViewHolder holder, int position) {
         holder.bind(mDrinkList.get(position), listener);
     }
 
@@ -97,7 +100,7 @@ public class LocalDrinksListAdapter extends RecyclerView.Adapter<LocalDrinksList
 
                             @Override
                             public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
-                                return mDrinkList.get(oldItemPosition).getId() == drinks.get(newItemPosition).getId();
+                                return Objects.equals(mDrinkList.get(oldItemPosition).getId(), drinks.get(newItemPosition).getId());
                             }
 
                             @Override
@@ -121,14 +124,14 @@ public class LocalDrinksListAdapter extends RecyclerView.Adapter<LocalDrinksList
         }
     }
 
-    public static class CardViewHolder extends RecyclerView.ViewHolder{
+    static class CardViewHolder extends RecyclerView.ViewHolder{
 
         final ImageView cardImage;
         final TextView title;
         final TextView subtitle;
         final RatingBar rating;
 
-        public CardViewHolder(View itemView) {
+        CardViewHolder(View itemView) {
             super(itemView);
 
             cardImage = itemView.findViewById(R.id.card_image);
@@ -137,7 +140,7 @@ public class LocalDrinksListAdapter extends RecyclerView.Adapter<LocalDrinksList
             rating = itemView.findViewById(R.id.card_rating_bar);
         }
 
-        public void bind(final Drink drinkItem, final OnItemClickListener listener) {
+        void bind(final Drink drinkItem, final OnItemClickListener listener) {
 
             Glide.with(cardImage.getContext())
                     .load(drinkItem.getImage())
@@ -148,13 +151,7 @@ public class LocalDrinksListAdapter extends RecyclerView.Adapter<LocalDrinksList
 
             ArrayList<Taste> tastes = drinkItem.getTastes();
 
-            if(tastes != null) {
-                String tastesStr = tastes.get(0).getText();
-                for (int i = 1; i < tastes.size(); i++){
-                    tastesStr += ", " + tastes.get(i).getText();
-                }
-                subtitle.setText(tastesStr);
-            }
+            subtitle.setText(TastesHelper.tastesToString(tastes));
 
             rating.setProgress(drinkItem.getRating() / 10);
 

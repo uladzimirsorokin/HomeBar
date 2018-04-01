@@ -22,7 +22,6 @@ import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MediatorLiveData;
 import android.arch.lifecycle.MutableLiveData;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import sorokinuladzimir.com.homebarassistant.BarApp;

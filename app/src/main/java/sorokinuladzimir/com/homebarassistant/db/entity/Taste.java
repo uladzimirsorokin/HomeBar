@@ -8,10 +8,6 @@ public class Taste implements Serializable {
 
     private String text;
 
-    public Taste() {
-
-    }
-
     public Taste(String text) {
         this.text = text;
     }

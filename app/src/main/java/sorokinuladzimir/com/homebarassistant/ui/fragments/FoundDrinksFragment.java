@@ -1,6 +1,7 @@
 package sorokinuladzimir.com.homebarassistant.ui.fragments;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
@@ -10,6 +11,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -17,19 +19,18 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
-import okhttp3.HttpUrl;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 import sorokinuladzimir.com.homebarassistant.Constants;
 import sorokinuladzimir.com.homebarassistant.R;
+import sorokinuladzimir.com.homebarassistant.net.NoConnectivityException;
+import sorokinuladzimir.com.homebarassistant.net.RetrofitInstance;
 import sorokinuladzimir.com.homebarassistant.net.entity.DrinkEntity;
 import sorokinuladzimir.com.homebarassistant.net.AbsolutDrinksApi;
 import sorokinuladzimir.com.homebarassistant.net.AbsolutDrinksResult;
@@ -47,24 +48,30 @@ public class FoundDrinksFragment extends Fragment {
     private static final String EXTRA_BUNDLE = "extra_bundle";
 
     private DrinkCardItemAdapter mAdapter;
-    private ActionBar mToolbar;
-    private FloatingActionButton mFab;
 
-    private ArrayList<DrinkEntity> mCocktailList;
+    private ArrayList<DrinkEntity> mCocktailList = new ArrayList<>();
     private int mTotalResult = 0;
     private String mNextLink;
     private String mRequestConditions;
     private SwipeRefreshLayout mSwipeRefreshLayout;
+    private SearchView searchView;
+
+    private int mCurrentSearchType = -1;
+
+    private static final int SEARCH_BY_NAME = 0;
+
+    private static final int SEARCH_BY_CONDITIONS = 1;
 
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fr_drinks_list, container, false);
 
         if(savedInstanceState != null) {
             mCocktailList = (ArrayList<DrinkEntity>) savedInstanceState.getSerializable("cocktailList");
             mTotalResult = savedInstanceState.getInt("total");
+            mCurrentSearchType = savedInstanceState.getInt("searchType");
             mNextLink = savedInstanceState.getString("next");
             mRequestConditions = savedInstanceState.getString("conditions");
         }
@@ -74,10 +81,14 @@ public class FoundDrinksFragment extends Fragment {
         initToolbar(rootView);
         initRecyclerView(rootView);
 
-        Bundle args = getArguments().getBundle(EXTRA_BUNDLE);
+        Bundle args = null;
+        if (getArguments() != null) {
+            args = getArguments().getBundle(EXTRA_BUNDLE);
+        }
         if (args != null && !args.isEmpty()) {
             mRequestConditions = args.getString(Constants.Extra.REQUEST_CONDITIONS);
-            loadDrinks(0, Constants.Values.DEFAULT_ITEM_AMOUNT, mRequestConditions);
+            mCurrentSearchType = SEARCH_BY_CONDITIONS;
+            searchDrinks(0, Constants.Values.DEFAULT_ITEM_AMOUNT, mRequestConditions, mCurrentSearchType, true);
             args.clear();
         }
 
@@ -88,8 +99,11 @@ public class FoundDrinksFragment extends Fragment {
         mSwipeRefreshLayout = rootView.findViewById(R.id.swipe_refresh_layout);
         mSwipeRefreshLayout.setOnRefreshListener(() -> {
         if (mRequestConditions != null){
-            mCocktailList.clear();
-            loadDrinks(0, Constants.Values.DEFAULT_ITEM_AMOUNT, mRequestConditions);
+            searchDrinks(0,
+                    Constants.Values.DEFAULT_ITEM_AMOUNT,
+                    mRequestConditions,
+                    mCurrentSearchType,
+                    true);
         }
             mSwipeRefreshLayout.setRefreshing(false);
         });
@@ -107,11 +121,10 @@ public class FoundDrinksFragment extends Fragment {
     }
 
     private void initFAB(View view){
-        mFab = view.findViewById(R.id.fab);
-        mFab.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_search));
-        mFab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+        FloatingActionButton mFab = view.findViewById(R.id.fab);
+        mFab.setImageDrawable(ContextCompat.getDrawable(Objects.requireNonNull(getContext()), R.drawable.ic_search));
+        mFab.setOnClickListener(view1 -> {
+            if (getParentFragment() != null) {
                 ((RouterProvider)getParentFragment()).getRouter().navigateTo(Screens.SEARCH_DRINKS);
             }
         });
@@ -120,9 +133,11 @@ public class FoundDrinksFragment extends Fragment {
     private void initToolbar(View view) {
         setHasOptionsMenu(true);
         Toolbar toolbar = view.findViewById(R.id.toolbar);
-        ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
-        mToolbar = ((AppCompatActivity) getActivity()).getSupportActionBar();
-        mToolbar.setTitle(R.string.search_cocktails_toolbar_title);
+        ((AppCompatActivity) Objects.requireNonNull(getActivity())).setSupportActionBar(toolbar);
+        ActionBar mToolbar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+        if (mToolbar != null) {
+            mToolbar.setTitle(R.string.search_cocktails_toolbar_title);
+        }
     }
 
     private void initRecyclerView(View rootView) {
@@ -132,10 +147,16 @@ public class FoundDrinksFragment extends Fragment {
         mAdapter = new DrinkCardItemAdapter(drink -> {
             Bundle bundle = new Bundle();
             bundle.putSerializable(Constants.Extra.COCKTAIL, drink);
-            ((RouterProvider) getParentFragment()).getRouter().navigateTo(Screens.SINGLE_DRINK, bundle);
+            if (getParentFragment() != null) {
+                ((RouterProvider) getParentFragment()).getRouter().navigateTo(Screens.SINGLE_DRINK, bundle);
+            }
         }, () -> {
             if (mCocktailList != null && mCocktailList.size() < mTotalResult) {
-                loadDrinks(mCocktailList.size(), Constants.Values.DEFAULT_ITEM_AMOUNT, mRequestConditions);
+                searchDrinks(mCocktailList.size(),
+                        Constants.Values.DEFAULT_ITEM_AMOUNT,
+                        mRequestConditions,
+                        mCurrentSearchType,
+                        false);
             }
         });
 
@@ -145,82 +166,120 @@ public class FoundDrinksFragment extends Fragment {
         recyclerView.setAdapter(mAdapter);
     }
 
-    private void loadDrinks(int start, int pageSize, String conditions){
-        OkHttpClient httpClient = new OkHttpClient.Builder().addInterceptor(chain -> {
-            Request original = chain.request();
-            HttpUrl originalHttpUrl = original.url();
-            HttpUrl url = originalHttpUrl.newBuilder()
-                    .addQueryParameter("apiKey", Constants.Keys.ABSOLUT_API_KEY)
-                    .addQueryParameter("start", String.valueOf(start))
-                    .addQueryParameter("pageSize", String.valueOf(pageSize))
-                    .addQueryParameter("lang", "ru")
-                    .build();
-            Request.Builder requestBuilder = original.newBuilder()
-                    .url(url);
-            Request request = requestBuilder.build();
+    private void searchDrinks(int start, int pageSize, String query, int searchType, boolean clearDrinkList) {
 
-            return chain.proceed(request);
-        }).build();
+        if (clearDrinkList && mCocktailList != null) mCocktailList.clear();
 
-        Retrofit.Builder builder = new Retrofit.Builder()
-                .baseUrl(Constants.Uri.ABSOLUT_DRINKS_ROOT)
-                .client(httpClient)
-                .addConverterFactory(GsonConverterFactory.create());
+        AbsolutDrinksApi client =  RetrofitInstance
+                .getRetrofitInstance(getContext(), "ru")
+                .create(AbsolutDrinksApi.class);
 
-        Retrofit retrofit = builder.build();
+        Call<AbsolutDrinksResult> call;
+        switch (searchType) {
+            case SEARCH_BY_CONDITIONS:
+                call = client.getAllMatchedDrinks(query, start, pageSize);
+                break;
+            case SEARCH_BY_NAME:
+                call = client.searchDrinks(query, start, pageSize);
+                break;
+            default:
+                call = null;
+        }
 
-        AbsolutDrinksApi client =  retrofit.create(AbsolutDrinksApi.class);
 
-        Call<AbsolutDrinksResult> call = client.getAllMatchedDrinks(conditions);
+        if (call != null) {
+            loadDrinks(call);
+        } else {
+            Toast.makeText(getContext(), "something went wrong :(", Toast.LENGTH_SHORT).show();
+        }
+
+    }
+
+    private void loadDrinks(Call<AbsolutDrinksResult> call){
 
         call.enqueue(new Callback<AbsolutDrinksResult>() {
             @Override
-            public void onResponse(Call<AbsolutDrinksResult> call, Response<AbsolutDrinksResult> response) {
-                // The network call was a success and we got a response
-                // TODO: use the repository list and display it
-                mTotalResult = response.body().getTotalResult();
-
-                if (mCocktailList != null && mNextLink != null && !mNextLink.equals(response.body().getNext())) {
-                    mCocktailList.addAll(response.body().getResult());
+            public void onResponse(@NonNull Call<AbsolutDrinksResult> call, @NonNull Response<AbsolutDrinksResult> response) {
+                if (response.isSuccessful()) {
+                    // The network call was a success and we got a response
+                    setDrinksResult(response);
                 } else {
-                    mCocktailList = response.body().getResult();
-                }
-
-                mNextLink = response.body().getNext();
-
-                if(mCocktailList != null){
-                    mAdapter.setData(mCocktailList);
+                    Toast.makeText(getContext(), "server returned error", Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
-            public void onFailure(Call<AbsolutDrinksResult> call, Throwable t) {
+            public void onFailure(@NonNull Call<AbsolutDrinksResult> call, @NonNull Throwable t) {
                 // the network call was a failure
+                if (t instanceof NoConnectivityException) {
+                    // No internet connection
+                    Toast.makeText(getContext(), "no internet", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(getContext(), "conversion issue! big problems :(", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+    }
+
+    private void setDrinksResult(Response<AbsolutDrinksResult> response){
+        mTotalResult = Objects.requireNonNull(response.body()).getTotalResult();
+
+        if (mCocktailList != null && mNextLink != null && !mNextLink.equals(Objects.requireNonNull(response.body()).getNext())) {
+            mCocktailList.addAll(Objects.requireNonNull(response.body()).getResult());
+        } else {
+            mCocktailList = Objects.requireNonNull(response.body()).getResult();
+        }
+
+        mNextLink = Objects.requireNonNull(response.body()).getNext();
+
+        if(mCocktailList != null){
+            mAdapter.setData(mCocktailList);
+        }
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.list_with_search_menu, menu);
+        MenuItem myActionMenuItem = menu.findItem( R.id.action_search);
+        searchView = (SearchView) myActionMenuItem.getActionView();
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                mRequestConditions = query;
+                mCurrentSearchType = SEARCH_BY_NAME;
+                searchDrinks(0, Constants.Values.DEFAULT_ITEM_AMOUNT, mRequestConditions, mCurrentSearchType, true);
+                if( ! searchView.isIconified()) {
+                    searchView.setIconified(true);
+                }
+                myActionMenuItem.collapseActionView();
+                return false;
+            }
+            @Override
+            public boolean onQueryTextChange(String s) {
+
+                return false;
             }
         });
     }
 
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        super.onCreateOptionsMenu(menu, inflater);
-        inflater.inflate(R.menu.list_without_search_menu, menu);
-    }
-
-    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.action_about) {
-            ((RouterProvider)getParentFragment()).getRouter().navigateTo(Screens.ABOUT, "Found drinks fragment anbout text");
+            if (getParentFragment() != null) {
+                ((RouterProvider)getParentFragment()).getRouter().navigateTo(Screens.ABOUT, "Found drinks fragment anbout text");
+            }
         }
         return super.onOptionsItemSelected(item);
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putSerializable("cocktailList", mCocktailList);
         outState.putString("conditions", mRequestConditions);
         outState.putInt("total", mTotalResult);
         outState.putString("next", mNextLink);
+        outState.putInt("searchType", mCurrentSearchType);
     }
 
 }

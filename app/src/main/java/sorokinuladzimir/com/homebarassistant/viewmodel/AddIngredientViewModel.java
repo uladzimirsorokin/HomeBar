@@ -23,7 +23,6 @@ import android.arch.lifecycle.MediatorLiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;
 import android.arch.lifecycle.ViewModelProvider;
-import android.content.Context;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 
@@ -51,7 +50,7 @@ public class AddIngredientViewModel extends AndroidViewModel {
 
     private DataRepository mRepository;
 
-    public AddIngredientViewModel(Application application, Long ingredientId) {
+    AddIngredientViewModel(Application application, Long ingredientId) {
         super(application);
 
         mIngredientId = ingredientId;
@@ -64,14 +63,12 @@ public class AddIngredientViewModel extends AndroidViewModel {
         mObservableCurrentImagePath = new MediatorLiveData<>();
         mObservableCurrentImagePath.setValue(null);
         mRepository.resetIngredientImagePath();
-        mObservableCurrentImagePath.addSource(mRepository.getObservableIngredientImagePath(), imagePath -> {
-            mObservableCurrentImagePath.setValue(imagePath);
-        });
+        mObservableCurrentImagePath.addSource(mRepository.getObservableIngredientImagePath(), mObservableCurrentImagePath::setValue);
 
         if(mIngredientId != -1L){
             mIsNewIngredient = false;
             mLiveIngredient = BarApp.getInstance().getRepository().loadIngredient(mIngredientId);
-            mObservableIngredient.addSource(mLiveIngredient, ingredient -> mObservableIngredient.setValue(ingredient));
+            mObservableIngredient.addSource(mLiveIngredient, mObservableIngredient::setValue);
         } else {
             mLiveIngredient = null;
         }
@@ -133,16 +130,16 @@ public class AddIngredientViewModel extends AndroidViewModel {
         getCurrentImagePath().setValue(null);
     }
 
-    public void removeImageFile(String dbPath, String currentPath, Boolean savingIngredient){
+    private void removeImageFile(String dbPath, String currentPath, Boolean savingIngredient){
 
         String deletePath = null;
 
         if (savingIngredient) {
-            if (dbPath != null && currentPath != dbPath) {
+            if (dbPath != null && !currentPath.equals(dbPath)) {
                 deletePath = dbPath;
             }
         } else {
-            if (currentPath != null && currentPath != dbPath) {
+            if (currentPath != null && !currentPath.equals(dbPath)) {
                 deletePath = currentPath;
             }
         }
@@ -162,8 +159,9 @@ public class AddIngredientViewModel extends AndroidViewModel {
             mIngredientId = ingredientId;
         }
 
+        @NonNull
         @Override
-        public <T extends ViewModel> T create(Class<T> modelClass) {
+        public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
             //noinspection unchecked
             return (T) new AddIngredientViewModel(mApplication, mIngredientId);
         }

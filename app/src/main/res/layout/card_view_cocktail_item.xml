@@ -13,7 +13,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="@dimen/card_height"
-        android:layout_margin="16dp">
+        android:layout_margin="@dimen/standard_spacing">
 
         <TextView
             android:layout_width="match_parent"
@@ -43,14 +43,13 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/card_subtitle"
-            android:layout_marginEnd="8dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="4dp"
+            android:layout_marginEnd="@dimen/medium_spacing"
+            android:layout_marginStart="@dimen/medium_spacing"
+            android:layout_marginTop="@dimen/small_spacing"
             android:textSize="14sp"
             android:fontFamily="sans-serif"
             android:ellipsize="end"
             android:maxLines="2"
-
             android:layout_above="@+id/card_rating_bar"
             android:layout_below="@+id/card_title"
             android:layout_toLeftOf="@+id/card_image"/>

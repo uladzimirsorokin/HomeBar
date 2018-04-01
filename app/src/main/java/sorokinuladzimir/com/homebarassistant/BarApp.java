@@ -18,8 +18,6 @@ public class BarApp extends Application {
     private Cicerone<Router> cicerone;
     private AppExecutors mAppExecutors;
 
-    public static int currentPosition;
-
 
     @Override
     public void onCreate() {

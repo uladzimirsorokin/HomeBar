@@ -3,20 +3,20 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="72dp">
+    android:layout_height="@dimen/list_item_height">
 
     <ImageView
         android:id="@+id/image_singledrink_ingredient_item"
-        android:paddingLeft="16dp"
-        android:paddingRight="16dp"
-        android:layout_width="72dp"
-        android:layout_height="72dp"
+        android:paddingStart="@dimen/standard_spacing"
+        android:paddingEnd="@dimen/standard_spacing"
+        android:layout_width="@dimen/list_item_height"
+        android:layout_height="@dimen/list_item_height"
         android:src="@drawable/alco"/>
 
     <ImageView
         android:layout_width="40dp"
         android:layout_height="40dp"
-        android:layout_margin="16dp"
+        android:layout_margin="@dimen/standard_spacing"
         android:background="@drawable/oval"/>
 
     <TextView
@@ -24,8 +24,8 @@
         android:layout_toRightOf="@+id/image_singledrink_ingredient_item"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingRight="16dp"
-        android:paddingTop="16dp"
+        android:paddingEnd="@dimen/standard_spacing"
+        android:paddingTop="@dimen/standard_spacing"
         android:singleLine="true"
         android:ellipsize="end"
         android:textSize="16sp"
@@ -39,7 +39,7 @@
         android:layout_below="@+id/tv_singledrink_ingredient"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
+        android:layout_marginBottom="@dimen/standard_spacing"
         android:singleLine="true"
         android:ellipsize="end"
         android:textSize="14sp"
@@ -55,8 +55,8 @@
         android:layout_toRightOf="@+id/tv_singledrink_amount"
         android:singleLine="true"
         android:ellipsize="end"
-        android:paddingLeft="4dp"
-        android:paddingRight="16dp"
+        android:paddingStart="@dimen/small_spacing"
+        android:paddingEnd="@dimen/standard_spacing"
         android:text="dash"
         android:textColor="#84000000"
         android:fontFamily="sans-serif"
