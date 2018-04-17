@@ -6,7 +6,7 @@ import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
-import sorokinuladzimir.com.homebarassistant.Constants;
+import sorokinuladzimir.com.homebarassistant.net.entity.Preparation;
 
 
 public interface AbsolutDrinksApi {
@@ -23,6 +23,9 @@ public interface AbsolutDrinksApi {
            @Path("searchString") String searchString,
            @Query("start") int start,
            @Query("pageSize") int pageSize);
+
+   @GET("/drinks/{drinkId}/howtomix")
+   Call<Preparation> getPreparationSteps(@Path("drinkId") String drinkId);
 
 }
 

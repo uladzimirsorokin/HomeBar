@@ -14,15 +14,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import sorokinuladzimir.com.homebarassistant.R;
-import sorokinuladzimir.com.homebarassistant.db.entity.Ingredient;
 import sorokinuladzimir.com.homebarassistant.db.entity.WholeCocktail;
-import sorokinuladzimir.com.homebarassistant.net.entity.IngredientEntity;
-import sorokinuladzimir.com.homebarassistant.ui.utils.IngredientParcer;
 
 
-public class SingleDrinkIngredientItemAdapter extends RecyclerView.Adapter<SingleDrinkIngredientItemAdapter.IngredientViewHolder> {
+public class RemoteDrinkIngredientItemAdapter extends RecyclerView.Adapter<RemoteDrinkIngredientItemAdapter.IngredientViewHolder> {
 
-    public SingleDrinkIngredientItemAdapter(OnItemClickListener listener) {
+    public RemoteDrinkIngredientItemAdapter(OnItemClickListener listener) {
         this.listener = listener;
     }
 
@@ -72,16 +69,30 @@ public class SingleDrinkIngredientItemAdapter extends RecyclerView.Adapter<Singl
 
         public void bind(final WholeCocktail item, final OnItemClickListener listener) {
 
-            if(item.getIngredientName() != null)ingredientName.setText(item.getIngredientName());
+            if(item.getIngredientName() != null){
+                ingredientName.setText(item.getIngredientName());
+            } else {
+                ingredientName.setText(R.string.noname_drink);
+            }
 
-            if(item.getAmount() != null) ingredientAmount.setText(item.getAmount());
 
-            if(item.getUnit() != null) ingredientUnit.setText(item.getUnit());
+            if(item.getAmount() != null){
+                ingredientAmount.setText(item.getAmount());
+            } else  {
+                ingredientAmount.setText("");
+            }
+
+
+            if (item.getUnit() != null) {
+                ingredientUnit.setText(item.getUnit());
+            } else {
+                ingredientUnit.setText("");
+            }
 
             if(item.getImage() != null){
                 Glide.with(ingredientImage.getContext())
                         .load(item.getImage())
-                        .apply(RequestOptions.centerCropTransform())
+                        .apply(RequestOptions.circleCropTransform())
                         .into(ingredientImage);
             }
 

@@ -63,4 +63,5 @@ public interface DrinkDao {
 
     @Query("DELETE FROM Drink")
     void deleteAll();
+
 }

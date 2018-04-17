@@ -32,6 +32,7 @@ import sorokinuladzimir.com.homebarassistant.R;
 import sorokinuladzimir.com.homebarassistant.ui.adapters.LocalDrinkIngredientItemAdapter;
 import sorokinuladzimir.com.homebarassistant.ui.subnavigation.BackButtonListener;
 import sorokinuladzimir.com.homebarassistant.ui.subnavigation.RouterProvider;
+import sorokinuladzimir.com.homebarassistant.ui.utils.TastesHelper;
 import sorokinuladzimir.com.homebarassistant.viewmodel.DrinkViewModel;
 
 
@@ -50,7 +51,13 @@ public class LocalDrinkFragment extends Fragment implements BackButtonListener {
     private LocalDrinkIngredientItemAdapter mAdapter;
     private TextView mDescriptionText;
     private CollapsingToolbarLayout mCollapsingToolbarLayout;
-
+    private View mCardPreparation;
+    private View mCardNotes;
+    private TextView mTvNotes;
+    private TextView mTvGlass;
+    private TextView mTvTastes;
+    private TextView mTvType;
+    private TextView mTvRating;
 
     @Nullable
     @Override
@@ -88,18 +95,50 @@ public class LocalDrinkFragment extends Fragment implements BackButtonListener {
             }
         });
 
+
         model.getDrink().observe(this, drink -> {
             if (drink != null) {
                 Glide.with(Objects.requireNonNull(getContext()))
                         .load(drink.getImage() != null ? drink.getImage() : R.drawable.camera_placeholder)
-                        .apply(RequestOptions.centerCropTransform())
                         .into(mDrinkImage);
-                if(drink.getDescription() != null) mDescriptionText.setText(drink.getDescription());
-                if(drink.getName() != null) mCollapsingToolbarLayout.setTitle(drink.getName());
+
+                if (drink.getName() != null) mCollapsingToolbarLayout.setTitle(drink.getName());
+
+                setTextToCard(mCardPreparation, mDescriptionText, drink.getDescription());
+
+                setTextToCard(mCardNotes, mTvNotes, drink.getNotes());
+
+                mTvRating.setText(String.valueOf(drink.getRating()));
+
+                if (drink.getGlass() != null && drink.getGlass().getGlassName() != null) mTvGlass.setText(drink.getGlass().getGlassName());
+
+                if (drink.getTastes() != null && drink.getTastes().size() > 0)
+                    mTvTastes.setText(TastesHelper.tastesToString(drink.getTastes()));
+
+                String type;
+                if (drink.isAlcoholic()) {
+                    type = "Алкогольный";
+                } else {
+                    type = "Безалкогольный";
+                }
+                if (drink.isCarbonated()) {
+                    type += ", Газированный";
+                }
+
+                mTvType.setText(type);
 
             }
         });
 
+    }
+
+    private void setTextToCard(View containerView, TextView textView, String text) {
+        if (text != null && !Objects.equals(text,"")) {
+            containerView.setVisibility(View.VISIBLE);
+            textView.setText(text);
+        } else {
+            containerView.setVisibility(View.GONE);
+        }
     }
 
     public static LocalDrinkFragment getNewInstance(String name, Long drinkId) {
@@ -156,6 +195,14 @@ public class LocalDrinkFragment extends Fragment implements BackButtonListener {
     private void initViews(View rootView) {
         mDrinkImage = rootView.findViewById(R.id.image_singledrink);
         mDescriptionText = rootView.findViewById(R.id.tv_singledrink_descriptionPlain);
+        mCardNotes = rootView.findViewById(R.id.card_notes);
+        mCardPreparation = rootView.findViewById(R.id.card_preparation);
+        mTvNotes = rootView.findViewById(R.id.tv_notes);
+        mTvGlass = rootView.findViewById(R.id.tv_glass);
+        mTvTastes = rootView.findViewById(R.id.tv_tastes);
+        mTvType = rootView.findViewById(R.id.tv_type);
+        mTvRating = rootView.findViewById(R.id.tv_rating);
+
 
         final RecyclerView rvIngredients = rootView.findViewById(R.id.recycler_singledrink_ingredients);
         rvIngredients.setHasFixedSize(true);

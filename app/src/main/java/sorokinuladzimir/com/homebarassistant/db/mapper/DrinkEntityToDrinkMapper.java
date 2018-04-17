@@ -25,16 +25,15 @@ public class DrinkEntityToDrinkMapper extends Mapper<Drink,DrinkEntity> {
 
     @Override
     public Drink reverseMap(DrinkEntity value) {
+
         Drink drink = new Drink();
         drink.setName(value.getName());
-
-
-
         drink.setTastes(value.getTastes());
         drink.setDescription(value.getDescription());
         drink.setImage(Constants.Uri.ABSOLUT_DRINKS_IMAGE_ROOT + value.getId() + ".png");
-        drink.setIngredients(IngredientEntityToIngredientMapper.getInstance().reverseMap(value.getIngredients()));
         drink.setRating(value.getRating());
+        drink.setAlcoholic(value.isAlcoholic());
+        drink.setCarbonated(value.isCarbonated());
 
         return drink;
     }

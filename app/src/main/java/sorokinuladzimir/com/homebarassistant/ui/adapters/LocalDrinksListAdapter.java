@@ -36,7 +36,7 @@ public class LocalDrinksListAdapter extends RecyclerView.Adapter<LocalDrinksList
 
     @Override
     public Character getCharacterForElement(int element) {
-        Character c = mDrinkList.get(element).getName().charAt(0);
+        Character c = mDrinkList.get(element).getName().equals("") ? Character.MIN_VALUE : mDrinkList.get(element).getName().charAt(0);
         if(Character.isDigit(c)) {
             c = '#';
         }
@@ -143,7 +143,7 @@ public class LocalDrinksListAdapter extends RecyclerView.Adapter<LocalDrinksList
         void bind(final Drink drinkItem, final OnItemClickListener listener) {
 
             Glide.with(cardImage.getContext())
-                    .load(drinkItem.getImage())
+                    .load(drinkItem.getImage() != null ? drinkItem.getImage() : R.drawable.camera_placeholder)
                     .apply(RequestOptions.centerCropTransform())
                     .into(cardImage);
 

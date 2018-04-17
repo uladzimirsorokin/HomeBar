@@ -54,6 +54,9 @@ public interface IngredientDao {
     @Query("SELECT * FROM Ingredient where id = :id")
     Ingredient loadIngredientById(Long id);
 
+    @Query("SELECT * FROM Ingredient where name = :name LIMIT 1")
+    Ingredient getIngredientByName(String name);
+
     @Query("SELECT * FROM Ingredient where id = :id")
     LiveData<Ingredient> loadIngredient(Long id);
 

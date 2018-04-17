@@ -33,8 +33,6 @@ public class DrinkEntity implements Serializable {
     @SerializedName("servedIn")
     private Glass servedIn;
 
-    private ArrayList<IngredientEntity> ingredients;
-
     private ArrayList<Taste> tastes;
 
     public String getId() {
@@ -99,14 +97,6 @@ public class DrinkEntity implements Serializable {
 
     public void setServedIn(Glass servedIn) {
         this.servedIn = servedIn;
-    }
-
-    public ArrayList<IngredientEntity> getIngredients() {
-        return ingredients;
-    }
-
-    public void setIngredients(ArrayList<IngredientEntity> ingredients) {
-        this.ingredients = ingredients;
     }
 
     public ArrayList<Taste> getTastes() {

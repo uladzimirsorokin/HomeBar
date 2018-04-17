@@ -18,6 +18,13 @@
         <item>Стакан рокс</item>
         <item>Шот</item>
         <item>Винный бокал</item>
+        <item>Кружка</item>
+        <item>Снифтер</item>
+        <item>Маргарита</item>
+        <item>Харрикейн</item>
+        <item>Пивной бокал</item>
+        <item>Пивная кружка</item>
+        <item>Айриш кофе</item>
     </string-array>
 
     <string-array name="colors_name">
@@ -111,6 +118,51 @@
         <item>teaspoon</item>
         <item>twist</item>
         <item>wedge</item>
+        <item>whole</item>
+    </string-array>
+
+    <string-array name="ingredient_unit_ru">
+        <item>част</item>
+        <item>щеп</item>
+        <item>кап</item>
+        <item>полов</item>
+        <item>четв</item>
+        <item>побе</item>
+        <item>лист</item>
+        <item>кожур</item>
+        <item>ломти</item>
+        <item>дольк</item>
+        <item>кус</item>
+        <item>круг</item>
+        <item>вкус</item>
+        <item>палочк</item>
+        <item>веточк</item>
+        <item>чайн</item>
+        <item>вит</item>
+        <item>спир</item>
+        <item>цел</item>
+    </string-array>
+
+    <string-array name="ingredient_unit_ru_matches">
+        <item>part</item>
+        <item>dash</item>
+        <item>drop</item>
+        <item>half</item>
+        <item>quarter</item>
+        <item>leaf</item>
+        <item>leaf</item>
+        <item>peel</item>
+        <item>slice</item>
+        <item>slice</item>
+        <item>wedge</item>
+        <item>wedge</item>
+        <item>scoop</item>
+        <item>sprig</item>
+        <item>sprig</item>
+        <item>teaspoon</item>
+        <item>twist</item>
+        <item>twist</item>
+        <item>whole</item>
     </string-array>
 
 </resources>

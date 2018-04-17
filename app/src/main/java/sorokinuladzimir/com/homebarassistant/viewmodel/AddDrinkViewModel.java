@@ -31,7 +31,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 import sorokinuladzimir.com.homebarassistant.BarApp;
-import sorokinuladzimir.com.homebarassistant.DataRepository;
+import sorokinuladzimir.com.homebarassistant.BarDataRepository;
 import sorokinuladzimir.com.homebarassistant.db.entity.Drink;
 import sorokinuladzimir.com.homebarassistant.db.entity.DrinkIngredientJoin;
 import sorokinuladzimir.com.homebarassistant.db.entity.Taste;
@@ -44,7 +44,7 @@ public class AddDrinkViewModel extends AndroidViewModel {
 
     private final Long mDrinkId;
 
-    private DataRepository mRepository;
+    private BarDataRepository mRepository;
 
     private final MediatorLiveData<Drink> mObservableDrink;
 
@@ -82,7 +82,7 @@ public class AddDrinkViewModel extends AndroidViewModel {
         super(application);
 
         mDrinkId = drinkId;
-        mRepository = BarApp.getInstance().getRepository();
+        mRepository = BarApp.getInstance().getBarRepository();
 
         mObservableDrink = new MediatorLiveData<>();
         mObservableDrink.setValue(null);
@@ -98,10 +98,10 @@ public class AddDrinkViewModel extends AndroidViewModel {
 
         if(mDrinkId != -1L){
             mIsNewDrink = false;
-            mLiveDrink = mRepository.loadDrink(mDrinkId);
+            mLiveDrink = mRepository.getDrink(mDrinkId);
             mObservableDrink.addSource(mLiveDrink, mObservableDrink::setValue);
 
-            mInitialIngredients.addSource(mRepository.loadIngredients(mDrinkId), mInitialIngredients::setValue);
+            mInitialIngredients.addSource(mRepository.getDrinkIngredients(mDrinkId), mInitialIngredients::setValue);
         } else {
             mLiveDrink = null;
 
@@ -166,7 +166,7 @@ public class AddDrinkViewModel extends AndroidViewModel {
         if (ingredientIds != null) {
             mIngredientIds = ingredientIds;
             if (mLiveListIngredients != null) mObservableLiveIngredients.removeSource(mLiveListIngredients);
-            mLiveListIngredients = mRepository.loadCocktailIngredients(mIngredientIds);
+            mLiveListIngredients = mRepository.getListIngredientsNames(mIngredientIds);
             mObservableLiveIngredients.addSource(mLiveListIngredients,
                     mObservableLiveIngredients::setValue);
         }
@@ -254,7 +254,7 @@ public class AddDrinkViewModel extends AndroidViewModel {
     }
 
     public Uri createPhotoFile() {
-        mPhotoUri = BarApp.getInstance().getRepository().createImageFile();
+        mPhotoUri = mRepository.createImageFile();
         return mPhotoUri;
     }
 
@@ -286,7 +286,7 @@ public class AddDrinkViewModel extends AndroidViewModel {
             }
         }
 
-        if (deletePath != null) BarApp.getInstance().getRepository().deleteImage(deletePath);
+        if (deletePath != null) mRepository.deleteImage(deletePath);
     }
 
 
@@ -306,7 +306,7 @@ public class AddDrinkViewModel extends AndroidViewModel {
         drink.setTastes(mCurrentTastesList.getValue());
         drink.setRating(rating);
         List<DrinkIngredientJoin> ingredientsList = WholeCocktailToDrinkIngredientJoinMapper.getInstance().reverseMap(ingredients);
-        mRepository.insertDrink(drink, ingredientsList);
+        mRepository.saveDrink(drink, ingredientsList);
     }
 
     public void deleteDrink() {

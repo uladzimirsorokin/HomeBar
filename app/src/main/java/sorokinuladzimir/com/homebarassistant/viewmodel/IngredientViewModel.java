@@ -24,15 +24,19 @@ import android.arch.lifecycle.ViewModel;
 import android.arch.lifecycle.ViewModelProvider;
 import android.support.annotation.NonNull;
 
+import java.util.List;
+
 import sorokinuladzimir.com.homebarassistant.BarApp;
+import sorokinuladzimir.com.homebarassistant.db.entity.Drink;
 import sorokinuladzimir.com.homebarassistant.db.entity.Ingredient;
 
 
 
 public class IngredientViewModel extends AndroidViewModel {
 
-    // MediatorLiveData can observe other LiveData objects and react on their emissions.
     private final MediatorLiveData<Ingredient> mObservableIngredient;
+
+    private final MediatorLiveData<List<Drink>> mRelatedDrinks;
 
 
     private final Long mIngredientId;
@@ -44,23 +48,27 @@ public class IngredientViewModel extends AndroidViewModel {
         mIngredientId = ingredientId;
 
         mObservableIngredient = new MediatorLiveData<>();
+        mRelatedDrinks = new MediatorLiveData<>();
 
         // set by default null, until we get data from the database.
         mObservableIngredient.setValue(null);
+        mRelatedDrinks.setValue(null);
 
+        mLiveIngredient = BarApp.getInstance().getBarRepository().getIngredient(mIngredientId);
 
-        mLiveIngredient = BarApp.getInstance().getRepository().loadIngredient(mIngredientId);
+        mRelatedDrinks.addSource(BarApp.getInstance().getBarRepository().getDrinksByIngredient(mIngredientId), mRelatedDrinks::setValue);
 
-        // observe the changes of the products from the database and forward them
         mObservableIngredient.addSource(mLiveIngredient, mObservableIngredient::setValue);
 
     }
 
-    /**
-     * Expose the LiveData Products query so the UI can observe it.
-     */
+
     public LiveData<Ingredient> getIngredient() {
         return mObservableIngredient;
+    }
+
+    public LiveData<List<Drink>> getRelatedDrinks() {
+        return mRelatedDrinks;
     }
 
     public static class Factory extends ViewModelProvider.NewInstanceFactory {

@@ -5,6 +5,7 @@
     <dimen name="bottom_bar_elevation">8dp</dimen>
     <dimen name="fab_margin">16dp</dimen>
     <dimen name="app_bar_height">450dp</dimen>
+    <dimen name="half_app_bar_height">450dp</dimen>
     <dimen name="ingredient_app_bar_height">300dp</dimen>
     <dimen name="expanded_toolbar_title_margin_start">36dp</dimen>
 <!--

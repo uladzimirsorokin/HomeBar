@@ -43,8 +43,8 @@ public class BarApp extends Application {
         return CocktailsDatabase.getInstance(this, mAppExecutors);
     }
 
-    public DataRepository getRepository() {
-        return DataRepository.getInstance(getDatabase(), mAppExecutors, getApplicationContext());
+    public BarDataRepository getBarRepository() {
+        return BarDataRepository.getInstance(getDatabase(), mAppExecutors, getApplicationContext());
     }
 
     public AppExecutors getExecutors() {

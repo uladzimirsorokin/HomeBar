@@ -40,7 +40,7 @@ public class DrinkListViewModel extends AndroidViewModel {
         mObservableDrinks = new MediatorLiveData<>();
         mObservableDrinks.setValue(null);
 
-        mLiveDrinks = BarApp.getInstance().getRepository().getDrinks();
+        mLiveDrinks = BarApp.getInstance().getBarRepository().getLocalDrinks();
 
         mObservableDrinks.addSource(mLiveDrinks, mObservableDrinks::setValue);
     }
@@ -64,7 +64,7 @@ public class DrinkListViewModel extends AndroidViewModel {
     }
 
     private void addSearchResultSource(String query) {
-        mLiveSearchDrinks = BarApp.getInstance().getRepository().searchDrinksByName(query);
+        mLiveSearchDrinks = BarApp.getInstance().getBarRepository().getDrinksByName(query);
         mObservableDrinks.addSource(mLiveSearchDrinks, mObservableDrinks::setValue);
     }
 

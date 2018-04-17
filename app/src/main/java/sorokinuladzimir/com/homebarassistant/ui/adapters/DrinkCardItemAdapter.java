@@ -18,6 +18,7 @@ import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.transition.Transition;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import sorokinuladzimir.com.homebarassistant.Constants;
 import sorokinuladzimir.com.homebarassistant.R;
@@ -63,7 +64,7 @@ public class DrinkCardItemAdapter extends RecyclerView.Adapter<DrinkCardItemAdap
         return mData.size();
     }
 
-    public void setData(ArrayList<DrinkEntity> cocktails) {
+    public void setData(List<DrinkEntity> cocktails) {
         mData.clear();
         mData.addAll(cocktails);
         notifyDataSetChanged();
@@ -89,7 +90,8 @@ public class DrinkCardItemAdapter extends RecyclerView.Adapter<DrinkCardItemAdap
 
             Glide.with(cardImage.getContext())
                     .load(Constants.Uri.ABSOLUT_DRINKS_IMAGE_ROOT + drinkItem.getId() + ".png")
-                    .apply(RequestOptions.placeholderOf(R.drawable.camera_placeholder))
+                    .apply(RequestOptions.centerCropTransform())
+                    .error(Glide.with(cardImage.getContext()).load(R.drawable.camera_placeholder))
                     .into(cardImage);
 
             title.setText(drinkItem.getName());

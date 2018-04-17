@@ -6,8 +6,6 @@ public class Glass {
 
     private String glassName;
 
-    private String glassImage;
-
     public int getGlassId() {
         return glassId;
     }
@@ -24,11 +22,4 @@ public class Glass {
         this.glassName = glassName;
     }
 
-    public String getGlassImage() {
-        return glassImage;
-    }
-
-    public void setGlassImage(String glassImage) {
-        this.glassImage = glassImage;
-    }
 }

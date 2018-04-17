@@ -2,6 +2,7 @@ package sorokinuladzimir.com.homebarassistant.ui.fragments;
 
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.net.Uri;
@@ -19,6 +20,7 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -143,11 +145,24 @@ public class AddIngredientFragment extends Fragment implements BackButtonListene
         }
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     private void initViews(View view) {
         mIngredientImage = view.findViewById(R.id.image_add_ingredient);
         mName = view.findViewById(R.id.et_ingredient_name);
         mDesc = view.findViewById(R.id.et_ingredient_description);
         mNotes = view.findViewById(R.id.et_ingredient_notes);
+
+        mNotes.setOnTouchListener((v, event) -> {
+            if (v.getId() == R.id.et_ingredient_notes) {
+                v.getParent().requestDisallowInterceptTouchEvent(true);
+                switch (event.getAction() & MotionEvent.ACTION_MASK) {
+                    case MotionEvent.ACTION_UP:
+                        v.getParent().requestDisallowInterceptTouchEvent(false);
+                        break;
+                }
+            }
+            return false;
+        });
 
         RxPermissions rxPermissions = new RxPermissions(Objects.requireNonNull(getActivity()));
         mIngredientImage.setOnClickListener(view1 ->

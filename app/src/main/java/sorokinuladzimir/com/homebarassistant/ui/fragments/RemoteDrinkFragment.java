@@ -30,6 +30,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.TransitionOptions;
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
+import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.transition.Transition;
 
@@ -38,33 +41,32 @@ import java.util.Objects;
 import sorokinuladzimir.com.homebarassistant.Constants;
 import sorokinuladzimir.com.homebarassistant.R;
 
-import sorokinuladzimir.com.homebarassistant.db.mapper.RawIngredientToWholeCocktailMapper;
 import sorokinuladzimir.com.homebarassistant.net.entity.DrinkEntity;
 
-import sorokinuladzimir.com.homebarassistant.ui.adapters.SingleDrinkIngredientItemAdapter;
+import sorokinuladzimir.com.homebarassistant.ui.adapters.RemoteDrinkIngredientItemAdapter;
 import sorokinuladzimir.com.homebarassistant.ui.subnavigation.BackButtonListener;
 import sorokinuladzimir.com.homebarassistant.ui.subnavigation.RouterProvider;
-import sorokinuladzimir.com.homebarassistant.viewmodel.SingleDrinkViewModel;
+import sorokinuladzimir.com.homebarassistant.viewmodel.RemoteDrinkViewModel;
 
 /**
  * Created by sorok on 18.10.2017.
  */
 
 
-public class SingleDrinkFragment extends Fragment implements BackButtonListener {
+public class RemoteDrinkFragment extends Fragment implements BackButtonListener {
 
     private static final String EXTRA_NAME = "extra_name";
     private static final String EXTRA_BUNDLE = "extra_bundle";
 
 
     private ImageView mDrinkImage;
-    private SingleDrinkIngredientItemAdapter mAdapter;
+    private RemoteDrinkIngredientItemAdapter mAdapter;
     private TextView mDescriptionText;
     private CollapsingToolbarLayout mCollapsingToolbarLayout;
     private FloatingActionButton mFab;
 
 
-    private SingleDrinkViewModel mViewModel;
+    private RemoteDrinkViewModel mViewModel;
 
     private Menu collapsedMenu;
     private AppBarLayout mAppBarLayout;
@@ -76,10 +78,10 @@ public class SingleDrinkFragment extends Fragment implements BackButtonListener 
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fr_single_drink, container, false);
 
-        SingleDrinkViewModel.Factory factory = new SingleDrinkViewModel.Factory(Objects.requireNonNull(getActivity()).getApplication(),
+        RemoteDrinkViewModel.Factory factory = new RemoteDrinkViewModel.Factory(Objects.requireNonNull(getActivity()).getApplication(),
                 (DrinkEntity) Objects.requireNonNull(Objects.requireNonNull(getArguments())
                         .getBundle(EXTRA_BUNDLE)).getSerializable(Constants.Extra.COCKTAIL));
-        mViewModel = ViewModelProviders.of(this, factory).get(SingleDrinkViewModel.class);
+        mViewModel = ViewModelProviders.of(this, factory).get(RemoteDrinkViewModel.class);
 
         initToolbar(rootView);
         initViews(rootView);
@@ -94,7 +96,7 @@ public class SingleDrinkFragment extends Fragment implements BackButtonListener 
         subscribeUi(mViewModel);
     }
 
-    private void subscribeUi(SingleDrinkViewModel viewModel) {
+    private void subscribeUi(RemoteDrinkViewModel viewModel) {
         viewModel.getDrink().observe(this, drink -> {
             if (drink != null) {
                 Glide.with(Objects.requireNonNull(getContext()))
@@ -111,11 +113,13 @@ public class SingleDrinkFragment extends Fragment implements BackButtonListener 
                                 mDrinkImage.setDrawingCacheEnabled(true);
                             }
                         });
-                if (drink.getIngredients() != null) mAdapter.setData(
-                        RawIngredientToWholeCocktailMapper.getInstance().reverseMap(drink.getIngredients()));
                 if (drink.getDescription() != null) mDescriptionText.setText(drink.getDescription());
                 if (drink.getName() != null) mCollapsingToolbarLayout.setTitle(drink.getName());
             }
+        });
+
+        viewModel.getDrinkIngredients().observe(this, ingredientsList -> {
+            if (ingredientsList != null) mAdapter.setData(ingredientsList);
         });
     }
 
@@ -123,8 +127,8 @@ public class SingleDrinkFragment extends Fragment implements BackButtonListener 
         mViewModel.saveDrink();
     }
 
-    public static SingleDrinkFragment getNewInstance(String name, Bundle bundle) {
-        SingleDrinkFragment fragment = new SingleDrinkFragment();
+    public static RemoteDrinkFragment getNewInstance(String name, Bundle bundle) {
+        RemoteDrinkFragment fragment = new RemoteDrinkFragment();
 
         Bundle arguments = new Bundle();
         arguments.putString(EXTRA_NAME, name);
@@ -180,7 +184,7 @@ public class SingleDrinkFragment extends Fragment implements BackButtonListener 
         final RecyclerView rvIngredients = rootView.findViewById(R.id.recycler_singledrink_ingredients);
         rvIngredients.setHasFixedSize(true);
         rvIngredients.setLayoutManager(new LinearLayoutManager(getContext()));
-        mAdapter = new SingleDrinkIngredientItemAdapter(ingredientItem ->
+        mAdapter = new RemoteDrinkIngredientItemAdapter(ingredientItem ->
                 Toast.makeText(getContext(), ingredientItem.getIngredientName(), Toast.LENGTH_LONG).show());
         rvIngredients.setAdapter(mAdapter);
 

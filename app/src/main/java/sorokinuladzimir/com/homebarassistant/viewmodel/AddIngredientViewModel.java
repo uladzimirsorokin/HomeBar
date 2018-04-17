@@ -27,7 +27,7 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 
 import sorokinuladzimir.com.homebarassistant.BarApp;
-import sorokinuladzimir.com.homebarassistant.DataRepository;
+import sorokinuladzimir.com.homebarassistant.BarDataRepository;
 import sorokinuladzimir.com.homebarassistant.db.entity.Ingredient;
 
 
@@ -48,14 +48,14 @@ public class AddIngredientViewModel extends AndroidViewModel {
 
     private boolean mIsImageRemoved = false;
 
-    private DataRepository mRepository;
+    private BarDataRepository mRepository;
 
     AddIngredientViewModel(Application application, Long ingredientId) {
         super(application);
 
         mIngredientId = ingredientId;
 
-        mRepository = BarApp.getInstance().getRepository();
+        mRepository = BarApp.getInstance().getBarRepository();
 
         mObservableIngredient = new MediatorLiveData<>();
         mObservableIngredient.setValue(null);
@@ -67,7 +67,7 @@ public class AddIngredientViewModel extends AndroidViewModel {
 
         if(mIngredientId != -1L){
             mIsNewIngredient = false;
-            mLiveIngredient = BarApp.getInstance().getRepository().loadIngredient(mIngredientId);
+            mLiveIngredient = mRepository.getIngredient(mIngredientId);
             mObservableIngredient.addSource(mLiveIngredient, mObservableIngredient::setValue);
         } else {
             mLiveIngredient = null;
@@ -116,7 +116,7 @@ public class AddIngredientViewModel extends AndroidViewModel {
         ingredient.setName(name);
         ingredient.setDescription(description);
         ingredient.setNotes(notes);
-        mRepository.insertIngredient(ingredient);
+        mRepository.addIngredient(ingredient);
     }
 
     public int deleteIngredient() {
@@ -144,7 +144,7 @@ public class AddIngredientViewModel extends AndroidViewModel {
             }
         }
 
-        if (deletePath != null) BarApp.getInstance().getRepository().deleteImage(deletePath);
+        if (deletePath != null) mRepository.deleteImage(deletePath);
     }
 
     public static class Factory extends ViewModelProvider.NewInstanceFactory {

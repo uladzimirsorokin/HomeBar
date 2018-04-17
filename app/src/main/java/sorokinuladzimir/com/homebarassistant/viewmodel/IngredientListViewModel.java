@@ -41,8 +41,7 @@ public class IngredientListViewModel extends AndroidViewModel {
         // set by default null, until we get data from the database.
         mObservableIngredients.setValue(null);
 
-        mLiveIngredients = BarApp.getInstance().getRepository()
-                .getIngredients();
+        mLiveIngredients = BarApp.getInstance().getBarRepository().getIngredients();
 
         mObservableIngredients.addSource(mLiveIngredients, mObservableIngredients::setValue);
     }
@@ -67,7 +66,7 @@ public class IngredientListViewModel extends AndroidViewModel {
     }
 
     private void addSearchResultSource(String query) {
-        mLiveSearchIngredients = BarApp.getInstance().getRepository().searchIngredients(query);
+        mLiveSearchIngredients = BarApp.getInstance().getBarRepository().getIngredientsByName(query);
         mObservableIngredients.addSource(mLiveSearchIngredients, mObservableIngredients::setValue);
     }
 

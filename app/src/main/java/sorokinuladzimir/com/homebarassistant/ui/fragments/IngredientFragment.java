@@ -10,6 +10,9 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.DividerItemDecoration;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -19,6 +22,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
@@ -27,6 +31,9 @@ import java.util.Objects;
 
 import sorokinuladzimir.com.homebarassistant.R;
 
+import sorokinuladzimir.com.homebarassistant.db.entity.Drink;
+import sorokinuladzimir.com.homebarassistant.db.entity.Taste;
+import sorokinuladzimir.com.homebarassistant.ui.adapters.DrinkSimpleItemAdapter;
 import sorokinuladzimir.com.homebarassistant.ui.subnavigation.BackButtonListener;
 import sorokinuladzimir.com.homebarassistant.ui.subnavigation.RouterProvider;
 import sorokinuladzimir.com.homebarassistant.viewmodel.IngredientViewModel;
@@ -50,6 +57,11 @@ public class IngredientFragment extends Fragment implements BackButtonListener {
     private AppBarLayout mAppBarLayout;
     private boolean appBarExpanded = true;
 
+    private View mCardDescription;
+    private View mCardNotes;
+    private View mCardRelatedDrinks;
+    private DrinkSimpleItemAdapter mAdapter;
+
 
     @Nullable
     @Override
@@ -59,6 +71,7 @@ public class IngredientFragment extends Fragment implements BackButtonListener {
         initToolbar(rootView);
         initFAB(rootView);
         initViews(rootView);
+        initRecyclerView(rootView);
 
         return rootView;
     }
@@ -88,12 +101,34 @@ public class IngredientFragment extends Fragment implements BackButtonListener {
                         .load(ingredient.getImage() != null ? ingredient.getImage() : R.drawable.camera_placeholder)
                         .apply(RequestOptions.centerCropTransform())
                         .into(mIngredientImage);
-                if(ingredient.getDescription() != null) mDescriptionText.setText(ingredient.getDescription());
+
                 if (ingredient.getName() != null) mCollapsingToolbarLayout.setTitle(ingredient.getName());
-                if (ingredient.getNotes() != null) mNotesText.setText(ingredient.getNotes());
+
+                setTextToCard(mCardDescription, mDescriptionText,ingredient.getDescription());
+
+                setTextToCard(mCardNotes, mNotesText,ingredient.getNotes());
+
             }
         });
 
+        model.getRelatedDrinks().observe(this, drinks -> {
+            if (drinks != null && drinks.size() != 0) {
+                mCardRelatedDrinks.setVisibility(View.VISIBLE);
+                mAdapter.setData(drinks);
+            } else {
+                mCardRelatedDrinks.setVisibility(View.GONE);
+            }
+        });
+
+    }
+
+    private void setTextToCard(View containerView, TextView textView, String text) {
+        if (text != null && !Objects.equals(text,"")) {
+            containerView.setVisibility(View.VISIBLE);
+            textView.setText(text);
+        } else {
+            containerView.setVisibility(View.GONE);
+        }
     }
 
     public static IngredientFragment getNewInstance(String name, Long ingredientId) {
@@ -127,6 +162,15 @@ public class IngredientFragment extends Fragment implements BackButtonListener {
         });
     }
 
+    private void initRecyclerView(View rootView) {
+        final RecyclerView recyclerView = rootView.findViewById(R.id.recycler_view);
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        mAdapter = new DrinkSimpleItemAdapter(drink ->
+                Toast.makeText(getContext(), drink.getName(), Toast.LENGTH_SHORT).show());
+        recyclerView.setAdapter(mAdapter);
+    }
+
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
         if (collapsedMenu != null && !appBarExpanded) {
@@ -152,6 +196,10 @@ public class IngredientFragment extends Fragment implements BackButtonListener {
         mIngredientImage = rootView.findViewById(R.id.image_singleIngredient);
         mDescriptionText = rootView.findViewById(R.id.tv_singleingredient_description);
         mNotesText = rootView.findViewById(R.id.tv_singleingredient_notes);
+
+        mCardNotes = rootView.findViewById(R.id.card_notes);
+        mCardDescription = rootView.findViewById(R.id.card_description);
+        mCardRelatedDrinks = rootView.findViewById(R.id.card_related_drinks);
     }
 
     private void initFAB(View view){

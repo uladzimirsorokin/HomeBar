@@ -52,6 +52,10 @@
     <string name="menu_edit">Edit</string>
     <string name="bt_add_ingredients">ingredients</string>
     <string name="bt_add_tastes">tastes</string>
+    <string name="singledrink_title_notes">Заметки</string>
+    <string name="singledrink_title_general">О коктейле</string>
+    <string name="noname_drink">безымянный :(</string>
+    <string name="ingredient_related_drinks_title">Коктейли</string>
 
 
 </resources>

@@ -27,13 +27,16 @@ public class Drink implements Serializable {
 
     private String image;
 
-    @Ignore
-    private List<Ingredient> ingredients;
-
     @Embedded
     private Glass glass;
 
     private int rating;
+
+    private boolean isAlcoholic;
+
+    private boolean isCarbonated;
+
+    private String notes;
 
     public Long getId() {
         return id;
@@ -75,14 +78,6 @@ public class Drink implements Serializable {
         this.image = image;
     }
 
-    public List<Ingredient> getIngredients() {
-        return ingredients;
-    }
-
-    public void setIngredients(List<Ingredient> ingredients) {
-        this.ingredients = ingredients;
-    }
-
     public Glass getGlass() {
         return glass;
     }
@@ -97,5 +92,29 @@ public class Drink implements Serializable {
 
     public void setRating(int rating) {
         this.rating = rating;
+    }
+
+    public boolean isAlcoholic() {
+        return isAlcoholic;
+    }
+
+    public void setAlcoholic(boolean alcoholic) {
+        isAlcoholic = alcoholic;
+    }
+
+    public boolean isCarbonated() {
+        return isCarbonated;
+    }
+
+    public void setCarbonated(boolean carbonated) {
+        isCarbonated = carbonated;
+    }
+
+    public String getNotes() {
+        return notes;
+    }
+
+    public void setNotes(String notes) {
+        this.notes = notes;
     }
 }

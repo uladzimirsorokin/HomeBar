@@ -25,6 +25,7 @@ import android.arch.persistence.room.TypeConverters;
 
 import java.util.List;
 
+import sorokinuladzimir.com.homebarassistant.db.entity.Drink;
 import sorokinuladzimir.com.homebarassistant.db.entity.DrinkIngredientJoin;
 import sorokinuladzimir.com.homebarassistant.db.entity.Ingredient;
 import sorokinuladzimir.com.homebarassistant.db.converter.TasteConverter;
@@ -83,12 +84,10 @@ public interface CocktailDao {
             "WHERE drink_id Like :drinkID")
     LiveData<List<WholeCocktail>> findAllIngredientsByDrinkId(Long drinkID);
 
-/*
-    @Query("SELECT DrinkIngredientJoin.id as join_id, DrinkIngredientJoin.ingredient_id as id, Ingredient.name as ingredient, " +
-            "DrinkIngredientJoin.amount, DrinkIngredientJoin.unit, Ingredient.image as image " +
+    @Query("SELECT * " +
             "FROM DrinkIngredientJoin " +
             "INNER JOIN Ingredient ON DrinkIngredientJoin.ingredient_id = Ingredient.id " +
             "INNER JOIN Drink ON DrinkIngredientJoin.drink_id = Drink.id " +
-            "WHERE drink_id Like :drinkID")
-    LiveData<List<WholeCocktail>> findAllIngredientsByDrinkId(Long drinkID);*/
+            "WHERE ingredient_id Like :ingredientId")
+    LiveData<List<Drink>> getDrinksWithIngredient(Long ingredientId);
 }

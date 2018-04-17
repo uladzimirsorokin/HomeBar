@@ -101,7 +101,7 @@ public class TabContainerFragment extends Fragment implements RouterProvider, Ba
                         case Screens.INGREDIENTS_LIST:
                             return IngredientsListFragment.getNewInstance(getContainerName());
                         case Screens.SINGLE_DRINK:
-                            return SingleDrinkFragment.getNewInstance(getContainerName(),(Bundle) data);
+                            return RemoteDrinkFragment.getNewInstance(getContainerName(),(Bundle) data);
                         case Screens.ADD_DRINK:
                             return AddDrinkFragment.getNewInstance(getContainerName(),(Long) data);
                         case Screens.LOCAL_DRINK:

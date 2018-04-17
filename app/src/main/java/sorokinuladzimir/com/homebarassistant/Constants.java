@@ -9,6 +9,7 @@ public class Constants {
     public static class Uri {
         public static final String ABSOLUT_DRINKS_ROOT = "http://addb.absolutdrinks.com";
         public static final String ABSOLUT_DRINKS_IMAGE_ROOT = "http://assets.absolutdrinks.com/drinks/600x800/";
+        public static final String ABSOLUT_INGREDIENTS_IMAGE_ROOT = "http://assets.absolutdrinks.com/";
         public static final String ABSOLUT_DRINKS_CUSTOM_IMAGE_ROOT =
                 "http://assets.absolutdrinks.com/drinks/transparent-background-white/soft-shadow/floor-reflection/600x800/";
     }

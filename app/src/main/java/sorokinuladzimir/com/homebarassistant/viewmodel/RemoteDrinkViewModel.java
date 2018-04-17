@@ -25,29 +25,44 @@ import android.graphics.Bitmap;
 import android.support.annotation.NonNull;
 
 
+import java.util.List;
+
 import sorokinuladzimir.com.homebarassistant.BarApp;
+import sorokinuladzimir.com.homebarassistant.BarDataRepository;
 import sorokinuladzimir.com.homebarassistant.db.entity.Drink;
+import sorokinuladzimir.com.homebarassistant.db.entity.WholeCocktail;
 import sorokinuladzimir.com.homebarassistant.db.mapper.DrinkEntityToDrinkMapper;
 import sorokinuladzimir.com.homebarassistant.net.entity.DrinkEntity;
 
 
-public class SingleDrinkViewModel extends AndroidViewModel {
+public class RemoteDrinkViewModel extends AndroidViewModel {
 
 
     private final DrinkEntity mDrinkEntity;
 
     private final MediatorLiveData<Drink> mObservableDrink;
 
+    private final MediatorLiveData<List<WholeCocktail>> mDrinkIngredients;
+
+    private BarDataRepository mRepository;
+
     private Bitmap mBitmap = null;
 
-    SingleDrinkViewModel(@NonNull Application application, DrinkEntity drinkEntity) {
+    RemoteDrinkViewModel(@NonNull Application application, DrinkEntity drinkEntity) {
         super(application);
 
         mDrinkEntity = drinkEntity;
 
-        mObservableDrink = new MediatorLiveData<>();
+        mRepository = BarApp.getInstance().getBarRepository();
+        getIngredients(drinkEntity.getId());
 
+        mObservableDrink = new MediatorLiveData<>();
         mObservableDrink.setValue(DrinkEntityToDrinkMapper.getInstance().reverseMap(mDrinkEntity));
+
+        mDrinkIngredients = new MediatorLiveData<>();
+        mDrinkIngredients.setValue(null);
+
+        mDrinkIngredients.addSource(mRepository.getRemoteDrinkIngredients(), mDrinkIngredients::setValue);
 
     }
 
@@ -55,12 +70,20 @@ public class SingleDrinkViewModel extends AndroidViewModel {
         return mObservableDrink;
     }
 
+    public MediatorLiveData<List<WholeCocktail>> getDrinkIngredients() {
+        return mDrinkIngredients;
+    }
+
     public void setBitmap(Bitmap mBitmap) {
         this.mBitmap = mBitmap;
     }
 
     public void saveDrink() {
-        BarApp.getInstance().getRepository().saveDrinkFromNet(mObservableDrink.getValue(), mBitmap);
+        mRepository.saveRemoteDrink(mDrinkEntity, mBitmap);
+    }
+
+    private void getIngredients(String drinkId) {
+        mRepository.getRemoteDrinkIngredients(drinkId);
     }
 
     public static class Factory extends ViewModelProvider.NewInstanceFactory {
@@ -79,7 +102,7 @@ public class SingleDrinkViewModel extends AndroidViewModel {
         @Override
         public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
             //noinspection unchecked
-            return (T) new SingleDrinkViewModel(mApplication, mDrinkEntity);
+            return (T) new RemoteDrinkViewModel(mApplication, mDrinkEntity);
         }
     }
 }

@@ -54,8 +54,8 @@ public class DrinkViewModel extends AndroidViewModel {
         mObservableIngredients.setValue(null);
 
 
-        mLiveDrink = BarApp.getInstance().getRepository().loadDrink(mDrinkId);
-        mLiveIngredients = BarApp.getInstance().getRepository().loadIngredients(mDrinkId);
+        mLiveDrink = BarApp.getInstance().getBarRepository().getDrink(mDrinkId);
+        mLiveIngredients = BarApp.getInstance().getBarRepository().getDrinkIngredients(mDrinkId);
 
         mObservableDrink.addSource(mLiveDrink, mObservableDrink::setValue);
         mObservableIngredients.addSource(mLiveIngredients, mObservableIngredients::setValue);
