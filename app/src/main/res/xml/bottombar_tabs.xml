@@ -2,7 +2,7 @@
 <tabs>
     <tab
         id="@+id/tab_search"
-        icon="@drawable/search"
+        icon="@drawable/ic_search"
         title="Search"
         barColorWhenSelected="#5075dd" />
     <tab

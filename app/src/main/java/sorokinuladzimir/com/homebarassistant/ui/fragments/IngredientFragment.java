@@ -10,7 +10,6 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -31,8 +30,6 @@ import java.util.Objects;
 
 import sorokinuladzimir.com.homebarassistant.R;
 
-import sorokinuladzimir.com.homebarassistant.db.entity.Drink;
-import sorokinuladzimir.com.homebarassistant.db.entity.Taste;
 import sorokinuladzimir.com.homebarassistant.ui.adapters.DrinkSimpleItemAdapter;
 import sorokinuladzimir.com.homebarassistant.ui.subnavigation.BackButtonListener;
 import sorokinuladzimir.com.homebarassistant.ui.subnavigation.RouterProvider;
@@ -45,6 +42,7 @@ public class IngredientFragment extends Fragment implements BackButtonListener {
 
     private static final String EXTRA_NAME = "extra_name";
     private static final String EXTRA_ID = "extra_id";
+    private static final String EXTRA_EDITABLE = "extra_editable";
 
     private Long mIngredientId;
 
@@ -61,15 +59,24 @@ public class IngredientFragment extends Fragment implements BackButtonListener {
     private View mCardNotes;
     private View mCardRelatedDrinks;
     private DrinkSimpleItemAdapter mAdapter;
-
+    private boolean mIsEditableIngredient;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fr_single_ingredient, container, false);
 
+        if (getArguments() != null) {
+            mIngredientId = getArguments().getLong(EXTRA_ID);
+            mIsEditableIngredient = getArguments().getBoolean(EXTRA_EDITABLE);
+        }
+
+        if (savedInstanceState != null) {
+            mIsEditableIngredient = savedInstanceState.getBoolean(EXTRA_EDITABLE);
+        }
+
         initToolbar(rootView);
-        initFAB(rootView);
+        initFAB(rootView, mIsEditableIngredient);
         initViews(rootView);
         initRecyclerView(rootView);
 
@@ -79,12 +86,6 @@ public class IngredientFragment extends Fragment implements BackButtonListener {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
-        Long ingredientId;
-        if (getArguments() != null) {
-            ingredientId = getArguments().getLong(EXTRA_ID);
-            mIngredientId = ingredientId;
-        }
 
         IngredientViewModel.Factory factory = new IngredientViewModel.Factory(
                 Objects.requireNonNull(getActivity()).getApplication(), mIngredientId);
@@ -131,13 +132,13 @@ public class IngredientFragment extends Fragment implements BackButtonListener {
         }
     }
 
-    public static IngredientFragment getNewInstance(String name, Long ingredientId) {
+    public static IngredientFragment getNewInstance(String name, Bundle bundle) {
         IngredientFragment fragment = new IngredientFragment();
 
         Bundle arguments = new Bundle();
         arguments.putString(EXTRA_NAME, name);
-        arguments.putLong(EXTRA_ID, ingredientId);
-
+        arguments.putLong(EXTRA_ID, bundle.getLong("ingredientId"));
+        arguments.putBoolean(EXTRA_EDITABLE, bundle.getBoolean("editable"));
         fragment.setArguments(arguments);
 
         return fragment;
@@ -166,14 +167,20 @@ public class IngredientFragment extends Fragment implements BackButtonListener {
         final RecyclerView recyclerView = rootView.findViewById(R.id.recycler_view);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        mAdapter = new DrinkSimpleItemAdapter(drink ->
-                Toast.makeText(getContext(), drink.getName(), Toast.LENGTH_SHORT).show());
+        mAdapter = new DrinkSimpleItemAdapter(drink -> {
+            if (getParentFragment() != null) {
+                Bundle bundle = new Bundle();
+                bundle.putLong("drinkId", drink.getId());
+                bundle.putBoolean("editable", false);
+                ((RouterProvider)getParentFragment()).getRouter().navigateTo(Screens.LOCAL_DRINK, bundle);
+            }
+        });
         recyclerView.setAdapter(mAdapter);
     }
 
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
-        if (collapsedMenu != null && !appBarExpanded) {
+        if (collapsedMenu != null && !appBarExpanded && mIsEditableIngredient) {
             //collapsed
             collapsedMenu.add(MENU_ITEM_EDIT)
                     .setIcon(R.drawable.ic_edit_done)
@@ -183,7 +190,6 @@ public class IngredientFragment extends Fragment implements BackButtonListener {
         }
         super.onPrepareOptionsMenu(collapsedMenu);
     }
-
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -202,13 +208,17 @@ public class IngredientFragment extends Fragment implements BackButtonListener {
         mCardRelatedDrinks = rootView.findViewById(R.id.card_related_drinks);
     }
 
-    private void initFAB(View view){
+    private void initFAB(View view, boolean isEditable){
         FloatingActionButton mFab = view.findViewById(R.id.fab);
-        mFab.setOnClickListener(view1 -> {
-            if (getParentFragment() != null) {
-                ((RouterProvider)getParentFragment()).getRouter().navigateTo(Screens.ADD_INGREDIENT, mIngredientId);
-            }
-        });
+        if (isEditable) {
+            mFab.setOnClickListener(view1 -> {
+                if (getParentFragment() != null) {
+                    ((RouterProvider)getParentFragment()).getRouter().navigateTo(Screens.ADD_INGREDIENT, mIngredientId);
+                }
+            });
+        } else {
+            mFab.setVisibility(View.GONE);
+        }
     }
 
     @Override
@@ -224,6 +234,12 @@ public class IngredientFragment extends Fragment implements BackButtonListener {
                 ((RouterProvider)getParentFragment()).getRouter().navigateTo(Screens.ABOUT, "Ingredient fragment about text");
             }
         }
+        if (item.getItemId() == R.id.action_settings) {
+            if (getParentFragment() != null) {
+                ((RouterProvider)getParentFragment()).getRouter().navigateTo(Screens.SETTINGS);
+            }
+        }
+
         if (item.getTitle() == MENU_ITEM_EDIT) {
             ((RouterProvider)getParentFragment()).getRouter().navigateTo(Screens.ADD_INGREDIENT, mIngredientId);
         }
@@ -236,5 +252,11 @@ public class IngredientFragment extends Fragment implements BackButtonListener {
             ((RouterProvider)getParentFragment()).getRouter().exit();
         }
         return true;
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean(EXTRA_EDITABLE, mIsEditableIngredient);
     }
 }

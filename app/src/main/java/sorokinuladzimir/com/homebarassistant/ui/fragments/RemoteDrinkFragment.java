@@ -46,6 +46,7 @@ import sorokinuladzimir.com.homebarassistant.net.entity.DrinkEntity;
 import sorokinuladzimir.com.homebarassistant.ui.adapters.RemoteDrinkIngredientItemAdapter;
 import sorokinuladzimir.com.homebarassistant.ui.subnavigation.BackButtonListener;
 import sorokinuladzimir.com.homebarassistant.ui.subnavigation.RouterProvider;
+import sorokinuladzimir.com.homebarassistant.ui.utils.TastesHelper;
 import sorokinuladzimir.com.homebarassistant.viewmodel.RemoteDrinkViewModel;
 
 /**
@@ -65,12 +66,19 @@ public class RemoteDrinkFragment extends Fragment implements BackButtonListener 
     private CollapsingToolbarLayout mCollapsingToolbarLayout;
     private FloatingActionButton mFab;
 
+    private View mCardPreparation;
+    private View mCardNotes;
+    private TextView mTvGlass;
+    private TextView mTvTastes;
+    private TextView mTvType;
+    private TextView mTvRating;
 
     private RemoteDrinkViewModel mViewModel;
 
     private Menu collapsedMenu;
     private AppBarLayout mAppBarLayout;
     private boolean appBarExpanded = true;
+    private MenuItem mItemAdd;
 
 
     @Nullable
@@ -113,14 +121,49 @@ public class RemoteDrinkFragment extends Fragment implements BackButtonListener 
                                 mDrinkImage.setDrawingCacheEnabled(true);
                             }
                         });
-                if (drink.getDescription() != null) mDescriptionText.setText(drink.getDescription());
+
+                setTextToCard(mCardPreparation, mDescriptionText, drink.getDescription());
+                mCardNotes.setVisibility(View.GONE);
+
                 if (drink.getName() != null) mCollapsingToolbarLayout.setTitle(drink.getName());
+
+                mTvRating.setText(String.valueOf(drink.getRating()));
+
+                if (drink.getGlass() != null && drink.getGlass().getGlassName() != null) mTvGlass.setText(drink.getGlass().getGlassName());
+
+                if (drink.getTastes() != null && drink.getTastes().size() > 0)
+                    mTvTastes.setText(TastesHelper.tastesToString(drink.getTastes()));
+
+                mTvType.setText(getDrinkType(drink.isAlcoholic(), drink.isCarbonated()));
             }
         });
 
         viewModel.getDrinkIngredients().observe(this, ingredientsList -> {
             if (ingredientsList != null) mAdapter.setData(ingredientsList);
         });
+    }
+
+    private String getDrinkType(boolean isAlcoholic, boolean isCarbonated) {
+        String type;
+        if (isAlcoholic) {
+            type = getString(R.string.alcoholic_drink_type);
+        } else {
+            type = getString(R.string.no_alco_drink_type);
+        }
+        if (isCarbonated) {
+            type += getString(R.string.carbo_drink_type);
+        }
+
+        return type;
+    }
+
+    private void setTextToCard(View containerView, TextView textView, String text) {
+        if (text != null && !Objects.equals(text,"")) {
+            containerView.setVisibility(View.VISIBLE);
+            textView.setText(text);
+        } else {
+            containerView.setVisibility(View.GONE);
+        }
     }
 
     private void addDrinkToDb(){
@@ -188,6 +231,12 @@ public class RemoteDrinkFragment extends Fragment implements BackButtonListener 
                 Toast.makeText(getContext(), ingredientItem.getIngredientName(), Toast.LENGTH_LONG).show());
         rvIngredients.setAdapter(mAdapter);
 
+        mCardNotes = rootView.findViewById(R.id.card_notes);
+        mCardPreparation = rootView.findViewById(R.id.card_preparation);
+        mTvGlass = rootView.findViewById(R.id.tv_glass);
+        mTvTastes = rootView.findViewById(R.id.tv_tastes);
+        mTvType = rootView.findViewById(R.id.tv_type);
+        mTvRating = rootView.findViewById(R.id.tv_rating);
     }
 
     private void initFAB(View view){
@@ -195,8 +244,7 @@ public class RemoteDrinkFragment extends Fragment implements BackButtonListener 
         mFab.setImageDrawable(ContextCompat.getDrawable(Objects.requireNonNull(getContext()), R.drawable.ic_add));
         mFab.setOnClickListener(view1 -> {
             addDrinkToDb();
-            mFab.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_done));
-            mFab.setEnabled(false);
+            onBackPressed();
         });
     }
 
@@ -211,8 +259,15 @@ public class RemoteDrinkFragment extends Fragment implements BackButtonListener 
                 ((RouterProvider)getParentFragment()).getRouter().navigateTo(Screens.ABOUT, "Single drink fragment anbout text");
             }
         }
+        if (item.getItemId() == R.id.action_settings) {
+            if (getParentFragment() != null) {
+                ((RouterProvider)getParentFragment()).getRouter().navigateTo(Screens.SETTINGS);
+            }
+        }
+
         if (item.getTitle() == getString(R.string.menu_add)) {
             addDrinkToDb();
+            onBackPressed();
         }
         return false;
     }

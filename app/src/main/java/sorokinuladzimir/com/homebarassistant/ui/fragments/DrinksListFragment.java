@@ -22,6 +22,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.turingtechnologies.materialscrollbar.AlphabetIndicator;
 import com.turingtechnologies.materialscrollbar.DragScrollBar;
@@ -46,12 +48,13 @@ public class DrinksListFragment extends Fragment {
     private DrinkListViewModel mViewModel;
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private SearchView searchView;
-
+    private ImageView mIvEmptyState;
+    private TextView mTvEmptyStateMessage;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fr_drinks_list, container, false);
+        View rootView = inflater.inflate(R.layout.fr_items_list, container, false);
 
         initViews(rootView);
         initFAB(rootView);
@@ -76,13 +79,32 @@ public class DrinksListFragment extends Fragment {
             if (drinks != null) {
                 mAdapter.setDrinks(drinks);
                 mSwipeRefreshLayout.setRefreshing(false);
+                if (drinks.size() == 0) {
+                    setEmptyState(R.drawable.list_empty_state, getString(R.string.no_items_drinks), true);
+                } else {
+                    setEmptyState(0, null, false);
+                }
             }
         });
+    }
+
+    private void setEmptyState(int imageResId, String message, boolean isVisible) {
+        if (isVisible) {
+            mIvEmptyState.setVisibility(View.VISIBLE);
+            mTvEmptyStateMessage.setVisibility(View.VISIBLE);
+            mIvEmptyState.setImageResource(imageResId);
+            mTvEmptyStateMessage.setText(message);
+        } else {
+            mIvEmptyState.setVisibility(View.GONE);
+            mTvEmptyStateMessage.setVisibility(View.GONE);
+        }
     }
 
     private void initViews(View rootView) {
         mSwipeRefreshLayout = rootView.findViewById(R.id.swipe_refresh_layout);
         mSwipeRefreshLayout.setOnRefreshListener(() -> mSwipeRefreshLayout.setRefreshing(false));
+        mIvEmptyState = rootView.findViewById(R.id.iv_empty_state);
+        mTvEmptyStateMessage = rootView.findViewById(R.id.tv_empty_state_message);
     }
 
     private void initRecyclerView(View rootView) {
@@ -91,7 +113,10 @@ public class DrinksListFragment extends Fragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         mAdapter = new LocalDrinksListAdapter(drink -> {
             if (getParentFragment() != null) {
-                ((RouterProvider)getParentFragment()).getRouter().navigateTo(Screens.LOCAL_DRINK, drink.getId());
+                Bundle bundle = new Bundle();
+                bundle.putLong("drinkId", drink.getId());
+                bundle.putBoolean("editable", true);
+                ((RouterProvider)getParentFragment()).getRouter().navigateTo(Screens.LOCAL_DRINK, bundle);
             }
         });
         recyclerView.setAdapter(mAdapter);
@@ -150,9 +175,11 @@ public class DrinksListFragment extends Fragment {
             }
         }
         if (item.getItemId() == R.id.action_settings) {
-            int theme = (Objects.requireNonNull(getActivity()).getPreferences(Context.MODE_PRIVATE).getInt("currentTheme", 0)+1)%3;
-            ThemeUtils.changeToTheme(getActivity(), theme);
+            if (getParentFragment() != null) {
+                ((RouterProvider)getParentFragment()).getRouter().navigateTo(Screens.SETTINGS);
+            }
         }
+
         return false;
     }
 

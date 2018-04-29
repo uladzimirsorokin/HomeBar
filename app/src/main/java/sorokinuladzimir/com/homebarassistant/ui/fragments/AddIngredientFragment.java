@@ -288,11 +288,6 @@ public class AddIngredientFragment extends Fragment implements BackButtonListene
                     ((RouterProvider)getParentFragment()).getRouter().navigateTo(Screens.INGREDIENTS_LIST);
                 }
                 return true;
-            case R.id.ab_about:
-                if (getParentFragment() != null) {
-                    ((RouterProvider)getParentFragment()).getRouter().navigateTo(Screens.ABOUT, "Add ingredient fragment anbout text");
-                }
-                return true;
             default:
                 Toast.makeText(getContext(),"Unknown menu item",Toast.LENGTH_SHORT).show();
                 break;

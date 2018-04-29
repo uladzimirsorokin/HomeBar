@@ -21,6 +21,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.turingtechnologies.materialscrollbar.AlphabetIndicator;
 import com.turingtechnologies.materialscrollbar.DragScrollBar;
@@ -32,11 +34,6 @@ import sorokinuladzimir.com.homebarassistant.ui.adapters.IngredientsListItemAdap
 import sorokinuladzimir.com.homebarassistant.ui.subnavigation.RouterProvider;
 import sorokinuladzimir.com.homebarassistant.viewmodel.IngredientListViewModel;
 
-
-/**
- * Created by sorok on 17.10.2017.
- */
-
 public class IngredientsListFragment extends Fragment {
 
     private static final String EXTRA_NAME = "ilf_extra_name";
@@ -45,12 +42,14 @@ public class IngredientsListFragment extends Fragment {
     private IngredientListViewModel mViewModel;
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private SearchView searchView;
+    private ImageView mIvEmptyState;
+    private TextView mTvEmptyStateMessage;
 
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fr_drinks_list, container, false);
+        View rootView = inflater.inflate(R.layout.fr_items_list, container, false);
 
         initFAB(rootView);
         initRecyclerView(rootView);
@@ -66,6 +65,8 @@ public class IngredientsListFragment extends Fragment {
     private void initViews(View rootView) {
         mSwipeRefreshLayout = rootView.findViewById(R.id.swipe_refresh_layout);
         mSwipeRefreshLayout.setOnRefreshListener(() -> mSwipeRefreshLayout.setRefreshing(false));
+        mIvEmptyState = rootView.findViewById(R.id.iv_empty_state);
+        mTvEmptyStateMessage = rootView.findViewById(R.id.tv_empty_state_message);
     }
 
     @Override
@@ -79,9 +80,26 @@ public class IngredientsListFragment extends Fragment {
         model.getIngredients().observe(this, ingredients -> {
             if (ingredients != null) {
                 mAdapter.setIngredients(ingredients);
+                if (ingredients.size() == 0) {
+                    setEmptyState(R.drawable.list_empty_state, getString(R.string.no_items_ingredients), true);
+                } else {
+                    setEmptyState(0, null, false);
+                }
             }
             mSwipeRefreshLayout.setRefreshing(false);
         });
+    }
+
+    private void setEmptyState(int imageResId, String message, boolean isVisible) {
+        if (isVisible) {
+            mIvEmptyState.setVisibility(View.VISIBLE);
+            mTvEmptyStateMessage.setVisibility(View.VISIBLE);
+            mIvEmptyState.setImageResource(imageResId);
+            mTvEmptyStateMessage.setText(message);
+        } else {
+            mIvEmptyState.setVisibility(View.GONE);
+            mTvEmptyStateMessage.setVisibility(View.GONE);
+        }
     }
 
     public static IngredientsListFragment getNewInstance(String name) {
@@ -120,7 +138,10 @@ public class IngredientsListFragment extends Fragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         mAdapter = new IngredientsListItemAdapter(getContext(), Objects.requireNonNull(getArguments()).getString(EXTRA_NAME), ingredient ->{
             if (getParentFragment() != null) {
-                ((RouterProvider)getParentFragment()).getRouter().navigateTo(Screens.LOCAL_INGREDIENT, ingredient.getId());
+                Bundle bundle = new Bundle();
+                bundle.putLong("ingredientId", ingredient.getId());
+                bundle.putBoolean("editable", true);
+                ((RouterProvider)getParentFragment()).getRouter().navigateTo(Screens.LOCAL_INGREDIENT, bundle);
             }
         });
         recyclerView.addItemDecoration(new DividerItemDecoration(Objects.requireNonNull(getContext()),DividerItemDecoration.VERTICAL));
@@ -159,6 +180,12 @@ public class IngredientsListFragment extends Fragment {
                 ((RouterProvider)getParentFragment()).getRouter().navigateTo(Screens.ABOUT, "Found drinks fragment anbout text");
             }
         }
+        if (item.getItemId() == R.id.action_settings) {
+            if (getParentFragment() != null) {
+                ((RouterProvider)getParentFragment()).getRouter().navigateTo(Screens.SETTINGS);
+            }
+        }
+
         return super.onOptionsItemSelected(item);
     }
 

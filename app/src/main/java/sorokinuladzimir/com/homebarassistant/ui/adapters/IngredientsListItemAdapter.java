@@ -36,7 +36,8 @@ public class IngredientsListItemAdapter extends RecyclerView.Adapter<Ingredients
 
     @Override
     public Character getCharacterForElement(int element) {
-        Character c = mFilteredIngredientsList.get(element).getName().charAt(0);
+        Character c = mFilteredIngredientsList.get(element).getName().equals("") ?
+                Character.MIN_VALUE : mFilteredIngredientsList.get(element).getName().charAt(0);
         if(Character.isDigit(c)) {
             c = '#';
         }
@@ -113,7 +114,8 @@ public class IngredientsListItemAdapter extends RecyclerView.Adapter<Ingredients
 
                             @Override
                             public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
-                                return Objects.equals(mIngredientsList.get(oldItemPosition).getId(), ingredients.get(newItemPosition).getId());
+                                return Objects.equals(mIngredientsList.get(oldItemPosition).getId(),
+                                        ingredients.get(newItemPosition).getId());
                             }
 
                             @Override

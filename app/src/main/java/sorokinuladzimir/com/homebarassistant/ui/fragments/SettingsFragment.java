@@ -1,9 +1,9 @@
 package sorokinuladzimir.com.homebarassistant.ui.fragments;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -12,57 +12,24 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.util.Objects;
 
-import mehdi.sakout.aboutpage.AboutPage;
-import mehdi.sakout.aboutpage.Element;
 import sorokinuladzimir.com.homebarassistant.R;
 import sorokinuladzimir.com.homebarassistant.ui.subnavigation.BackButtonListener;
 import sorokinuladzimir.com.homebarassistant.ui.subnavigation.RouterProvider;
+import sorokinuladzimir.com.homebarassistant.ui.utils.ThemeUtils;
 
-public class AboutFragment extends Fragment implements BackButtonListener {
+public class SettingsFragment extends Fragment implements BackButtonListener, View.OnClickListener {
 
     private static final String EXTRA_NAME = "extra_name";
-    private static final String EXTRA_TEXT = "extra_text";
-    private String mAboutText;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View rootView = inflater.inflate(R.layout.fr_settings, container, false);
 
-        View rootView = inflater.inflate(R.layout.fr_about, container, false);
-        ViewGroup layout = rootView.findViewById(R.id.fr_about_layout);
-
-        if (getArguments() != null) {
-            mAboutText = getArguments().getString(EXTRA_TEXT);
-        }
-
-        Element versionElement = new Element();
-        versionElement.setTitle("Version 1.0");
-
-        View aboutPage = new AboutPage(getContext())
-                .isRTL(false)
-                .setImage(R.mipmap.ic_launcher_round)
-                .setDescription(mAboutText)
-                .addItem(versionElement)
-                .addGroup("Connect with us")
-                .addEmail("elmehdi.sakout@gmail.com")
-                .addWebsite("http://medyo.github.io/")
-                .addFacebook("the.medy")
-                .addTwitter("medyo80")
-                .addYoutube("UCdPQtdWIsg7_pi4mrRu46vA")
-                .addPlayStore("com.ideashower.readitlater.pro")
-                .addGitHub("medyo")
-                .addInstagram("medyo80")
-                .create();
-
-        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-        layoutParams.setMargins(0, 72, 0, 16);
-        layout.addView(aboutPage, layoutParams);
 
         initToolbar(rootView);
         initViews(rootView);
@@ -71,14 +38,42 @@ public class AboutFragment extends Fragment implements BackButtonListener {
     }
 
     private void initViews(View view) {
-
+        View first = view.findViewById(R.id.first_theme);
+        View second = view.findViewById(R.id.second_theme);
+        View third = view.findViewById(R.id.third_theme);
+        first.setOnClickListener(this);
+        second.setOnClickListener(this);
+        third.setOnClickListener(this);
     }
 
-    public static AboutFragment getNewInstance(String name, String aboutText) {
-        AboutFragment fragment = new AboutFragment();
+    @Override
+    public void onClick(View v) {
+        int theme = -1;
+        switch (v.getId()) {
+            case R.id.first_theme:
+                theme = 0;
+                break;
+            case R.id.second_theme:
+                theme = 1;
+                break;
+            case R.id.third_theme:
+                theme = 2;
+                break;
+        }
+
+        swapTheme(theme);
+    }
+
+    private void swapTheme(int theme) {
+        int currentTheme = Objects.requireNonNull(getActivity()).getPreferences(Context.MODE_PRIVATE).getInt("currentTheme", 0);
+        if (currentTheme != theme && theme != -1) ThemeUtils.changeToTheme(getActivity(), theme);
+    }
+
+
+    public static SettingsFragment getNewInstance(String name) {
+        SettingsFragment fragment = new SettingsFragment();
         Bundle arguments = new Bundle();
         arguments.putString(EXTRA_NAME, name);
-        arguments.putString(EXTRA_TEXT, aboutText);
         fragment.setArguments(arguments);
 
         return fragment;
@@ -91,7 +86,7 @@ public class AboutFragment extends Fragment implements BackButtonListener {
         ActionBar mToolbar = ((AppCompatActivity) getActivity()).getSupportActionBar();
         if(mToolbar != null) {
             mToolbar.setDisplayHomeAsUpEnabled(true);
-            mToolbar.setTitle(R.string.menu_about);
+            mToolbar.setTitle(R.string.settings_fragment_title);
         }
     }
 

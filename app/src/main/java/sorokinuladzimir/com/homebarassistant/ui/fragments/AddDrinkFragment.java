@@ -23,8 +23,11 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Spinner;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -40,17 +43,13 @@ import sorokinuladzimir.com.homebarassistant.R;
 import sorokinuladzimir.com.homebarassistant.ui.adapters.AddDrinkIngredientItemAdapter;
 import sorokinuladzimir.com.homebarassistant.ui.subnavigation.BackButtonListener;
 import sorokinuladzimir.com.homebarassistant.ui.subnavigation.RouterProvider;
+import sorokinuladzimir.com.homebarassistant.ui.utils.SpinnerGlassMatcher;
 import sorokinuladzimir.com.homebarassistant.ui.utils.TastesHelper;
 import sorokinuladzimir.com.homebarassistant.viewmodel.AddDrinkViewModel;
 import sorokinuladzimir.com.homebarassistant.viewmodel.SharedViewModel;
 
 import static android.app.Activity.RESULT_OK;
 import static sorokinuladzimir.com.homebarassistant.Constants.Values.DEFAULT_IMAGE_SIZE;
-
-
-/**
- * Created by sorok on 04.11.2017.
- */
 
 public class AddDrinkFragment extends Fragment implements BackButtonListener,
         AddImageDialogFragment.AddImageDialogFragmentCallback,
@@ -72,6 +71,10 @@ public class AddDrinkFragment extends Fragment implements BackButtonListener,
     private EditText mEtDescription;
     private TextView mTvTastes;
     private RangeBar mRangebarRating;
+    private Switch mSwIsCarbonated;
+    private Switch mSwIsAlcoholic;
+    private Spinner mSpGlass;
+    private EditText mEtNotes;
 
     @Nullable
     @Override
@@ -119,6 +122,12 @@ public class AddDrinkFragment extends Fragment implements BackButtonListener,
                     if (drink.getDescription() != null) mEtDescription.setText(drink.getDescription());
                     if (drink.getTastes() != null) drinkModel.getTastesList().setValue(drink.getTastes());
                     mRangebarRating.setRangePinsByValue(0, drink.getRating());
+                    mSwIsAlcoholic.setChecked(drink.isAlcoholic());
+                    mSwIsCarbonated.setChecked(drink.isCarbonated());
+                    int glassPos = SpinnerGlassMatcher.matchGlass(
+                            getResources().getStringArray(R.array.glass_name_local), drink.getGlass());
+                    mSpGlass.setSelection(glassPos == -1 ? 0 : glassPos);
+                    if (drink.getNotes() != null) mEtNotes.setText(drink.getNotes());
                 }
             });
         }
@@ -206,6 +215,14 @@ public class AddDrinkFragment extends Fragment implements BackButtonListener,
         });
 
         mRangebarRating = view.findViewById(R.id.rb_drink_rating);
+        mSwIsCarbonated = view.findViewById(R.id.sw_search_carbonated);
+        mSwIsAlcoholic = view.findViewById(R.id.sw_search_alcoholic);
+        mEtNotes = view.findViewById(R.id.et_notes);
+        mSpGlass = view.findViewById(R.id.spin_glass_type);
+        ArrayAdapter<CharSequence> adapterGlass = ArrayAdapter.createFromResource(Objects.requireNonNull(getContext()),
+                R.array.glass_name_local, android.R.layout.simple_spinner_item);
+        adapterGlass.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        mSpGlass.setAdapter(adapterGlass);
     }
 
     public static AddDrinkFragment getNewInstance(String name, Long drinkId) {
@@ -325,7 +342,11 @@ public class AddDrinkFragment extends Fragment implements BackButtonListener,
         mViewModel.saveDrink(mEtName.getText().toString(),
                 mEtDescription.getText().toString(),
                 mAdapter.getIngredients(),
-                Integer.valueOf(mRangebarRating.getRightPinValue()));
+                Integer.valueOf(mRangebarRating.getRightPinValue()),
+                getResources().getStringArray(R.array.glass_name_local)[mSpGlass.getSelectedItemPosition()],
+                mSwIsCarbonated.isChecked(),
+                mSwIsAlcoholic.isChecked(),
+                mEtNotes.getText().toString());
         onBackPressed();
     }
 
@@ -355,11 +376,6 @@ public class AddDrinkFragment extends Fragment implements BackButtonListener,
                 mViewModel.deleteDrink();
                 if (getParentFragment() != null) {
                     ((RouterProvider)getParentFragment()).getRouter().navigateTo(Screens.DRINKS_LIST);
-                }
-                return true;
-            case R.id.ab_about:
-                if (getParentFragment() != null) {
-                    ((RouterProvider)getParentFragment()).getRouter().navigateTo(Screens.ABOUT, "Add drink fragment anbout text");
                 }
                 return true;
             default:

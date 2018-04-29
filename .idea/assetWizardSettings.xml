@@ -23,7 +23,7 @@
                                           <PersistentState>
                                             <option name="values">
                                               <map>
-                                                <entry key="url" value="jar:file:/C:/Android/studio/android-studio-preview-latest/plugins/android/lib/android.jar!/images/material_design_icons/action/ic_info_outline_black_24dp.xml" />
+                                                <entry key="url" value="jar:file:/C:/Android/studio/android-studio-preview-latest/plugins/android/lib/android.jar!/images/material_design_icons/file/ic_cloud_off_black_24dp.xml" />
                                               </map>
                                             </option>
                                           </PersistentState>
@@ -33,7 +33,48 @@
                                   </option>
                                   <option name="values">
                                     <map>
-                                      <entry key="outputName" value="ic_drink_type" />
+                                      <entry key="imageAsset" value="C:\Users\sorok\Desktop\icon.png" />
+                                      <entry key="outputName" value="no_internet_error" />
+                                      <entry key="theme" value="CUSTOM" />
+                                      <entry key="themeColor" value="000000" />
+                                    </map>
+                                  </option>
+                                </PersistentState>
+                              </value>
+                            </entry>
+                            <entry key="launcher">
+                              <value>
+                                <PersistentState>
+                                  <option name="children">
+                                    <map>
+                                      <entry key="foregroundClipArt">
+                                        <value>
+                                          <PersistentState>
+                                            <option name="values">
+                                              <map>
+                                                <entry key="scalingPercent" value="49" />
+                                              </map>
+                                            </option>
+                                          </PersistentState>
+                                        </value>
+                                      </entry>
+                                      <entry key="foregroundClipartAsset">
+                                        <value>
+                                          <PersistentState>
+                                            <option name="values">
+                                              <map>
+                                                <entry key="url" value="jar:file:/C:/Android/studio/android-studio-preview-latest/plugins/android/lib/android.jar!/images/material_design_icons/communication/ic_call_black_24dp.xml" />
+                                              </map>
+                                            </option>
+                                          </PersistentState>
+                                        </value>
+                                      </entry>
+                                    </map>
+                                  </option>
+                                  <option name="values">
+                                    <map>
+                                      <entry key="backgroundColor" value="0a12a6" />
+                                      <entry key="legacyIconShape" value="CIRCLE" />
                                     </map>
                                   </option>
                                 </PersistentState>
@@ -79,8 +120,9 @@
                         </option>
                         <option name="values">
                           <map>
-                            <entry key="outputName" value="ic_drink_ingredients" />
-                            <entry key="sourceFile" value="C:\Users\sorok" />
+                            <entry key="assetSourceType" value="FILE" />
+                            <entry key="outputName" value="ic_splash" />
+                            <entry key="sourceFile" value="C:\Users\sorok\Desktop\634c97aa-4bac-49a4-bb62-7bee2a6dbf4b.svg" />
                           </map>
                         </option>
                       </PersistentState>

@@ -35,6 +35,13 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="160dp"
+                android:background="@drawable/reverse_scrim"
+                android:layout_gravity="top"
+                app:layout_collapseMode="pin" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="160dp"
                 android:layout_gravity="bottom"
                 android:background="@drawable/scrim"/>
 

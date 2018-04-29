@@ -37,6 +37,7 @@ import sorokinuladzimir.com.homebarassistant.db.entity.DrinkIngredientJoin;
 import sorokinuladzimir.com.homebarassistant.db.entity.Taste;
 import sorokinuladzimir.com.homebarassistant.db.entity.WholeCocktail;
 import sorokinuladzimir.com.homebarassistant.db.mapper.WholeCocktailToDrinkIngredientJoinMapper;
+import sorokinuladzimir.com.homebarassistant.db.entity.Glass;
 import sorokinuladzimir.com.homebarassistant.ui.utils.TastesHelper;
 
 
@@ -292,7 +293,8 @@ public class AddDrinkViewModel extends AndroidViewModel {
 
     // save/delete operations with whole cocktail
 
-    public void saveDrink(String name, String description, List<WholeCocktail> ingredients, int rating){
+    public void saveDrink(String name, String description, List<WholeCocktail> ingredients, int rating,
+                          String glassName, boolean carbonated, boolean alcoholic, String notes){
 
         removeImageFile(getDrink().getValue() == null ? null : getDrink().getValue().getImage(),
                 getCurrentImagePath().getValue(), true);
@@ -301,10 +303,17 @@ public class AddDrinkViewModel extends AndroidViewModel {
         if(drink == null) drink = new Drink();
 
         drink.setImage(mObservableCurrentImagePath.getValue());
-        drink.setName(name != null ? name : "name stub");
-        drink.setDescription(description != null ? description : "description stub");
+        drink.setName(name != null ? name : "");
+        drink.setDescription(description != null ? description : "");
         drink.setTastes(mCurrentTastesList.getValue());
         drink.setRating(rating);
+        drink.setCarbonated(carbonated);
+        drink.setAlcoholic(alcoholic);
+        Glass glass = new Glass();
+        glass.setGlassName(glassName);
+        drink.setGlass(glass);
+        drink.setNotes(notes != null ? notes : "");
+
         List<DrinkIngredientJoin> ingredientsList = WholeCocktailToDrinkIngredientJoinMapper.getInstance().reverseMap(ingredients);
         mRepository.saveDrink(drink, ingredientsList);
     }

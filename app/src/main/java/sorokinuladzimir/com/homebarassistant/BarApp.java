@@ -1,6 +1,10 @@
 package sorokinuladzimir.com.homebarassistant;
 
 import android.app.Application;
+import android.content.res.Configuration;
+import android.os.Build;
+
+import java.util.Locale;
 
 import ru.terrakok.cicerone.Cicerone;
 import ru.terrakok.cicerone.NavigatorHolder;
@@ -18,10 +22,19 @@ public class BarApp extends Application {
     private Cicerone<Router> cicerone;
     private AppExecutors mAppExecutors;
 
+    public static String sDefSystemLanguage;
 
     @Override
     public void onCreate() {
         super.onCreate();
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N){
+            sDefSystemLanguage = getResources().getConfiguration().getLocales().get(0).getLanguage();
+        } else{
+            //noinspection deprecation
+            sDefSystemLanguage = getResources().getConfiguration().locale.getLanguage();
+        }
+
         sInstance = this;
         cicerone = Cicerone.create();
         mAppExecutors = new AppExecutors();

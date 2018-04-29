@@ -1,8 +1,8 @@
 <resources>
     <string name="app_name">Home Bar</string>
-    <string name="error_network">Server error</string>
-    <string name="error_network_connection">No network connection</string>
-    <string name="error_unknown">Unknown error</string>
+    <string name="error_network">Ошибка сервера</string>
+    <string name="error_network_connection">Нет сети</string>
+    <string name="error_unknown">Неизвестная ошибка</string>
     <string name="cocktail_name">Название коктейля</string>
     <string name="glass_type">Тип стакана:</string>
     <string name="taste_type">Вкус:</string>
@@ -34,7 +34,7 @@
     <string name="menu_settings">settings</string>
     <string name="menu_search">ИСКАТЬ</string>
     <string name="menu_delete">Удалить</string>
-    <string name="menu_add">ADD</string>
+    <string name="menu_add">ДОБАВИТЬ</string>
     <string name="menu_choose">ВЫБРАТЬ</string>
     <string name="title_new_cocktail">Новый коктейль</string>
     <string name="title_edit_cocktail">Редактирование</string>
@@ -42,20 +42,37 @@
     <string name="menu_save">Сохранить</string>
     <string name="menu_drink_add">Добавить</string>
     <string name="title_choose_ingredients">Выбор ингридиентов</string>
-    <string name="take_photo">Take Photo</string>
-    <string name="choose_from_library">Choose from Library</string>
-    <string name="remove_picture">Remove picture</string>
+    <string name="take_photo">Сделать фото</string>
+    <string name="choose_from_library">Выбрать из галлереи</string>
+    <string name="remove_picture">Удалить картинку</string>
     <string name="negative_button">Close</string>
     <string name="title_new_ingredient">Новый ингредиент</string>
     <string name="title_ingredient_edit">Редактирование</string>
-    <string name="positive_button">Ok</string>
+    <string name="positive_button">OK</string>
     <string name="menu_edit">Edit</string>
-    <string name="bt_add_ingredients">ingredients</string>
-    <string name="bt_add_tastes">tastes</string>
+    <string name="bt_add_ingredients">ингридиенты</string>
+    <string name="bt_add_tastes">вкусы</string>
     <string name="singledrink_title_notes">Заметки</string>
     <string name="singledrink_title_general">О коктейле</string>
     <string name="noname_drink">безымянный :(</string>
     <string name="ingredient_related_drinks_title">Коктейли</string>
+    <string name="drink_name_hint">Название коктейля</string>
+    <string name="et_preparation_hint">1. Наполните бокал льдом…</string>
+    <string name="drink_image">Фото коктейля</string>
+    <string name="drink_notes_hint">Заметки о коктейле</string>
+    <string name="alcoholic_drink_type">Алкогольный</string>
+    <string name="no_alco_drink_type">Безалкогольный</string>
+    <string name="carbo_drink_type">, Газированный</string>
+    <string name="empty_list_or_error">empty list or error</string>
+    <string name="no_items_founddrinks">список пуст</string>
+    <string name="no_items_drinks">список пуст</string>
+    <string name="no_items_ingredients">список пуст</string>
+    <string name="no_items_found">по данному запросу коктейлей не обнаружено</string>
+    <string name="ingredient_name_hint">Название ингридлиента</string>
+    <string name="ingredient_description_hint">Описание ингридиента</string>
+    <string name="ingredient_notes_hint">Заметки об ингридиенте</string>
+    <string name="settings_fragment_title">Настройки</string>
+    <string name="app_theme_color_title">APP THEME COLOR</string>
 
 
 </resources>

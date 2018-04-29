@@ -21,10 +21,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.RequestOptions;
 
 import java.util.Objects;
 
@@ -40,6 +38,7 @@ public class LocalDrinkFragment extends Fragment implements BackButtonListener {
 
     private static final String EXTRA_NAME = "extra_name";
     private static final String EXTRA_ID = "extra_id";
+    private static final String EXTRA_EDITABLE = "extra_editable";
 
     private Long mDrinkId = 0L;
 
@@ -58,14 +57,24 @@ public class LocalDrinkFragment extends Fragment implements BackButtonListener {
     private TextView mTvTastes;
     private TextView mTvType;
     private TextView mTvRating;
+    private boolean mIsEditableDrink;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fr_single_drink, container, false);
 
+        if (getArguments() != null) {
+            mDrinkId = getArguments().getLong(EXTRA_ID);
+            mIsEditableDrink = getArguments().getBoolean(EXTRA_EDITABLE);
+        }
+
+        if (savedInstanceState != null) {
+            mIsEditableDrink = savedInstanceState.getBoolean(EXTRA_EDITABLE);
+        }
+
         initToolbar(rootView);
-        initFAB(rootView);
+        initFAB(rootView, mIsEditableDrink);
         initViews(rootView);
 
         return rootView;
@@ -75,11 +84,6 @@ public class LocalDrinkFragment extends Fragment implements BackButtonListener {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
-        if (getArguments() != null) {
-            mDrinkId= getArguments().getLong(EXTRA_ID);
-        }
-
         DrinkViewModel.Factory factory = new DrinkViewModel.Factory(
                 Objects.requireNonNull(getActivity()).getApplication(), mDrinkId);
 
@@ -110,26 +114,36 @@ public class LocalDrinkFragment extends Fragment implements BackButtonListener {
 
                 mTvRating.setText(String.valueOf(drink.getRating()));
 
-                if (drink.getGlass() != null && drink.getGlass().getGlassName() != null) mTvGlass.setText(drink.getGlass().getGlassName());
-
-                if (drink.getTastes() != null && drink.getTastes().size() > 0)
-                    mTvTastes.setText(TastesHelper.tastesToString(drink.getTastes()));
-
-                String type;
-                if (drink.isAlcoholic()) {
-                    type = "Алкогольный";
+                if (drink.getGlass() != null && drink.getGlass().getGlassName() != null) {
+                    mTvGlass.setText(drink.getGlass().getGlassName());
                 } else {
-                    type = "Безалкогольный";
-                }
-                if (drink.isCarbonated()) {
-                    type += ", Газированный";
+                    mTvGlass.setText("");
                 }
 
-                mTvType.setText(type);
+                if (drink.getTastes() != null && drink.getTastes().size() > 0) {
+                    mTvTastes.setVisibility(View.VISIBLE);
+                    mTvTastes.setText(TastesHelper.tastesToString(drink.getTastes()));
+                } else {
+                    mTvTastes.setVisibility(View.GONE);
+                }
 
+                mTvType.setText(getDrinkType(drink.isAlcoholic(), drink.isCarbonated()));
             }
         });
+    }
 
+    private String getDrinkType(boolean isAlcoholic, boolean isCarbonated) {
+        String type;
+        if (isAlcoholic) {
+            type = getString(R.string.alcoholic_drink_type);
+        } else {
+            type = getString(R.string.no_alco_drink_type);
+        }
+        if (isCarbonated) {
+            type += getString(R.string.carbo_drink_type);
+        }
+
+        return type;
     }
 
     private void setTextToCard(View containerView, TextView textView, String text) {
@@ -141,12 +155,13 @@ public class LocalDrinkFragment extends Fragment implements BackButtonListener {
         }
     }
 
-    public static LocalDrinkFragment getNewInstance(String name, Long drinkId) {
+    public static LocalDrinkFragment getNewInstance(String name, Bundle bundle) {
         LocalDrinkFragment fragment = new LocalDrinkFragment();
 
         Bundle arguments = new Bundle();
         arguments.putString(EXTRA_NAME, name);
-        arguments.putLong(EXTRA_ID, drinkId);
+        arguments.putLong(EXTRA_ID, bundle.getLong("drinkId"));
+        arguments.putBoolean(EXTRA_EDITABLE, bundle.getBoolean("editable"));
         fragment.setArguments(arguments);
 
         return fragment;
@@ -175,7 +190,7 @@ public class LocalDrinkFragment extends Fragment implements BackButtonListener {
 
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
-        if (collapsedMenu != null && !appBarExpanded) {
+        if (collapsedMenu != null && !appBarExpanded && mIsEditableDrink) {
             //collapsed
             collapsedMenu.add(R.string.menu_edit)
                     .setIcon(R.drawable.ic_edit_done)
@@ -207,14 +222,30 @@ public class LocalDrinkFragment extends Fragment implements BackButtonListener {
         final RecyclerView rvIngredients = rootView.findViewById(R.id.recycler_singledrink_ingredients);
         rvIngredients.setHasFixedSize(true);
         rvIngredients.setLayoutManager(new LinearLayoutManager(getContext()));
-        mAdapter = new LocalDrinkIngredientItemAdapter(ingredientItem -> Toast.makeText(getContext(),
-                ingredientItem.getIngredientName(), Toast.LENGTH_LONG).show());
+        mAdapter = new LocalDrinkIngredientItemAdapter(ingredientItem -> {
+            if (getParentFragment() != null) {
+                Bundle bundle = new Bundle();
+                bundle.putLong("ingredientId", ingredientItem.getIngredientId());
+                bundle.putBoolean("editable", false);
+                ((RouterProvider)getParentFragment()).getRouter().navigateTo(Screens.LOCAL_INGREDIENT, bundle);
+            }
+        });
         rvIngredients.setAdapter(mAdapter);
     }
 
-    private void initFAB(View view){
+    private void initFAB(View view, boolean isEditable){
         FloatingActionButton mFab = view.findViewById(R.id.single_drink_fab);
-        mFab.setOnClickListener(view1 -> editPressed());
+        if (isEditable) {
+            mFab.setOnClickListener(view1 -> editPressed());
+        } else {
+            mFab.setVisibility(View.GONE);
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean(EXTRA_EDITABLE, mIsEditableDrink);
     }
 
     @Override
@@ -223,6 +254,12 @@ public class LocalDrinkFragment extends Fragment implements BackButtonListener {
             if (getParentFragment() != null) {
                 ((RouterProvider)getParentFragment()).getRouter().exit();
             }
+            if (item.getItemId() == R.id.action_settings) {
+                if (getParentFragment() != null) {
+                    ((RouterProvider)getParentFragment()).getRouter().navigateTo(Screens.SETTINGS);
+                }
+            }
+
             return true;
         }
         if (item.getItemId() == R.id.action_about) {

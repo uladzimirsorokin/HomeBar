@@ -36,8 +36,30 @@
                 app:msb_lightOnTouch="false"
                 android:layout_height="match_parent"
                 android:layout_alignParentTop="true"
-                android:layout_alignParentRight="true"
                 android:layout_alignParentEnd="true" />
+
+            <ImageView
+                android:id="@+id/iv_empty_state"
+                android:layout_width="128dp"
+                android:layout_height="128dp"
+                android:adjustViewBounds="false"
+                android:contentDescription="@string/empty_list_or_error"
+                android:cropToPadding="false"
+                android:scaleType="fitCenter"
+                android:src="@drawable/list_empty_state"
+                android:alpha="0.5"
+                android:layout_centerInParent="true"
+                android:visibility="gone"/>
+
+            <TextView
+                android:id="@+id/tv_empty_state_message"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:textSize="18sp"
+                android:layout_centerHorizontal="true"
+                android:layout_below="@+id/iv_empty_state"
+                android:visibility="gone"/>
 
         </RelativeLayout>
 

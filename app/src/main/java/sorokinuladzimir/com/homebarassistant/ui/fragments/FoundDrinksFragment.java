@@ -20,31 +20,17 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
+import android.widget.ImageView;
+import android.widget.TextView;
 
-import java.util.ArrayList;
 import java.util.Objects;
 
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import sorokinuladzimir.com.homebarassistant.BarDataRepository;
 import sorokinuladzimir.com.homebarassistant.BarDataRepository.QueryType;
 import sorokinuladzimir.com.homebarassistant.Constants;
 import sorokinuladzimir.com.homebarassistant.R;
-import sorokinuladzimir.com.homebarassistant.net.NoConnectivityException;
-import sorokinuladzimir.com.homebarassistant.net.RetrofitInstance;
-import sorokinuladzimir.com.homebarassistant.net.entity.DrinkEntity;
-import sorokinuladzimir.com.homebarassistant.net.AbsolutDrinksApi;
-import sorokinuladzimir.com.homebarassistant.net.AbsolutDrinksResult;
 import sorokinuladzimir.com.homebarassistant.ui.adapters.DrinkCardItemAdapter;
 import sorokinuladzimir.com.homebarassistant.ui.subnavigation.RouterProvider;
 import sorokinuladzimir.com.homebarassistant.viewmodel.FoundDrinksViewModel;
-
-
-/**
- * Created by sorok on 17.10.2017.
- */
 
 public class FoundDrinksFragment extends Fragment {
 
@@ -57,11 +43,13 @@ public class FoundDrinksFragment extends Fragment {
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private SearchView searchView;
     private FoundDrinksViewModel mViewModel;
+    private ImageView mIvEmptyState;
+    private TextView mTvEmptyStateMessage;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fr_drinks_list, container, false);
+        View rootView = inflater.inflate(R.layout.fr_items_list, container, false);
 
         mViewModel = ViewModelProviders.of(this).get(FoundDrinksViewModel.class);
 
@@ -80,6 +68,7 @@ public class FoundDrinksFragment extends Fragment {
         }
         if (args != null && !args.isEmpty()) {
             mRequestConditions = args.getString(Constants.Extra.REQUEST_CONDITIONS);
+            mSwipeRefreshLayout.setRefreshing(true);
             searchDrinks(mRequestConditions, QueryType.SEARCH_BY_CONDITIONS, true);
             args.clear();
         }
@@ -94,8 +83,18 @@ public class FoundDrinksFragment extends Fragment {
     }
 
     private void subscribeUi() {
+        setEmptyState(R.drawable.list_empty_state, getString(R.string.no_items_founddrinks), true);
+
         mViewModel.getDrinks().observe(this, drinkEntities -> {
-            if (drinkEntities != null) mAdapter.setData(drinkEntities);
+            if (drinkEntities != null) {
+                mSwipeRefreshLayout.setRefreshing(false);
+                mAdapter.setData(drinkEntities);
+                if (drinkEntities.size() == 0) {
+                    setEmptyState(R.drawable.list_empty_state, getString(R.string.no_items_found), true);
+                } else {
+                    setEmptyState(0, null, false);
+                }
+            }
         });
     }
 
@@ -103,10 +102,26 @@ public class FoundDrinksFragment extends Fragment {
         mSwipeRefreshLayout = rootView.findViewById(R.id.swipe_refresh_layout);
         mSwipeRefreshLayout.setOnRefreshListener(() -> {
         if (mRequestConditions != null){
+            mSwipeRefreshLayout.setRefreshing(true);
             searchDrinks(mRequestConditions, QueryType.CURRENT, true);
         }
             mSwipeRefreshLayout.setRefreshing(false);
         });
+
+        mIvEmptyState = rootView.findViewById(R.id.iv_empty_state);
+        mTvEmptyStateMessage = rootView.findViewById(R.id.tv_empty_state_message);
+    }
+
+    private void setEmptyState(int imageResId, String message, boolean isVisible) {
+        if (isVisible) {
+            mIvEmptyState.setVisibility(View.VISIBLE);
+            mTvEmptyStateMessage.setVisibility(View.VISIBLE);
+            mIvEmptyState.setImageResource(imageResId);
+            mTvEmptyStateMessage.setText(message);
+        } else {
+            mIvEmptyState.setVisibility(View.GONE);
+            mTvEmptyStateMessage.setVisibility(View.GONE);
+        }
     }
 
     public static FoundDrinksFragment getNewInstance(String name, Bundle bundle) {
@@ -114,7 +129,7 @@ public class FoundDrinksFragment extends Fragment {
 
         Bundle arguments = new Bundle();
         arguments.putString(EXTRA_NAME, name);
-        arguments.putBundle(EXTRA_BUNDLE,bundle);
+        arguments.putBundle(EXTRA_BUNDLE, bundle);
         fragment.setArguments(arguments);
 
         return fragment;
@@ -150,9 +165,7 @@ public class FoundDrinksFragment extends Fragment {
             if (getParentFragment() != null) {
                 ((RouterProvider) getParentFragment()).getRouter().navigateTo(Screens.SINGLE_DRINK, bundle);
             }
-        }, () -> {
-                searchDrinks(mRequestConditions, QueryType.CURRENT, false);
-        });
+        }, () -> searchDrinks(mRequestConditions, QueryType.CURRENT, false));
 
         recyclerView.setAdapter(mAdapter);
     }
@@ -171,6 +184,7 @@ public class FoundDrinksFragment extends Fragment {
             @Override
             public boolean onQueryTextSubmit(String query) {
                 mRequestConditions = query;
+                mSwipeRefreshLayout.setRefreshing(true);
                 searchDrinks(mRequestConditions, QueryType.SEARCH_BY_NAME, true);
                 if( ! searchView.isIconified()) {
                     searchView.setIconified(true);
@@ -193,6 +207,12 @@ public class FoundDrinksFragment extends Fragment {
                 ((RouterProvider)getParentFragment()).getRouter().navigateTo(Screens.ABOUT, "Found drinks fragment anbout text");
             }
         }
+        if (item.getItemId() == R.id.action_settings) {
+            if (getParentFragment() != null) {
+                ((RouterProvider)getParentFragment()).getRouter().navigateTo(Screens.SETTINGS);
+            }
+        }
+
         return super.onOptionsItemSelected(item);
     }
 

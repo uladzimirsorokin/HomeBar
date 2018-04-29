@@ -49,7 +49,7 @@ public class AddDrinkIngredientsFragment extends Fragment implements BackButtonL
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fr_drinks_list, container, false);
+        View rootView = inflater.inflate(R.layout.fr_items_list, container, false);
 
         initFAB(rootView);
         initRecyclerView(rootView);

@@ -11,30 +11,30 @@
     </string-array>
 
     <string-array name="glass_name">
-        <item>Любой</item>
-        <item>Бокал для шампанского</item>
-        <item>Бокал для коктейля</item>
-        <item>Хайболл</item>
-        <item>Стакан рокс</item>
-        <item>Шот</item>
-        <item>Винный бокал</item>
+        <item>Any</item>
+        <item>Champagne Glass</item>
+        <item>Cocktail Glass</item>
+        <item>Highball Glass</item>
+        <item>Rocks Glass</item>
+        <item>Shot Glass</item>
+        <item>Wine Glass</item>
     </string-array>
 
     <string-array name="glass_name_local">
-        <item>Любой</item>
-        <item>Бокал для шампанского</item>
-        <item>Бокал для коктейля</item>
-        <item>Хайболл</item>
-        <item>Стакан рокс</item>
-        <item>Шот</item>
-        <item>Винный бокал</item>
-        <item>Кружка</item>
-        <item>Снифтер</item>
-        <item>Маргарита</item>
-        <item>Харрикейн</item>
-        <item>Пивной бокал</item>
-        <item>Пивная кружка</item>
-        <item>Айриш кофе</item>
+        <item>Any</item>
+        <item>Champagne Glass</item>
+        <item>Cocktail Glass</item>
+        <item>Highball Glass</item>
+        <item>Rocks Glass</item>
+        <item>Shot Glass</item>
+        <item>Wine Glass</item>
+        <item>Cup</item>
+        <item>Snifter</item>
+        <item>Margarita</item>
+        <item>Hurricane</item>
+        <item>Beer Glass</item>
+        <item>Beer mug</item>
+        <item>Irish coffee</item>
     </string-array>
 
     <string-array name="colors_name">
@@ -75,16 +75,16 @@
     </string-array>
 
     <string-array name="taste_name">
-        <item>любой</item>
-        <item>Ягодный</item>
-        <item>Горький</item>
-        <item>Свежий</item>
-        <item>Фруктовый</item>
-        <item>Травяной</item>
-        <item>Кислый</item>
-        <item>Пряный</item>
-        <item>С выраженным вкусом спирта</item>
-        <item>Сладкий</item>
+        <item>any</item>
+        <item>Berry</item>
+        <item>Bitter</item>
+        <item>Fresh</item>
+        <item>Fruity</item>
+        <item>Herb</item>
+        <item>Sour</item>
+        <item>Spicy</item>
+        <item>Spirits palpable</item>
+        <item>Sweet</item>
     </string-array>
 
     <string-array name="ingridient_type">
@@ -98,13 +98,13 @@
     </string-array>
 
     <string-array name="ingridient_name">
-        <item>любой</item>
-        <item>бренди</item>
-        <item>джин</item>
-        <item>ром</item>
-        <item>текила</item>
-        <item>водка</item>
-        <item>виски</item>
+        <item>any</item>
+        <item>brandy</item>
+        <item>gin</item>
+        <item>rum</item>
+        <item>tequila</item>
+        <item>vodka</item>
+        <item>whisky</item>
     </string-array>
 
     <string-array name="ingredient_unit">
@@ -132,25 +132,25 @@
     </string-array>
 
     <string-array name="ingredient_unit_ru">
-        <item>част</item>
-        <item>щеп</item>
-        <item>кап</item>
-        <item>полов</item>
-        <item>четв</item>
-        <item>побе</item>
-        <item>лист</item>
-        <item>кожур</item>
-        <item>ломти</item>
-        <item>дольк</item>
-        <item>кус</item>
-        <item>круг</item>
-        <item>вкус</item>
-        <item>палочк</item>
-        <item>веточк</item>
-        <item>чайн</item>
-        <item>вит</item>
-        <item>спир</item>
-        <item>цел</item>
+        <item>part</item>
+        <item>dash</item>
+        <item>drop</item>
+        <item>hal</item>
+        <item>quart</item>
+        <item>leaf</item>
+        <item>lea</item>
+        <item>peel</item>
+        <item>slic</item>
+        <item>slic</item>
+        <item>wed</item>
+        <item>wed</item>
+        <item>scoo</item>
+        <item>spri</item>
+        <item>spri</item>
+        <item>teasp</item>
+        <item>twis</item>
+        <item>twis</item>
+        <item>whole</item>
         <item>pin</item>
         <item>stic</item>
     </string-array>

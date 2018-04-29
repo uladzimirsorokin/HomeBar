@@ -143,8 +143,9 @@ public class BarDataRepository implements BarData {
 
             int start = (mObservableRemoteDrinks.getValue() == null) ? 0 : mObservableRemoteDrinks.getValue().size();
 
+
             AbsolutDrinksApi client =  RetrofitInstance
-                    .getRetrofitInstance(mContext, "ru")
+                    .getRetrofitInstance(mContext, getLanguage())
                     .create(AbsolutDrinksApi.class);
 
             Call<AbsolutDrinksResult> call;
@@ -167,6 +168,15 @@ public class BarDataRepository implements BarData {
                 Toast.makeText(mContext, "something went wrong :(", Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private String getLanguage() {
+        String lang = BarApp.sDefSystemLanguage;
+        if (lang.equals("ru")) {
+            return lang;
+        } else {
+            return "en";
+        }
     }
 
     private void clearRemoteDrinks(){
@@ -234,7 +244,7 @@ public class BarDataRepository implements BarData {
             if (mRemoteIngredients != null) mRemoteIngredients.clear();
 
             AbsolutDrinksApi client =  RetrofitInstance
-                    .getRetrofitInstance(mContext, "ru")
+                    .getRetrofitInstance(mContext, getLanguage())
                     .create(AbsolutDrinksApi.class);
 
             Call<Preparation> call = client.getPreparationSteps(drinkId);
@@ -317,11 +327,11 @@ public class BarDataRepository implements BarData {
 
     private Map<String, String> matchAmountAndUnit(float amount, float centilitresAmount, String unit) {
         Map<String, String> result = new HashMap<>();
-        if (amount != 0.0) {
+        if (amount != 0.0 && unit != null) {
             String[] unitPatterns = mContext.getResources().getStringArray(R.array.ingredient_unit_ru);
             String[] unitMatches = mContext.getResources().getStringArray(R.array.ingredient_unit_ru_matches);
             for (String unitPattern : unitPatterns) {
-                if (unit != null && unit.toLowerCase().contains(unitPattern)) {
+                if (unit.toLowerCase().contains(unitPattern)) {
                     result.put("amount", formatFloatNumber(amount));
                     result.put("unit", unitMatches[Arrays.asList(unitPatterns).indexOf(unitPattern)]);
                     return result;

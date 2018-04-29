@@ -2,6 +2,7 @@ package sorokinuladzimir.com.homebarassistant.db.mapper;
 
 import sorokinuladzimir.com.homebarassistant.Constants;
 import sorokinuladzimir.com.homebarassistant.db.entity.Drink;
+import sorokinuladzimir.com.homebarassistant.db.entity.Glass;
 import sorokinuladzimir.com.homebarassistant.net.entity.DrinkEntity;
 
 public class DrinkEntityToDrinkMapper extends Mapper<Drink,DrinkEntity> {
@@ -34,7 +35,9 @@ public class DrinkEntityToDrinkMapper extends Mapper<Drink,DrinkEntity> {
         drink.setRating(value.getRating());
         drink.setAlcoholic(value.isAlcoholic());
         drink.setCarbonated(value.isCarbonated());
-
+        Glass glass = new Glass();
+        glass.setGlassName(value.getServedIn().getText());
+        drink.setGlass(glass);
         return drink;
     }
 }

@@ -72,9 +72,23 @@ public class LocalDrinkIngredientItemAdapter extends RecyclerView.Adapter<LocalD
 
         public void bind(final WholeCocktail item, final OnItemClickListener listener) {
 
-            if(item.getIngredientName() != null) ingredientName.setText(item.getIngredientName());
-            if(item.getAmount() != null) ingredientAmount.setText(item.getAmount());
-            if(item.getUnit() != null) ingredientUnit.setText(item.getUnit());
+            if (item.getIngredientName() != null) {
+                ingredientName.setText(item.getIngredientName());
+            } else {
+                ingredientName.setText("");
+            }
+
+            if(item.getAmount() != null) {
+                ingredientAmount.setText(item.getAmount());
+            } else {
+                ingredientAmount.setText("");
+            }
+
+            if (item.getUnit() != null) {
+                ingredientUnit.setText(item.getUnit());
+            } else {
+                ingredientUnit.setText("");
+            }
 
             Glide.with(ingredientImage.getContext())
                     .load(item.getImage() != null ? item.getImage() : R.drawable.camera_placeholder)
