@@ -2,8 +2,6 @@ package sorokinuladzimir.com.homebarassistant;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.support.v4.app.Fragment;
@@ -123,9 +121,9 @@ public class MainActivity extends AppCompatActivity {
         bottomNavigation = findViewById(R.id.bottom_navigation);
         bottomNavigation.setDefaultBackgroundColor(fetchPrimaryColor());
         bottomNavigation.setAccentColor(Color.parseColor("#FFFFFF"));
-        AHBottomNavigationItem item1 = new AHBottomNavigationItem("search", R.drawable.ic_search);
-        AHBottomNavigationItem item2 = new AHBottomNavigationItem("drinks", R.drawable.cocktail);
-        AHBottomNavigationItem item3 = new AHBottomNavigationItem("ingredients", R.drawable.bottles);
+        AHBottomNavigationItem item1 = new AHBottomNavigationItem(getString(R.string.bottom_bar_search), R.drawable.ic_search);
+        AHBottomNavigationItem item2 = new AHBottomNavigationItem(getString(R.string.bottom_bar_drinks), R.drawable.cocktail);
+        AHBottomNavigationItem item3 = new AHBottomNavigationItem(getString(R.string.bottom_bar_ingredients), R.drawable.bottles);
 
         bottomNavigation.addItem(item1);
         bottomNavigation.addItem(item2);
@@ -133,28 +131,23 @@ public class MainActivity extends AppCompatActivity {
 
         bottomNavigation.setTitleState(AHBottomNavigation.TitleState.ALWAYS_SHOW);
 
-        bottomNavigation.setOnTabSelectedListener(new AHBottomNavigation.OnTabSelectedListener() {
-            @Override
-            public boolean onTabSelected(int position, boolean wasSelected) {
-                switch (position){
-                    case 0:
-                        BarApp.getInstance().getRouter().replaceScreen(Screens.SEARCH);
-                        break;
-                    case 1:
-                        BarApp.getInstance().getRouter().replaceScreen(Screens.DRINKS);
-                        break;
-                    case 2:
-                        BarApp.getInstance().getRouter().replaceScreen(Screens.INGREDIENTS);
-                        break;
-                }
+        bottomNavigation.setOnTabSelectedListener((position, wasSelected) -> {
+            switch (position){
+                case 0:
+                    BarApp.getInstance().getRouter().replaceScreen(Screens.SEARCH);
+                    break;
+                case 1:
+                    BarApp.getInstance().getRouter().replaceScreen(Screens.DRINKS);
+                    break;
+                case 2:
+                    BarApp.getInstance().getRouter().replaceScreen(Screens.INGREDIENTS);
+                    break;
+            }
 
-                return true;
-            }
+            return true;
         });
-        bottomNavigation.setOnNavigationPositionListener(new AHBottomNavigation.OnNavigationPositionListener() {
-            @Override public void onPositionChange(int y) {
-                // Manage the new y position
-            }
+        bottomNavigation.setOnNavigationPositionListener(y -> {
+            // Manage the new y position
         });
     }
 

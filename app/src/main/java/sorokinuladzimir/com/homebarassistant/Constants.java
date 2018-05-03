@@ -41,6 +41,7 @@ public class Constants {
         public static final String COLOR = "color";
         public static final String COCKTAIL = "cocktail";
         public static final String REQUEST_CONDITIONS = "request conditions";
+        public static final String APP_THEME = "appTheme";
     }
 
 

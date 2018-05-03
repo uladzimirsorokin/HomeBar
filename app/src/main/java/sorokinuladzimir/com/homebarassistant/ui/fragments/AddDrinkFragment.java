@@ -1,6 +1,7 @@
 package sorokinuladzimir.com.homebarassistant.ui.fragments;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.net.Uri;
@@ -21,6 +22,7 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -162,6 +164,7 @@ public class AddDrinkFragment extends Fragment implements BackButtonListener,
 
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     private void initViews(View view) {
 
         mEtName = view.findViewById(R.id.et_drink_name);
@@ -218,6 +221,17 @@ public class AddDrinkFragment extends Fragment implements BackButtonListener,
         mSwIsCarbonated = view.findViewById(R.id.sw_search_carbonated);
         mSwIsAlcoholic = view.findViewById(R.id.sw_search_alcoholic);
         mEtNotes = view.findViewById(R.id.et_notes);
+        mEtNotes.setOnTouchListener((v, event) -> {
+            if (v.getId() == R.id.et_notes) {
+                v.getParent().requestDisallowInterceptTouchEvent(true);
+                switch (event.getAction() & MotionEvent.ACTION_MASK) {
+                    case MotionEvent.ACTION_UP:
+                        v.getParent().requestDisallowInterceptTouchEvent(false);
+                        break;
+                }
+            }
+            return false;
+        });
         mSpGlass = view.findViewById(R.id.spin_glass_type);
         ArrayAdapter<CharSequence> adapterGlass = ArrayAdapter.createFromResource(Objects.requireNonNull(getContext()),
                 R.array.glass_name_local, android.R.layout.simple_spinner_item);
@@ -361,7 +375,6 @@ public class AddDrinkFragment extends Fragment implements BackButtonListener,
         }
 
     }
-
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {

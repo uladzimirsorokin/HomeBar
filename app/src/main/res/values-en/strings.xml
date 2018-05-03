@@ -72,5 +72,8 @@
     <string name="ingredient_description_hint">Ingredient description</string>
     <string name="ingredient_notes_hint">Ingredient notes</string>
     <string name="settings_fragment_title">Settings</string>
-    <string name="app_theme_color_title">APP THEME COLOR</string>
+    <string name="app_theme_color_title">Theme</string>
+    <string name="bottom_bar_search">search</string>
+    <string name="bottom_bar_drinks">drinks</string>
+    <string name="bottom_bar_ingredients">ingredients</string>
 </resources>

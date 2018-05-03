@@ -1,29 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <color name="colorPrimary">#3f51b5</color>
-    <color name="colorPrimaryDark">#303F9F</color>
-    <color name="colorAccent">#FF4081</color>
-
-    <color name="colorPrimary2">#ac00251a</color>
-    <color name="colorPrimaryDark2">#004d40</color>
-    <color name="colorAccent2">#aeea00</color>
-
-
-
-    <color name="colorFAB1">#2196F3</color>
-    <color name="colorFAB2">#E040FB</color>
-
     <color name="bg_circle_default">#666666</color>
     <color name="row_activated">#e0e0e0</color>
-
     <color name="bg_close_circle">#be3f51b5</color>
-
     <color name="subheader_text">#8c000000</color>
     <color name="singleline_edittext">#f3000000</color>
     <color name="add_ingredients">#84313335</color>
 
     <color name="transparent">#00ffffff</color>
     <color name="black_trans80">#33000000</color>
+
+    <color name="white">#FFFFFF</color>
+    <color name="green">#50fe00</color>
+    <color name="red">#ff0000</color>
+    <color name="dark_gray">#a9a9a9</color>
+
+    <color name="indigo">#3F51B5</color>
+    <color name="indigoDark">#303F9F</color>
+    <color name="indigoAccent">#FF4081</color>
+
+    <color name="pink">#e91e63</color>
+    <color name="pinkDark">#b0003a</color>
+    <color name="pinkAccent">#AA00FF</color>
+
+    <color name="black">#212121</color>
+    <color name="blackDark">#000000</color>
+    <color name="blackAccent">#00e676</color>
 </resources>
 

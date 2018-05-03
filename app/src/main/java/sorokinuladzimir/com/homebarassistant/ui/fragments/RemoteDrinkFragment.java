@@ -78,7 +78,6 @@ public class RemoteDrinkFragment extends Fragment implements BackButtonListener 
     private Menu collapsedMenu;
     private AppBarLayout mAppBarLayout;
     private boolean appBarExpanded = true;
-    private MenuItem mItemAdd;
 
 
     @Nullable
@@ -243,6 +242,7 @@ public class RemoteDrinkFragment extends Fragment implements BackButtonListener 
         mFab = view.findViewById(R.id.single_drink_fab);
         mFab.setImageDrawable(ContextCompat.getDrawable(Objects.requireNonNull(getContext()), R.drawable.ic_add));
         mFab.setOnClickListener(view1 -> {
+            mFab.setEnabled(false);
             addDrinkToDb();
             onBackPressed();
         });
@@ -266,6 +266,7 @@ public class RemoteDrinkFragment extends Fragment implements BackButtonListener 
         }
 
         if (item.getTitle() == getString(R.string.menu_add)) {
+            item.setEnabled(false);
             addDrinkToDb();
             onBackPressed();
         }

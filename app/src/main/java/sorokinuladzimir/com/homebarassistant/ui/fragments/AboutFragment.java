@@ -1,9 +1,9 @@
 package sorokinuladzimir.com.homebarassistant.ui.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -16,7 +16,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.util.Objects;
-
+import com.google.android.gms.oss.licenses.OssLicensesMenuActivity;
 import mehdi.sakout.aboutpage.AboutPage;
 import mehdi.sakout.aboutpage.Element;
 import sorokinuladzimir.com.homebarassistant.R;
@@ -40,7 +40,13 @@ public class AboutFragment extends Fragment implements BackButtonListener {
             mAboutText = getArguments().getString(EXTRA_TEXT);
         }
 
-        Element versionElement = new Element();
+        TextView tvLicences = rootView.findViewById(R.id.tv_licences);
+        tvLicences.setOnClickListener(view -> {
+            // When the user selects an option to see the licenses:
+            startActivity(new Intent(getContext(), OssLicensesMenuActivity.class));
+        });
+
+    /*    Element versionElement = new Element();
         versionElement.setTitle("Version 1.0");
 
         View aboutPage = new AboutPage(getContext())
@@ -62,7 +68,7 @@ public class AboutFragment extends Fragment implements BackButtonListener {
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         layoutParams.setMargins(0, 72, 0, 16);
-        layout.addView(aboutPage, layoutParams);
+        layout.addView(aboutPage, layoutParams);*/
 
         initToolbar(rootView);
         initViews(rootView);

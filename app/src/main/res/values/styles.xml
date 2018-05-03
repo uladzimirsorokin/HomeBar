@@ -1,26 +1,34 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="BaseAppTheme" parent="Theme.AppCompat.Light.NoActionBar">
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item>
-
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">?themePrimary</item>
+        <item name="colorPrimaryDark">?themePrimaryDark</item>
+        <item name="colorAccent">?themeAccent</item>
     </style>
 
-    <style name="CustomAppTheme" parent="Theme.AppCompat.DayNight.NoActionBar">
-        <item name="colorPrimary">@color/colorPrimary2</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark2</item>
-        <item name="colorAccent">@color/colorAccent2</item>
+    <style name="AppTheme.Indigo">
+        <item name="themePrimary">@color/indigo</item>
+        <item name="themePrimaryDark">@color/indigoDark</item>
+        <item name="themeAccent">@color/indigoAccent</item>
     </style>
 
-    <style name="BrightAppTheme" parent="Theme.AppCompat.Light.NoActionBar">
-        <item name="colorPrimary">#212121</item>
-        <item name="colorPrimaryDark">#000000</item>
-        <item name="colorAccent">#00e676</item>
-        <item name="android:textColorSecondary">#ffffff</item>
-        <item name="android:textColorPrimary">#000000</item>
+    <style name="AppTheme.Pink">
+        <item name="themePrimary">@color/pink</item>
+        <item name="themePrimaryDark">@color/pinkDark</item>
+        <item name="themeAccent">@color/pinkAccent</item>
     </style>
+
+    <style name="AppTheme.Black">
+        <item name="colorPrimary">@color/black</item>
+        <item name="colorPrimaryDark">@color/blackDark</item>
+        <item name="colorAccent">@color/blackAccent</item>
+    </style>
+
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
     <style name="SplashTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="android:windowBackground">@drawable/background_splash</item>
@@ -68,5 +76,24 @@
     <style name="TextStyle" parent="TextAppearance.AppCompat.Medium">
         <item name="android:textColor">@color/add_ingredients</item>
     </style>
+
+    <style name="TextIngredientItemName">
+        <item name="android:paddingTop">@dimen/standard_spacing</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:textIsSelectable">false</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:fontFamily">sans-serif</item>
+    </style>
+
+    <style name="EditTextAmout">
+        <item name="android:singleLine">true</item>
+        <item name="android:inputType">numberDecimal</item>
+        <item name="android:hint">10</item>
+        <item name="android:maxLength">4</item>
+        <item name="android:ems">3</item>
+        <item name="android:maxEms">3</item>
+    </style>
+
 
 </resources>

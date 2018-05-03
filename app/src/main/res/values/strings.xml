@@ -72,7 +72,10 @@
     <string name="ingredient_description_hint">Описание ингридиента</string>
     <string name="ingredient_notes_hint">Заметки об ингридиенте</string>
     <string name="settings_fragment_title">Настройки</string>
-    <string name="app_theme_color_title">APP THEME COLOR</string>
+    <string name="app_theme_color_title">Темы</string>
+    <string name="bottom_bar_search">search</string>
+    <string name="bottom_bar_drinks">drinks</string>
+    <string name="bottom_bar_ingredients">ingredients</string>
 
 
 </resources>

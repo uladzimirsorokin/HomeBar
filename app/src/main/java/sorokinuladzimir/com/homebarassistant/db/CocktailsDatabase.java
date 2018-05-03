@@ -59,7 +59,7 @@ public abstract class CocktailsDatabase extends RoomDatabase {
                         super.onCreate(db);
                         executors.diskIO().execute(() -> {
                             final CocktailsDatabase database = CocktailsDatabase.getInstance(appContext, executors);
-                                   database.setDatabaseCreated();
+                            database.setDatabaseCreated();
                         });
                     }
                 }).build();

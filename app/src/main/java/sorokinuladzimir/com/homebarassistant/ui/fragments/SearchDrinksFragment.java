@@ -35,11 +35,6 @@ import sorokinuladzimir.com.homebarassistant.ui.subnavigation.BackButtonListener
 import sorokinuladzimir.com.homebarassistant.ui.subnavigation.RouterProvider;
 import sorokinuladzimir.com.homebarassistant.ui.utils.DrinksPathManager;
 
-
-/**
- * Created by sorok on 20.10.2017.
- */
-
 public class SearchDrinksFragment extends Fragment implements BackButtonListener {
 
     private static final String EXTRA_NAME = "sdf_extra_name";

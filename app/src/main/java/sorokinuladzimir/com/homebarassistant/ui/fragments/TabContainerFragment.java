@@ -20,10 +20,6 @@ import sorokinuladzimir.com.homebarassistant.ui.subnavigation.BackButtonListener
 import sorokinuladzimir.com.homebarassistant.ui.subnavigation.LocalCiceroneHolder;
 import sorokinuladzimir.com.homebarassistant.ui.subnavigation.RouterProvider;
 
-/**
- * Created by sorok on 18.10.2017.
- */
-
 public class TabContainerFragment extends Fragment implements RouterProvider, BackButtonListener {
 
     private static final String EXTRA_NAME = "tcf_extra_name";

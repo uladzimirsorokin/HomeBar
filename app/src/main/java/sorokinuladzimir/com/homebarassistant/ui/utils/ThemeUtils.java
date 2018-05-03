@@ -5,19 +5,20 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 
+import sorokinuladzimir.com.homebarassistant.Constants;
 import sorokinuladzimir.com.homebarassistant.R;
 
 public class ThemeUtils {
 
-    public final static int BASE_THEME = 0;
-    public final static int CUSTOM_THEME = 1;
-    public final static int BRIGHT_THEME = 2;
+    public final static int INDIGO = 0;
+    public final static int PINK = 1;
+    public final static int BLACK = 2;
 
     public static void changeToTheme(Activity activity, int theme) {
         SharedPreferences sharedPref = activity.getPreferences(Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
-        editor.putInt("currentTheme", theme);
-        editor.commit();
+        editor.putInt(Constants.Extra.APP_THEME, theme);
+        editor.apply();
         activity.finish();
         activity.startActivity(new Intent(activity, activity.getClass()));
         activity.overridePendingTransition(android.R.anim.fade_in,
@@ -25,16 +26,16 @@ public class ThemeUtils {
     }
 
     public static void onActivityCreateSetTheme(Activity activity) {
-        switch (activity.getPreferences(Context.MODE_PRIVATE).getInt("currentTheme", 0)) {
+        switch (activity.getPreferences(Context.MODE_PRIVATE).getInt(Constants.Extra.APP_THEME, 0)) {
             default:
-            case BASE_THEME:
-                activity.setTheme(R.style.BaseAppTheme);
+            case INDIGO:
+                activity.setTheme(R.style.AppTheme_Indigo);
                 break;
-            case CUSTOM_THEME:
-                activity.setTheme(R.style.CustomAppTheme);
+            case PINK:
+                activity.setTheme(R.style.AppTheme_Pink);
                 break;
-            case BRIGHT_THEME:
-                activity.setTheme(R.style.BrightAppTheme);
+            case BLACK:
+                activity.setTheme(R.style.AppTheme_Black);
                 break;
         }
     }

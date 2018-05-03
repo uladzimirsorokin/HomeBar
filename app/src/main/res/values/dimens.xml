@@ -8,14 +8,6 @@
     <dimen name="half_app_bar_height">450dp</dimen>
     <dimen name="ingredient_app_bar_height">300dp</dimen>
     <dimen name="expanded_toolbar_title_margin_start">36dp</dimen>
-<!--
-
-
-    <dimen name="text_margin">16dp</dimen>
-    <dimen name="icon_left_padding">16dp</dimen>
-    <dimen name="list_item_left_padding">72dp</dimen>
-    <dimen name="list_item_right_padding">16dp</dimen>
-    <dimen name="list_top_padding">8dp</dimen>-->
 
     <dimen name="list_subheader_height">48dp</dimen>
     <dimen name="dense_list_item_height">48dp</dimen>
