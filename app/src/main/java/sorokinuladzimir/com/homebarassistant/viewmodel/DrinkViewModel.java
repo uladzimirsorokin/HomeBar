@@ -33,30 +33,17 @@ import sorokinuladzimir.com.homebarassistant.db.entity.WholeCocktail;
 
 public class DrinkViewModel extends AndroidViewModel {
 
-    // MediatorLiveData can observe other LiveData objects and react on their emissions.
     private final MediatorLiveData<Drink> mObservableDrink;
     private final MediatorLiveData<List<WholeCocktail>> mObservableIngredients;
 
-
-    private final Long mDrinkId;
-    private final LiveData<Drink> mLiveDrink;
-    private final LiveData<List<WholeCocktail>> mLiveIngredients;
-
     DrinkViewModel(Application application, Long drinkId) {
         super(application);
-
-        mDrinkId = drinkId;
-
         mObservableDrink = new MediatorLiveData<>();
         mObservableIngredients = new MediatorLiveData<>();
-
         mObservableDrink.setValue(null);
         mObservableIngredients.setValue(null);
-
-
-        mLiveDrink = BarApp.getInstance().getBarRepository().getDrink(mDrinkId);
-        mLiveIngredients = BarApp.getInstance().getBarRepository().getDrinkIngredients(mDrinkId);
-
+        LiveData<Drink> mLiveDrink = BarApp.getBarRepository().getDrink(drinkId);
+        LiveData<List<WholeCocktail>> mLiveIngredients = BarApp.getBarRepository().getDrinkIngredients(drinkId);
         mObservableDrink.addSource(mLiveDrink, mObservableDrink::setValue);
         mObservableIngredients.addSource(mLiveIngredients, mObservableIngredients::setValue);
     }

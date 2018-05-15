@@ -34,25 +34,21 @@ import com.tbruyelle.rxpermissions2.RxPermissions;
 import java.util.Objects;
 
 import sorokinuladzimir.com.homebarassistant.R;
+import sorokinuladzimir.com.homebarassistant.db.entity.Ingredient;
 import sorokinuladzimir.com.homebarassistant.ui.subnavigation.BackButtonListener;
 import sorokinuladzimir.com.homebarassistant.ui.subnavigation.RouterProvider;
 import sorokinuladzimir.com.homebarassistant.viewmodel.AddIngredientViewModel;
 
-
 import static android.app.Activity.RESULT_OK;
 import static sorokinuladzimir.com.homebarassistant.Constants.Values.DEFAULT_IMAGE_SIZE;
 
-
 public class AddIngredientFragment extends Fragment implements BackButtonListener, AddImageDialogFragment.AddImageDialogFragmentCallback {
 
-    private final String TAG = "AddIngredientFragment";
+    static final int REQUEST_IMAGE_CAPTURE = 1;
     private static final String EXTRA_NAME = "extra_name";
     private static final String EXTRA_ID = "extra_id";
-
-    static final int REQUEST_IMAGE_CAPTURE = 1;
-
     private static final int OPEN_PICTURE_CODE = 2;
-
+    private static final String TAG = "addIngredient";
     private ImageView mIngredientImage;
     private EditText mName;
     private EditText mDesc;
@@ -60,17 +56,27 @@ public class AddIngredientFragment extends Fragment implements BackButtonListene
 
     private AddIngredientViewModel mViewModel;
 
+    public static AddIngredientFragment getNewInstance(String name, Long ingredientId) {
+        AddIngredientFragment fragment = new AddIngredientFragment();
+        Bundle arguments = new Bundle();
+        arguments.putString(EXTRA_NAME, name);
+        if ((ingredientId != null)) {
+            arguments.putLong(EXTRA_ID, ingredientId);
+        } else {
+            arguments.putLong(EXTRA_ID, -1L);
+        }
+        fragment.setArguments(arguments);
 
+        return fragment;
+    }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fr_add_ingredient, container, false);
-
         AddIngredientViewModel.Factory factory = new AddIngredientViewModel.Factory(Objects.requireNonNull(getActivity()).getApplication(),
                 Objects.requireNonNull(getArguments()).getLong(EXTRA_ID));
         mViewModel = ViewModelProviders.of(this, factory).get(AddIngredientViewModel.class);
-
         initToolbar(rootView);
         initViews(rootView);
 
@@ -83,61 +89,51 @@ public class AddIngredientFragment extends Fragment implements BackButtonListene
         subscribeUi(mViewModel);
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
+    private void subscribeUi(AddIngredientViewModel mViewModel) {
+        subscribeImage(mViewModel);
+        if (!mViewModel.getIsNewIngredient())
+            subscribeTextFields(mViewModel);
     }
 
-    private void subscribeUi(AddIngredientViewModel mViewModel) {
+    private void subscribeTextFields(AddIngredientViewModel mViewModel) {
+        mViewModel.getIngredient().observe(this, ingredient -> {
+            if (ingredient != null && mViewModel.getCurrentImagePath().getValue() == null) {
+                setImagePath(mViewModel, ingredient);
+                if (ingredient.getName() != null)
+                    mName.setText(ingredient.getName());
+                if (ingredient.getDescription() != null)
+                    mDesc.setText(ingredient.getDescription());
+                if (ingredient.getNotes() != null)
+                    mNotes.setText(ingredient.getNotes());
+            }
+        });
+    }
 
+    private void setImagePath(AddIngredientViewModel mViewModel, Ingredient ingredient) {
+        if (ingredient.getImage() != null && !mViewModel.getIsImageRemoved()) {
+            mViewModel.getCurrentImagePath().setValue(ingredient.getImage());
+        }
+    }
+
+    private void subscribeImage(AddIngredientViewModel mViewModel) {
         mViewModel.getCurrentImagePath().observe(this, imagePath ->
                 Glide.with(Objects.requireNonNull(getContext()))
                         .load(imagePath != null ? imagePath : R.drawable.camera_placeholder)
                         .apply(RequestOptions.circleCropTransform())
                         .into(mIngredientImage));
-
-        if(!mViewModel.getIsNewIngredient()) {
-            mViewModel.getIngredient().observe(this, ingredient -> {
-                if(ingredient != null && mViewModel.getCurrentImagePath().getValue() == null) {
-                    if (ingredient.getImage() != null && !mViewModel.getIsImageRemoved()){
-                        mViewModel.getCurrentImagePath().setValue(ingredient.getImage());
-                    }
-                    if (ingredient.getName() != null) mName.setText(ingredient.getName());
-                    if (ingredient.getDescription() != null) mDesc.setText(ingredient.getDescription());
-                    if (ingredient.getNotes() != null) mNotes.setText(ingredient.getNotes());
-                }
-            });
-        }
-
     }
 
-    public static AddIngredientFragment getNewInstance(String name, Long ingredientId) {
-        AddIngredientFragment fragment = new AddIngredientFragment();
-
-        Bundle arguments = new Bundle();
-        arguments.putString(EXTRA_NAME, name);
-
-        if ((ingredientId != null)) {
-            arguments.putLong(EXTRA_ID, ingredientId);
-        } else {
-            arguments.putLong(EXTRA_ID, -1L);
-        }
-        fragment.setArguments(arguments);
-
-        return fragment;
-    }
-
-    private void initToolbar(View view){
+    private void initToolbar(View view) {
         setHasOptionsMenu(true);
         Toolbar toolbar = view.findViewById(R.id.toolbar);
         ((AppCompatActivity) Objects.requireNonNull(getActivity())).setSupportActionBar(toolbar);
         ActionBar mToolbar = ((AppCompatActivity) getActivity()).getSupportActionBar();
 
-        if(mToolbar != null){
+        if (mToolbar != null) {
             mToolbar.setDisplayHomeAsUpEnabled(true);
             mToolbar.setHomeAsUpIndicator(R.drawable.ic_close);
 
-            if(mViewModel.getIsNewIngredient()){
+            if (mViewModel.getIsNewIngredient()) {
                 mToolbar.setTitle(R.string.title_new_ingredient);
             } else {
                 mToolbar.setTitle(R.string.title_ingredient_edit);
@@ -151,14 +147,13 @@ public class AddIngredientFragment extends Fragment implements BackButtonListene
         mName = view.findViewById(R.id.et_ingredient_name);
         mDesc = view.findViewById(R.id.et_ingredient_description);
         mNotes = view.findViewById(R.id.et_ingredient_notes);
-
         mNotes.setOnTouchListener((v, event) -> {
             if (v.getId() == R.id.et_ingredient_notes) {
                 v.getParent().requestDisallowInterceptTouchEvent(true);
-                switch (event.getAction() & MotionEvent.ACTION_MASK) {
-                    case MotionEvent.ACTION_UP:
-                        v.getParent().requestDisallowInterceptTouchEvent(false);
-                        break;
+                int i = event.getAction() & MotionEvent.ACTION_MASK;
+                if (i == MotionEvent.ACTION_UP) {
+                    v.getParent().requestDisallowInterceptTouchEvent(false);
+
                 }
             }
             return false;
@@ -173,43 +168,37 @@ public class AddIngredientFragment extends Fragment implements BackButtonListene
                                 showAddImageDialog();
                             } else if (permission.shouldShowRequestPermissionRationale) {
                                 // Denied permission with ask never again
-                                Toast.makeText(getContext(), "denied",Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getContext(), "denied", Toast.LENGTH_SHORT).show();
                             } else {
                                 // Denied permission with ask never again
                                 // Need to go to the settings
-                                Toast.makeText(getContext(), "denied, ask never again",Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getContext(), "denied, ask never again", Toast.LENGTH_SHORT).show();
                             }
                         }));
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent resultData) {
-
-        if (requestCode == OPEN_PICTURE_CODE && resultCode == RESULT_OK) {
-
-            if (resultData != null) handleChoosenPicture(resultData.getData());
-
+        if (requestCode == OPEN_PICTURE_CODE && resultCode == RESULT_OK && resultData != null) {
+            handleChoosenPicture(resultData.getData());
         }
-
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
-
             handleTakenPicture(mViewModel.getPhotoUri());
-
         }
     }
 
-    private void handleChoosenPicture(Uri imageUri){
+    private void handleChoosenPicture(Uri imageUri) {
         mViewModel.handleImage(imageUri, DEFAULT_IMAGE_SIZE, false);
     }
 
-    private void handleTakenPicture(Uri imageUri){
+    private void handleTakenPicture(Uri imageUri) {
         mViewModel.handleImage(imageUri, DEFAULT_IMAGE_SIZE, true);
     }
 
     void showAddImageDialog() {
         DialogFragment newFragment = AddImageDialogFragment.newInstance("Change photo",
                 mViewModel.getCurrentImagePath().getValue() != null);
-        newFragment.setTargetFragment(this,911);
+        newFragment.setTargetFragment(this, 911);
         if (getFragmentManager() != null) {
             newFragment.show(getFragmentManager(), "dialog");
         }
@@ -217,7 +206,7 @@ public class AddIngredientFragment extends Fragment implements BackButtonListene
 
     @Override
     public void addImageDialogCallback(int item) {
-        switch (item){
+        switch (item) {
             case 0:
                 dispatchTakePictureIntent();
                 break;
@@ -228,7 +217,7 @@ public class AddIngredientFragment extends Fragment implements BackButtonListene
                 mViewModel.removeCurrentImage();
                 break;
             default:
-                Log.d(TAG,"Some strange type of taking photo");
+                Log.d(TAG, "Some strange type of taking photo");
                 break;
         }
     }
@@ -237,11 +226,10 @@ public class AddIngredientFragment extends Fragment implements BackButtonListene
     private void dispatchTakePictureIntent() {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         // Ensure that there's a camera activity to handle the intent
-        if (takePictureIntent.resolveActivity(Objects.requireNonNull(getContext()).getPackageManager()) != null) {
-            if (mViewModel.createPhotoFile() != null) {
-                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, mViewModel.getPhotoUri());
-                startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
-            }
+        if (takePictureIntent.resolveActivity(
+                Objects.requireNonNull(getContext()).getPackageManager()) != null && mViewModel.createPhotoFile() != null) {
+            takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, mViewModel.getPhotoUri());
+            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
         }
     }
 
@@ -261,19 +249,18 @@ public class AddIngredientFragment extends Fragment implements BackButtonListene
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.add_edit_item_menu, menu);
-        if(mViewModel.getIsNewIngredient()){
+        if (mViewModel.getIsNewIngredient()) {
             menu.findItem(R.id.ab_add).setTitle(R.string.menu_drink_add);
             menu.findItem(R.id.ab_delete).setVisible(false);
         } else {
             menu.findItem(R.id.ab_add).setTitle(R.string.menu_save);
         }
-
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
-        switch (item.getItemId()){
+        switch (item.getItemId()) {
             case android.R.id.home:
                 onBackPressed();
                 return true;
@@ -282,24 +269,23 @@ public class AddIngredientFragment extends Fragment implements BackButtonListene
                 return true;
             case R.id.ab_delete:
                 int count = mViewModel.deleteIngredient();
-                if(count != 0) Toast.makeText(getContext(),
-                        "Can't be deleted, used in " + count + "cocktails",Toast.LENGTH_SHORT).show();
+                if (count != 0) Toast.makeText(getContext(),
+                        "Can't be deleted, used in " + count + "cocktails", Toast.LENGTH_SHORT).show();
                 if (getParentFragment() != null) {
-                    ((RouterProvider)getParentFragment()).getRouter().navigateTo(Screens.INGREDIENTS_LIST);
+                    ((RouterProvider) getParentFragment()).getRouter().navigateTo(Screens.INGREDIENTS_LIST);
                 }
                 return true;
             default:
-                Toast.makeText(getContext(),"Unknown menu item",Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "Unknown menu item", Toast.LENGTH_SHORT).show();
                 break;
         }
-
         return false;
     }
 
     @Override
     public boolean onBackPressed() {
         if (getParentFragment() != null) {
-            ((RouterProvider)getParentFragment()).getRouter().exit();
+            ((RouterProvider) getParentFragment()).getRouter().exit();
         }
         return true;
     }

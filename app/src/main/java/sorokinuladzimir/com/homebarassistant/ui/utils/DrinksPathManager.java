@@ -3,10 +3,6 @@ package sorokinuladzimir.com.homebarassistant.ui.utils;
 
 import android.text.TextUtils;
 
-/**
- * Created by 1 on 10/20/2016.
- */
-
 public final class DrinksPathManager {
 
     private final String drinkId;
@@ -33,43 +29,42 @@ public final class DrinksPathManager {
         this.isAlcoholic = builder.isAlcoholic;
 
         this.path = buildPath(builder.drinkId, builder.glassType, builder.taste, builder.rating,
-                builder.color, builder.ingredientType, builder.skill,builder.isCarbonated,builder.isAlcoholic);
+                builder.color, builder.ingredientType, builder.skill, builder.isCarbonated, builder.isAlcoholic);
     }
 
     private String buildPath(String drinkId, String glassType, String taste,
                              String rating, String color, String ingredientType,
                              String skill, String isCarbonated, String isAlcoholic) {
-        String conditionsPath = "";
+        StringBuilder conditionsPath = new StringBuilder();
         if (drinkId != null) {
-            conditionsPath += "/" + drinkId;
+            conditionsPath.append("/").append(drinkId);
         }
         if (glassType != null) {
-            conditionsPath += "/" + glassType;
+            conditionsPath.append("/").append(glassType);
         }
         if (taste != null) {
-            conditionsPath += "/" + taste;
+            conditionsPath.append("/").append(taste);
         }
 
         if (rating != null) {
-            conditionsPath += "/" + rating;
+            conditionsPath.append("/").append(rating);
         }
         if (color != null) {
-            conditionsPath += "/" + color;
+            conditionsPath.append("/").append(color);
         }
         if (ingredientType != null) {
-            conditionsPath += "/" + ingredientType;
+            conditionsPath.append("/").append(ingredientType);
         }
         if (skill != null) {
-            conditionsPath += "/" + skill;
+            conditionsPath.append("/").append(skill);
         }
         if (isCarbonated != null) {
-            conditionsPath += "/" + isCarbonated;
+            conditionsPath.append("/").append(isCarbonated);
         }
         if (isAlcoholic != null) {
-            conditionsPath += "/" + isAlcoholic;
+            conditionsPath.append("/").append(isAlcoholic);
         }
-
-        return conditionsPath;
+        return conditionsPath.toString();
     }
 
     public String getDrinkId() {
@@ -105,9 +100,7 @@ public final class DrinksPathManager {
     }
 
     /**
-     *
      * The builder class.
-     *
      */
     public static class Builder {
 
@@ -127,12 +120,12 @@ public final class DrinksPathManager {
         }
 
         public Builder setGlassType(String glassType) {
-            if(glassType != null) this.glassType = "servedin/" + glassType;
+            if (glassType != null) this.glassType = "servedin/" + glassType;
             return this;
         }
 
         public Builder setTaste(String[] tastes) {
-            if(tastes != null)this.taste = "tasting/" + TextUtils.join("/and/", tastes);
+            if (tastes != null) this.taste = "tasting/" + TextUtils.join("/and/", tastes);
             return this;
         }
 
@@ -142,12 +135,13 @@ public final class DrinksPathManager {
         }
 
         public Builder setColor(String color) {
-            if(color != null)this.color = "colored/" + color;
+            if (color != null) this.color = "colored/" + color;
             return this;
         }
 
         public Builder setIngredient(String[] ingredients) {
-            if(ingredients != null) this.ingredientType = "withtype/" + TextUtils.join("/and/", ingredients);
+            if (ingredients != null)
+                this.ingredientType = "withtype/" + TextUtils.join("/and/", ingredients);
             return this;
         }
 
@@ -157,7 +151,7 @@ public final class DrinksPathManager {
         }
 
         public Builder setCarbonated(Boolean carbonated) {
-            if(carbonated) {
+            if (carbonated) {
                 this.isCarbonated = "carbonated";
             } else {
                 this.isCarbonated = "not/carbonated";
@@ -166,7 +160,7 @@ public final class DrinksPathManager {
         }
 
         public Builder setAlcoholic(Boolean alcoholic) {
-            if(alcoholic) {
+            if (alcoholic) {
                 this.isAlcoholic = "alcoholic";
             } else {
                 this.isAlcoholic = "not/alcoholic";

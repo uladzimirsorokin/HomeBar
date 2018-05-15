@@ -1,65 +1,65 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_height="match_parent"
     android:layout_width="match_parent"
+    android:layout_height="match_parent"
     android:fitsSystemWindows="true">
 
-    <include layout="@layout/toolbar"
-        android:id="@+id/include" />
+    <include
+        android:id="@+id/include"
+        layout="@layout/toolbar" />
 
     <android.support.v4.widget.SwipeRefreshLayout
-        android:fitsSystemWindows="true"
         android:id="@+id/swipe_refresh_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="?attr/actionBarSize">
+        android:layout_marginTop="?attr/actionBarSize"
+        android:fitsSystemWindows="true">
 
         <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
             xmlns:tools="http://schemas.android.com/tools"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            xmlns:app="http://schemas.android.com/apk/res-auto"
             tools:context=".MainActivity">
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/recycler_view"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:padding = "@dimen/medium_spacing" />
+                android:padding="@dimen/medium_spacing" />
 
             <com.turingtechnologies.materialscrollbar.DragScrollBar
                 android:id="@+id/dragScrollBar"
                 android:layout_width="wrap_content"
-                app:msb_recyclerView="@id/recycler_view"
-                app:msb_lightOnTouch="false"
                 android:layout_height="match_parent"
                 android:layout_alignParentTop="true"
-                android:layout_alignParentEnd="true" />
+                android:layout_alignParentEnd="true"
+                app:msb_lightOnTouch="false"
+                app:msb_recyclerView="@id/recycler_view" />
 
             <ImageView
                 android:id="@+id/iv_empty_state"
                 android:layout_width="128dp"
                 android:layout_height="128dp"
+                android:layout_centerInParent="true"
                 android:adjustViewBounds="false"
+                android:alpha="0.5"
                 android:contentDescription="@string/empty_list_or_error"
                 android:cropToPadding="false"
                 android:scaleType="fitCenter"
                 android:src="@drawable/list_empty_state"
-                android:alpha="0.5"
-                android:layout_centerInParent="true"
-                android:visibility="gone"/>
+                android:visibility="gone" />
 
             <TextView
                 android:id="@+id/tv_empty_state_message"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_below="@+id/iv_empty_state"
+                android:layout_centerHorizontal="true"
                 android:layout_marginTop="8dp"
                 android:textSize="18sp"
-                android:layout_centerHorizontal="true"
-                android:layout_below="@+id/iv_empty_state"
-                android:visibility="gone"/>
+                android:visibility="gone" />
 
         </RelativeLayout>
 

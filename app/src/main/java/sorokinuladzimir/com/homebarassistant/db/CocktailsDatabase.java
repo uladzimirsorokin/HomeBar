@@ -2,14 +2,12 @@ package sorokinuladzimir.com.homebarassistant.db;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
-import android.arch.persistence.db.SupportSQLiteDatabase;
 import android.arch.persistence.room.Database;
 import android.arch.persistence.room.Room;
 import android.arch.persistence.room.RoomDatabase;
 import android.content.Context;
-import android.support.annotation.NonNull;
 
-import sorokinuladzimir.com.homebarassistant.AppExecutors;
+import sorokinuladzimir.com.homebarassistant.BarApp;
 import sorokinuladzimir.com.homebarassistant.db.dao.CocktailDao;
 import sorokinuladzimir.com.homebarassistant.db.dao.DrinkDao;
 import sorokinuladzimir.com.homebarassistant.db.dao.IngredientDao;
@@ -18,12 +16,9 @@ import sorokinuladzimir.com.homebarassistant.db.entity.DrinkIngredientJoin;
 import sorokinuladzimir.com.homebarassistant.db.entity.Ingredient;
 
 
-@Database(entities = {Drink.class, Ingredient.class, DrinkIngredientJoin.class}, version = 1)
+@Database(entities = {Drink.class, Ingredient.class, DrinkIngredientJoin.class}, version = 1,
+        exportSchema = false)
 public abstract class CocktailsDatabase extends RoomDatabase {
-
-    private static CocktailsDatabase sInstance;
-
-    private static final String DB_NAME = "cocktails_db";
 
     public abstract DrinkDao getDrinkDao();
 
@@ -31,51 +26,37 @@ public abstract class CocktailsDatabase extends RoomDatabase {
 
     public abstract CocktailDao getCocktailDao();
 
-    private final MutableLiveData<Boolean> mIsDatabaseCreated = new MutableLiveData<>();
+    private static final String DB_NAME = "cocktails_db";
+    private static final MutableLiveData<Boolean> mIsDatabaseCreated = new MutableLiveData<>();
 
-    public static CocktailsDatabase getInstance(final Context context, final AppExecutors executors) {
-        if (sInstance == null) {
-            synchronized (CocktailsDatabase.class) {
-                if (sInstance == null) {
-                    sInstance = buildDatabase(context.getApplicationContext(), executors);
-                    sInstance.updateDatabaseCreated(context.getApplicationContext());
-                }
-            }
-        }
-        return sInstance;
+    public static CocktailsDatabase getInstance() {
+        return SingletonHolder.INSTANCE;
     }
 
-    /**
-     * Build the database. {@link Builder#build()} only sets up the database configuration and
-     * creates a new instance of the database.
-     * The SQLite database is only created when it's accessed for the first time.
-     */
-    private static CocktailsDatabase buildDatabase(final Context appContext,
-                                                   final AppExecutors executors) {
-        return Room.databaseBuilder(appContext, CocktailsDatabase.class, DB_NAME)
-                .addCallback(new Callback() {
-                    @Override
-                    public void onCreate(@NonNull SupportSQLiteDatabase db) {
-                        super.onCreate(db);
-                        executors.diskIO().execute(() -> {
-                            final CocktailsDatabase database = CocktailsDatabase.getInstance(appContext, executors);
-                            database.setDatabaseCreated();
-                        });
-                    }
-                }).build();
+    private static CocktailsDatabase buildDatabase(final Context appContext) {
+        Builder<CocktailsDatabase> build = Room.databaseBuilder(appContext, CocktailsDatabase.class, DB_NAME);
+        updateDatabaseCreated(appContext);
+        return build.build();
     }
 
-    private void setDatabaseCreated(){
+    private static void setDatabaseCreated() {
         mIsDatabaseCreated.postValue(true);
     }
 
-    public LiveData<Boolean> getDatabaseCreated() {
+    public static LiveData<Boolean> getDatabaseCreated() {
         return mIsDatabaseCreated;
     }
 
-    private void updateDatabaseCreated(final Context context) {
+    private static void updateDatabaseCreated(final Context context) {
         if (context.getDatabasePath(DB_NAME).exists()) {
             setDatabaseCreated();
+        }
+    }
+
+    private static final class SingletonHolder {
+        private static final CocktailsDatabase INSTANCE = buildDatabase(BarApp.getAppContext());
+
+        private SingletonHolder() {
         }
     }
 

@@ -23,10 +23,10 @@ public class DrinkIngredientJoin {
 
     private String unit;
 
-    @ColumnInfo(name="drink_id")
+    @ColumnInfo(name = "drink_id")
     private Long drinkId;
 
-    @ColumnInfo(name="ingredient_id")
+    @ColumnInfo(name = "ingredient_id")
     private Long ingredientId;
 
     public Long getId() {

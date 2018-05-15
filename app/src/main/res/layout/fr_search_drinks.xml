@@ -1,12 +1,11 @@
-<android.support.design.widget.CoordinatorLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_height="match_parent"
     android:layout_width="match_parent"
+    android:layout_height="match_parent"
     android:fitsSystemWindows="true">
+
     <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
         android:id="@+id/linearLayout2"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -169,8 +168,8 @@
                         android:id="@+id/tv_skill_container"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_centerVertical="true"
                         android:layout_below="@id/et_skill_sb"
+                        android:layout_centerVertical="true"
                         android:layout_marginStart="72dp"
                         android:fontFamily="sans-serif"
                         android:text="@string/skill_novice"
@@ -269,8 +268,7 @@
                         android:layout_gravity="center_vertical"
                         android:layout_marginStart="16dp"
                         android:background="@drawable/color_circle"
-                        android:outlineProvider="bounds">
-                    </ImageView>
+                        android:outlineProvider="bounds"></ImageView>
 
                     <TextView
                         android:layout_width="match_parent"

@@ -25,11 +25,11 @@ import android.arch.lifecycle.ViewModel;
 import android.arch.lifecycle.ViewModelProvider;
 import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.text.TextUtils;
 
 import sorokinuladzimir.com.homebarassistant.BarApp;
 import sorokinuladzimir.com.homebarassistant.BarDataRepository;
 import sorokinuladzimir.com.homebarassistant.db.entity.Ingredient;
-
 
 
 public class AddIngredientViewModel extends AndroidViewModel {
@@ -39,8 +39,6 @@ public class AddIngredientViewModel extends AndroidViewModel {
     private final MediatorLiveData<String> mObservableCurrentImagePath;
 
     private final Long mIngredientId;
-
-    private final LiveData<Ingredient> mLiveIngredient;
 
     private Uri mPhotoUri = null;
 
@@ -52,27 +50,18 @@ public class AddIngredientViewModel extends AndroidViewModel {
 
     AddIngredientViewModel(Application application, Long ingredientId) {
         super(application);
-
         mIngredientId = ingredientId;
-
-        mRepository = BarApp.getInstance().getBarRepository();
-
+        mRepository = BarApp.getBarRepository();
         mObservableIngredient = new MediatorLiveData<>();
         mObservableIngredient.setValue(null);
-
         mObservableCurrentImagePath = new MediatorLiveData<>();
         mObservableCurrentImagePath.setValue(null);
         mRepository.resetIngredientImagePath();
         mObservableCurrentImagePath.addSource(mRepository.getObservableIngredientImagePath(), mObservableCurrentImagePath::setValue);
-
-        if(mIngredientId != -1L){
+        if (mIngredientId != -1L) {
             mIsNewIngredient = false;
-            mLiveIngredient = mRepository.getIngredient(mIngredientId);
-            mObservableIngredient.addSource(mLiveIngredient, mObservableIngredient::setValue);
-        } else {
-            mLiveIngredient = null;
+            mObservableIngredient.addSource(mRepository.getIngredient(mIngredientId), mObservableIngredient::setValue);
         }
-
     }
 
     public LiveData<Ingredient> getIngredient() {
@@ -100,18 +89,18 @@ public class AddIngredientViewModel extends AndroidViewModel {
         return mPhotoUri;
     }
 
-    public void handleImage(Uri imageUri, int sizeForScale, boolean deleteSource){
+    public void handleImage(Uri imageUri, int sizeForScale, boolean deleteSource) {
         mIsImageRemoved = false;
         removeImageFile(getIngredient().getValue() == null ? null : getIngredient().getValue().getImage(),
                 getCurrentImagePath().getValue(), false);
         mRepository.saveImageToAlbum(imageUri, sizeForScale, deleteSource, true);
     }
 
-    public void saveIngredient(String name, String description, String notes){
+    public void saveIngredient(String name, String description, String notes) {
         removeImageFile(getIngredient().getValue() == null ? null : getIngredient().getValue().getImage(),
                 getCurrentImagePath().getValue(), true);
         Ingredient ingredient = mObservableIngredient.getValue();
-        if(ingredient == null) ingredient = new Ingredient();
+        if (ingredient == null) ingredient = new Ingredient();
         ingredient.setImage(mObservableCurrentImagePath.getValue());
         ingredient.setName(name);
         ingredient.setDescription(description);
@@ -130,20 +119,17 @@ public class AddIngredientViewModel extends AndroidViewModel {
         getCurrentImagePath().setValue(null);
     }
 
-    private void removeImageFile(String dbPath, String currentPath, Boolean savingIngredient){
-
+    private void removeImageFile(String dbPath, String currentPath, Boolean savingIngredient) {
         String deletePath = null;
-
         if (savingIngredient) {
-            if (dbPath != null && !currentPath.equals(dbPath)) {
+            if (dbPath != null && !TextUtils.equals(currentPath, dbPath)) {
                 deletePath = dbPath;
             }
         } else {
-            if (currentPath != null && !currentPath.equals(dbPath)) {
+            if (currentPath != null && !TextUtils.equals(currentPath, dbPath)) {
                 deletePath = currentPath;
             }
         }
-
         if (deletePath != null) mRepository.deleteImage(deletePath);
     }
 

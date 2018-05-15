@@ -18,14 +18,12 @@ package sorokinuladzimir.com.homebarassistant.viewmodel;
 
 import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
-import android.arch.lifecycle.LifecycleOwner;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MediatorLiveData;
 
 import java.util.List;
 
 import sorokinuladzimir.com.homebarassistant.BarApp;
-import sorokinuladzimir.com.homebarassistant.BarDataRepository;
 import sorokinuladzimir.com.homebarassistant.BarDataRepository.QueryType;
 import sorokinuladzimir.com.homebarassistant.net.entity.DrinkEntity;
 
@@ -34,28 +32,19 @@ public class FoundDrinksViewModel extends AndroidViewModel {
 
     private final MediatorLiveData<List<DrinkEntity>> mObservableRemoteDrinks;
 
-    private BarDataRepository mRepository;
-
-
     public FoundDrinksViewModel(Application application) {
         super(application);
-
-        mRepository = BarApp.getInstance().getBarRepository();
-
         mObservableRemoteDrinks = new MediatorLiveData<>();
         mObservableRemoteDrinks.setValue(null);
-
-        mObservableRemoteDrinks.addSource(mRepository.getObservableRemoteDrinks(), mObservableRemoteDrinks::setValue);
+        mObservableRemoteDrinks.addSource(BarApp.getBarRepository().getObservableRemoteDrinks(), mObservableRemoteDrinks::setValue);
     }
 
     public LiveData<List<DrinkEntity>> getDrinks() {
         return mObservableRemoteDrinks;
     }
 
-
-
     public void searchDrinks(String query, QueryType searchType, boolean clearList) {
-        BarApp.getInstance().getBarRepository().getRemoteDrinks(query, searchType, clearList);
+        BarApp.getBarRepository().getRemoteDrinks(query, searchType, clearList);
     }
 
 

@@ -1,32 +1,41 @@
 package sorokinuladzimir.com.homebarassistant;
 
-/**
- * Created by 1 on 10/16/2016.
- */
-
 public class Constants {
+
+    private Constants() {
+        throw new UnsupportedOperationException();
+    }
 
     public static class Uri {
         public static final String ABSOLUT_DRINKS_ROOT = "http://addb.absolutdrinks.com";
         public static final String ABSOLUT_DRINKS_IMAGE_ROOT = "http://assets.absolutdrinks.com/drinks/600x800/";
         public static final String ABSOLUT_INGREDIENTS_IMAGE_ROOT = "http://assets.absolutdrinks.com/";
-        public static final String ABSOLUT_DRINKS_CUSTOM_IMAGE_ROOT =
-                "http://assets.absolutdrinks.com/drinks/transparent-background-white/soft-shadow/floor-reflection/600x800/";
+
+        private Uri() {
+        }
     }
 
     public static class Keys {
         public static final String ABSOLUT_API_KEY = "e94231991e5d42c58fbd02e0d60fe11b";
-        public static final String ABSOLUT_API_SECRET_KEY = "7013678e724a477d8115a877ef62dabf";
+
+        private Keys() {
+        }
     }
 
     public static class Strings {
         public static final String ALBUM_NAME = "HomeBar";
         public static final String AUTHORITY = BuildConfig.APPLICATION_ID + ".provider";
+
+        private Strings() {
+        }
     }
 
     public static class Values {
         public static final int DEFAULT_ITEM_AMOUNT = 5;
         public static final int DEFAULT_IMAGE_SIZE = 500;
+
+        private Values() {
+        }
     }
 
     public static class Extra {
@@ -42,6 +51,19 @@ public class Constants {
         public static final String COCKTAIL = "cocktail";
         public static final String REQUEST_CONDITIONS = "request conditions";
         public static final String APP_THEME = "appTheme";
+        public static final String API_KEY = "apiKey";
+        public static final String LANG = "lang";
+        public static final String AMOUNT = "amount";
+        public static final String UNIT = "unit";
+        public static final String ALLOW_DELETE = "allowDelete";
+        public static final String TITLE = "title";
+        public static final String SELECTION = "selection";
+        public static final String CONDITIONS = "conditions";
+        public static final String EDITABLE = "editable";
+        public static final String EXTRA_ID = "extraId";
+
+        private Extra() {
+        }
     }
 
 

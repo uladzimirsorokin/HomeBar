@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:title="@string/menu_add"
         android:id="@+id/ab_add"
-        app:showAsAction="ifRoom"/>
+        android:title="@string/menu_add"
+        app:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/ab_delete"
         android:title="@string/menu_delete"
-        app:showAsAction="never"/>
+        app:showAsAction="never" />
 
 </menu>

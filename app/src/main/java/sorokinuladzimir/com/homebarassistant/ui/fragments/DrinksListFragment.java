@@ -1,9 +1,7 @@
 package sorokinuladzimir.com.homebarassistant.ui.fragments;
 
 import android.arch.lifecycle.ViewModelProviders;
-import android.content.Context;
 import android.os.Bundle;
-
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -30,37 +28,40 @@ import com.turingtechnologies.materialscrollbar.DragScrollBar;
 
 import java.util.Objects;
 
+import sorokinuladzimir.com.homebarassistant.Constants;
 import sorokinuladzimir.com.homebarassistant.R;
 import sorokinuladzimir.com.homebarassistant.ui.adapters.LocalDrinksListAdapter;
 import sorokinuladzimir.com.homebarassistant.ui.subnavigation.RouterProvider;
-import sorokinuladzimir.com.homebarassistant.ui.utils.ThemeUtils;
 import sorokinuladzimir.com.homebarassistant.viewmodel.DrinkListViewModel;
 
-
-/**
- * Created by sorok on 17.10.2017.
- */
 
 public class DrinksListFragment extends Fragment {
 
     private static final String EXTRA_NAME = "dlf_extra_name";
+
     private LocalDrinksListAdapter mAdapter;
     private DrinkListViewModel mViewModel;
-    private SwipeRefreshLayout mSwipeRefreshLayout;
     private SearchView searchView;
     private ImageView mIvEmptyState;
     private TextView mTvEmptyStateMessage;
+
+    public static DrinksListFragment getNewInstance(String name) {
+        DrinksListFragment fragment = new DrinksListFragment();
+        Bundle arguments = new Bundle();
+        arguments.putString(EXTRA_NAME, name);
+        fragment.setArguments(arguments);
+
+        return fragment;
+    }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fr_items_list, container, false);
-
         initViews(rootView);
         initFAB(rootView);
         initRecyclerView(rootView);
         initToolbar(rootView);
-
         mViewModel = ViewModelProviders.of(Objects.requireNonNull(getActivity())).get(DrinkListViewModel.class);
         mViewModel.restoreSources();
 
@@ -74,12 +75,10 @@ public class DrinksListFragment extends Fragment {
     }
 
     private void subscribeUi(DrinkListViewModel viewModel) {
-        mSwipeRefreshLayout.setRefreshing(true);
         viewModel.getDrinks().observe(this, drinks -> {
             if (drinks != null) {
                 mAdapter.setDrinks(drinks);
-                mSwipeRefreshLayout.setRefreshing(false);
-                if (drinks.size() == 0) {
+                if (drinks.isEmpty()) {
                     setEmptyState(R.drawable.list_empty_state, getString(R.string.no_items_drinks), true);
                 } else {
                     setEmptyState(0, null, false);
@@ -101,8 +100,8 @@ public class DrinksListFragment extends Fragment {
     }
 
     private void initViews(View rootView) {
-        mSwipeRefreshLayout = rootView.findViewById(R.id.swipe_refresh_layout);
-        mSwipeRefreshLayout.setOnRefreshListener(() -> mSwipeRefreshLayout.setRefreshing(false));
+        SwipeRefreshLayout swipeRefreshLayout = rootView.findViewById(R.id.swipe_refresh_layout);
+        swipeRefreshLayout.setOnRefreshListener(() -> swipeRefreshLayout.setRefreshing(false));
         mIvEmptyState = rootView.findViewById(R.id.iv_empty_state);
         mTvEmptyStateMessage = rootView.findViewById(R.id.tv_empty_state_message);
     }
@@ -114,24 +113,14 @@ public class DrinksListFragment extends Fragment {
         mAdapter = new LocalDrinksListAdapter(drink -> {
             if (getParentFragment() != null) {
                 Bundle bundle = new Bundle();
-                bundle.putLong("drinkId", drink.getId());
-                bundle.putBoolean("editable", true);
-                ((RouterProvider)getParentFragment()).getRouter().navigateTo(Screens.LOCAL_DRINK, bundle);
+                bundle.putLong(Constants.Extra.EXTRA_ID, drink.getId());
+                bundle.putBoolean(Constants.Extra.EDITABLE, true);
+                ((RouterProvider) getParentFragment()).getRouter().navigateTo(Screens.LOCAL_DRINK, bundle);
             }
         });
         recyclerView.setAdapter(mAdapter);
         ((DragScrollBar) rootView.findViewById(R.id.dragScrollBar))
                 .setIndicator(new AlphabetIndicator(getContext()), true);
-    }
-
-    public static DrinksListFragment getNewInstance(String name) {
-        DrinksListFragment fragment = new DrinksListFragment();
-
-        Bundle arguments = new Bundle();
-        arguments.putString(EXTRA_NAME, name);
-        fragment.setArguments(arguments);
-
-        return fragment;
     }
 
     private void initToolbar(View view) {
@@ -147,18 +136,20 @@ public class DrinksListFragment extends Fragment {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.list_with_search_menu, menu);
-        MenuItem myActionMenuItem = menu.findItem( R.id.action_search);
+        MenuItem myActionMenuItem = menu.findItem(R.id.action_search);
         searchView = (SearchView) myActionMenuItem.getActionView();
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
                 mViewModel.searchDrinks(query);
-                if( ! searchView.isIconified()) {
+                if (!searchView.isIconified()) {
                     searchView.setIconified(true);
                 }
                 myActionMenuItem.collapseActionView();
+                mViewModel.restoreSources();
                 return false;
             }
+
             @Override
             public boolean onQueryTextChange(String s) {
                 mViewModel.searchDrinks(s);
@@ -169,21 +160,17 @@ public class DrinksListFragment extends Fragment {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.action_about) {
-            if (getParentFragment() != null) {
-                ((RouterProvider)getParentFragment()).getRouter().navigateTo(Screens.ABOUT, "Drinks list fragment anbout text");
-            }
+        if (item.getItemId() == R.id.action_about && getParentFragment() != null) {
+            ((RouterProvider) getParentFragment()).getRouter().navigateTo(Screens.ABOUT, "Drinks list fragment anbout text");
         }
-        if (item.getItemId() == R.id.action_settings) {
-            if (getParentFragment() != null) {
-                ((RouterProvider)getParentFragment()).getRouter().navigateTo(Screens.SETTINGS);
-            }
+        if (item.getItemId() == R.id.action_settings && getParentFragment() != null) {
+            ((RouterProvider) getParentFragment()).getRouter().navigateTo(Screens.SETTINGS);
         }
 
         return false;
     }
 
-    private void initFAB(View view){
+    private void initFAB(View view) {
         FloatingActionButton mFab = view.findViewById(R.id.fab);
         mFab.setImageDrawable(ContextCompat.getDrawable(Objects.requireNonNull(getContext()), R.drawable.ic_add));
         mFab.setOnClickListener(view1 -> {
@@ -192,6 +179,5 @@ public class DrinksListFragment extends Fragment {
             }
         });
     }
-
 
 }

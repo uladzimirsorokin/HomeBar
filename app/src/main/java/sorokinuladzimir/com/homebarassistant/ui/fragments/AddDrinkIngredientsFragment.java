@@ -13,6 +13,7 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -21,6 +22,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.util.Objects;
+
 import sorokinuladzimir.com.homebarassistant.R;
 import sorokinuladzimir.com.homebarassistant.db.entity.Ingredient;
 import sorokinuladzimir.com.homebarassistant.ui.adapters.IngredientsListItemAdapter;
@@ -28,14 +31,7 @@ import sorokinuladzimir.com.homebarassistant.ui.subnavigation.BackButtonListener
 import sorokinuladzimir.com.homebarassistant.ui.subnavigation.RouterProvider;
 import sorokinuladzimir.com.homebarassistant.viewmodel.AddDrinkIngredientsViewModel;
 import sorokinuladzimir.com.homebarassistant.viewmodel.SharedViewModel;
-import android.support.v7.widget.SearchView;
 
-import java.util.Objects;
-
-
-/**
- * Created by sorok on 17.10.2017.
- */
 
 public class AddDrinkIngredientsFragment extends Fragment implements BackButtonListener {
 
@@ -45,6 +41,16 @@ public class AddDrinkIngredientsFragment extends Fragment implements BackButtonL
     private AddDrinkIngredientsViewModel mViewModel;
     private SharedViewModel mSharedIngredientsViewModel;
     private SearchView searchView;
+
+    public static AddDrinkIngredientsFragment getNewInstance(String name) {
+        AddDrinkIngredientsFragment fragment = new AddDrinkIngredientsFragment();
+
+        Bundle arguments = new Bundle();
+        arguments.putString(EXTRA_NAME, name);
+        fragment.setArguments(arguments);
+
+        return fragment;
+    }
 
     @Nullable
     @Override
@@ -63,7 +69,6 @@ public class AddDrinkIngredientsFragment extends Fragment implements BackButtonL
         return rootView;
     }
 
-
     private void subscribeUi(AddDrinkIngredientsViewModel model, SharedViewModel sharedIngredients) {
 
         model.getIngredients().observe(this, ingredients -> {
@@ -73,40 +78,28 @@ public class AddDrinkIngredientsFragment extends Fragment implements BackButtonL
         });
 
         model.getQuery().observe(this, query -> {
-            if(query != null) mAdapter.getFilter().filter(query);
+            if (query != null) mAdapter.getFilter().filter(query);
         });
 
         sharedIngredients.getSelectedIds().observe(this, list -> {
-            if (list != null && list.size() != 0) {
-                if (model.getLocalSelection().getValue() == null || model.getLocalSelection().getValue().size() == 0) {
-                    model.setLocalSelection(list);
-                }
+            if (list != null && !list.isEmpty() && (model.getLocalSelection().getValue() == null || model.getLocalSelection().getValue().isEmpty())) {
+                model.setLocalSelection(list);
             }
         });
 
         model.getLocalSelection().observe(this, list -> {
-            if (list != null && list.size() != 0) {
+            if (list != null && !list.isEmpty()) {
                 mAdapter.setSelectedIds(list);
             }
         });
     }
 
-    public static AddDrinkIngredientsFragment getNewInstance(String name) {
-        AddDrinkIngredientsFragment fragment = new AddDrinkIngredientsFragment();
-
-        Bundle arguments = new Bundle();
-        arguments.putString(EXTRA_NAME, name);
-        fragment.setArguments(arguments);
-
-        return fragment;
-    }
-
-    private void initFAB(View view){
+    private void initFAB(View view) {
         FloatingActionButton mFab = view.findViewById(R.id.fab);
         mFab.setImageDrawable(ContextCompat.getDrawable(Objects.requireNonNull(getContext()), R.drawable.ic_add));
         mFab.setOnClickListener(view1 -> {
             if (getParentFragment() != null) {
-                ((RouterProvider)getParentFragment()).getRouter().navigateTo(Screens.ADD_INGREDIENT,null);
+                ((RouterProvider) getParentFragment()).getRouter().navigateTo(Screens.ADD_INGREDIENT, null);
             }
         });
     }
@@ -116,7 +109,7 @@ public class AddDrinkIngredientsFragment extends Fragment implements BackButtonL
         Toolbar toolbar = view.findViewById(R.id.toolbar);
         ((AppCompatActivity) Objects.requireNonNull(getActivity())).setSupportActionBar(toolbar);
         ActionBar mToolbar = ((AppCompatActivity) getActivity()).getSupportActionBar();
-        if(mToolbar != null){
+        if (mToolbar != null) {
             mToolbar.setDisplayHomeAsUpEnabled(true);
             mToolbar.setTitle(R.string.title_choose_ingredients);
         }
@@ -127,7 +120,7 @@ public class AddDrinkIngredientsFragment extends Fragment implements BackButtonL
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         mAdapter = new IngredientsListItemAdapter(getContext(),
-                Objects.requireNonNull(getArguments()).getString(EXTRA_NAME) , this::toggleSelection);
+                Objects.requireNonNull(getArguments()).getString(EXTRA_NAME), this::toggleSelection);
         recyclerView.addItemDecoration(new DividerItemDecoration(Objects.requireNonNull(getContext()), DividerItemDecoration.VERTICAL));
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(mAdapter);
@@ -140,20 +133,21 @@ public class AddDrinkIngredientsFragment extends Fragment implements BackButtonL
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate( R.menu.add_drink_ingredient_menu, menu);
+        inflater.inflate(R.menu.add_drink_ingredient_menu, menu);
 
-        MenuItem myActionMenuItem = menu.findItem( R.id.action_search);
+        MenuItem myActionMenuItem = menu.findItem(R.id.action_search);
         searchView = (SearchView) myActionMenuItem.getActionView();
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
                 mViewModel.searchIngredients(query);
-                if( ! searchView.isIconified()) {
+                if (!searchView.isIconified()) {
                     searchView.setIconified(true);
                 }
                 myActionMenuItem.collapseActionView();
                 return false;
             }
+
             @Override
             public boolean onQueryTextChange(String s) {
                 mViewModel.searchIngredients(s);
@@ -170,16 +164,14 @@ public class AddDrinkIngredientsFragment extends Fragment implements BackButtonL
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if(item.getItemId() == android.R.id.home){
+        if (item.getItemId() == android.R.id.home) {
             onBackPressed();
             return true;
         }
-        if (item.getItemId() == R.id.action_about) {
-            if (getParentFragment() != null) {
-                ((RouterProvider)getParentFragment()).getRouter().navigateTo(Screens.ABOUT, "Drink ingredientrs fragment about text");
-            }
+        if (item.getItemId() == R.id.action_about && getParentFragment() != null) {
+            ((RouterProvider) getParentFragment()).getRouter().navigateTo(Screens.ABOUT, "Drink ingredientrs fragment about text");
         }
-        if(item.getItemId() == R.id.ab_add){
+        if (item.getItemId() == R.id.ab_add) {
             mSharedIngredientsViewModel.selectIds(mAdapter.getSelectedIds());
             onBackPressed();
             return true;
@@ -190,7 +182,7 @@ public class AddDrinkIngredientsFragment extends Fragment implements BackButtonL
     @Override
     public boolean onBackPressed() {
         if (getParentFragment() != null) {
-            ((RouterProvider)getParentFragment()).getRouter().exit();
+            ((RouterProvider) getParentFragment()).getRouter().exit();
         }
         return true;
     }

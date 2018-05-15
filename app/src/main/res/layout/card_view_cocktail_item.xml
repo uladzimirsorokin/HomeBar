@@ -3,8 +3,8 @@
     android:id="@+id/card_view"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:focusable="true"
     android:clickable="true"
+    android:focusable="true"
     android:foreground="?android:attr/selectableItemBackground"
     app:cardCornerRadius="3dp"
     app:cardElevation="4dp"
@@ -16,48 +16,48 @@
         android:layout_margin="@dimen/standard_spacing">
 
         <TextView
+            android:id="@+id/card_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_toLeftOf="@+id/card_image"
-            android:textSize="24sp"
-            android:fontFamily="sans-serif"
-            android:textColor="#000000"
-            android:maxLines="2"
-            android:ems="15"
             android:ellipsize="end"
-            android:id="@+id/card_title" />
+            android:ems="15"
+            android:fontFamily="sans-serif"
+            android:maxLines="2"
+            android:textColor="#000000"
+            android:textSize="24sp" />
 
 
-        <RatingBar
-            style="@style/Widget.AppCompat.RatingBar.Indicator"
+     <!--   <RatingBar
             android:id="@+id/card_rating_bar"
-            android:layout_height="wrap_content"
+            style="@style/Widget.AppCompat.RatingBar.Indicator"
             android:layout_width="wrap_content"
-            android:rating="3"
-            android:stepSize="0.5"
-            android:numStars="5"
+            android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
-            android:layout_marginTop="16dp"/>
+            android:layout_marginTop="16dp"
+            android:numStars="5"
+            android:rating="3"
+            android:stepSize="0.5" />-->
+        <!--android:layout_above="@+id/card_rating_bar"-->
 
         <TextView
+            android:id="@+id/card_subtitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/card_subtitle"
-            android:layout_marginEnd="@dimen/medium_spacing"
+            android:layout_below="@+id/card_title"
             android:layout_marginStart="@dimen/medium_spacing"
             android:layout_marginTop="@dimen/small_spacing"
-            android:textSize="14sp"
-            android:fontFamily="sans-serif"
+            android:layout_marginEnd="@dimen/medium_spacing"
+            android:layout_toStartOf="@+id/card_image"
             android:ellipsize="end"
+            android:fontFamily="sans-serif"
             android:maxLines="2"
-            android:layout_above="@+id/card_rating_bar"
-            android:layout_below="@+id/card_title"
-            android:layout_toLeftOf="@+id/card_image"/>
+            android:textSize="14sp" />
 
         <ImageView
             android:id="@+id/card_image"
-            android:layout_height="match_parent"
             android:layout_width="125dp"
+            android:layout_height="match_parent"
             android:layout_alignParentTop="true"
             android:layout_alignParentEnd="true" />
 

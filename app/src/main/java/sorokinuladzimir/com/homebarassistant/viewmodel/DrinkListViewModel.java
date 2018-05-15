@@ -20,11 +20,13 @@ import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MediatorLiveData;
+import android.text.TextUtils;
 
 import java.util.List;
 
-import sorokinuladzimir.com.homebarassistant.BarApp;
 import sorokinuladzimir.com.homebarassistant.db.entity.Drink;
+
+import static sorokinuladzimir.com.homebarassistant.BarApp.getBarRepository;
 
 
 public class DrinkListViewModel extends AndroidViewModel {
@@ -35,13 +37,9 @@ public class DrinkListViewModel extends AndroidViewModel {
 
     public DrinkListViewModel(Application application) {
         super(application);
-
-
         mObservableDrinks = new MediatorLiveData<>();
         mObservableDrinks.setValue(null);
-
-        mLiveDrinks = BarApp.getInstance().getBarRepository().getLocalDrinks();
-
+        mLiveDrinks = getBarRepository().getLocalDrinks();
         mObservableDrinks.addSource(mLiveDrinks, mObservableDrinks::setValue);
     }
 
@@ -51,7 +49,7 @@ public class DrinkListViewModel extends AndroidViewModel {
 
     public void searchDrinks(String query) {
         removeAllSources();
-        if (query != null && !query.equals("")){
+        if (!TextUtils.isEmpty(query)) {
             addSearchResultSource(query);
         } else {
             restoreInitialSource();
@@ -64,7 +62,7 @@ public class DrinkListViewModel extends AndroidViewModel {
     }
 
     private void addSearchResultSource(String query) {
-        mLiveSearchDrinks = BarApp.getInstance().getBarRepository().getDrinksByName(query);
+        mLiveSearchDrinks = getBarRepository().getDrinksByName(query);
         mObservableDrinks.addSource(mLiveSearchDrinks, mObservableDrinks::setValue);
     }
 

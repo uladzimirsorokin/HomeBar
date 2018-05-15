@@ -6,13 +6,13 @@ import java.util.Objects;
 
 public class WholeCocktail {
 
-    @ColumnInfo(name="join_id")
+    @ColumnInfo(name = "join_id")
     private Long jointableId;
 
-    @ColumnInfo(name="id")
+    @ColumnInfo(name = "id")
     private Long ingredientId;
 
-    @ColumnInfo(name="ingredient")
+    @ColumnInfo(name = "ingredient")
     private String ingredientName;
 
     private String amount;

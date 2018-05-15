@@ -24,7 +24,7 @@ import static android.support.v4.content.FileProvider.getUriForFile;
 
 public final class ImageHandler {
 
-    private final static String TAG = "ImageHandler";
+    private static final String TAG = "ImageHandler";
 
     private static final String IMG_FILE_PREFIX = "IMG_";
 
@@ -61,14 +61,14 @@ public final class ImageHandler {
         FileDescriptor fileDescriptor = Objects.requireNonNull(parcelFileDescriptor).getFileDescriptor();
         BitmapFactory.Options bitmapOptions = new BitmapFactory.Options();
         bitmapOptions.inJustDecodeBounds = true;
-        BitmapFactory.decodeFileDescriptor(fileDescriptor,null,bitmapOptions);
+        BitmapFactory.decodeFileDescriptor(fileDescriptor, null, bitmapOptions);
         int photoW = bitmapOptions.outWidth;
         int photoH = bitmapOptions.outHeight;
 
-        int scaleFactor = Math.min(photoW/imageSize, photoH/imageSize);
+        int scaleFactor = Math.min(photoW / imageSize, photoH / imageSize);
         bitmapOptions.inJustDecodeBounds = false;
         bitmapOptions.inSampleSize = scaleFactor;
-        Bitmap image = BitmapFactory.decodeFileDescriptor(fileDescriptor,null,bitmapOptions);
+        Bitmap image = BitmapFactory.decodeFileDescriptor(fileDescriptor, null, bitmapOptions);
 
         parcelFileDescriptor.close();
         return image;
@@ -77,13 +77,13 @@ public final class ImageHandler {
     //Save in PNG
     public String saveImage(Bitmap bitmap) throws IOException {
 
-        if(isExternalStorageWritable()){
+        if (isExternalStorageWritable()) {
 
             File imageFile = createImageFile();
 
             try {
                 FileOutputStream fos = new FileOutputStream(imageFile);
-                if (bitmap != null){
+                if (bitmap != null) {
                     bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos);
                 }
                 fos.close();
@@ -98,44 +98,13 @@ public final class ImageHandler {
         return null;
     }
 
-/*
-    public String copyImage(Context context, Uri imgUri) throws IOException {
-        if(isExternalStorageWritable()){
-            final int chunkSize = 1024;  // We'll read in one kB at a time
-            byte[] imageData = new byte[chunkSize];
-
-            File imageFile = createImageFile();
-
-            try {
-                InputStream in = context.getContentResolver().openInputStream(imgUri);
-                OutputStream out = new FileOutputStream(imageFile);
-
-                int bytesRead;
-                while ((bytesRead = Objects.requireNonNull(in).read(imageData)) > 0) {
-                    out.write(Arrays.copyOfRange(imageData, 0, Math.max(0, bytesRead)));
-                }
-
-                in.close();
-                out.close();
-
-                return imageFile.getAbsolutePath();
-
-            } catch (Exception e) {
-                Log.e(TAG, e.toString());
-            }
-        }
-
-        return null;
-    }
-*/
-
     public Uri createImageFile(Context context) {
         File photoFile = null;
 
         try {
             photoFile = createImageFile();
         } catch (IOException ignored) {
-
+            //oh noo...
         }
 
         if (photoFile != null) {
@@ -147,7 +116,7 @@ public final class ImageHandler {
         return null;
     }
 
-    public void deleteImage(Context context, Uri imageUri){
+    public void deleteImage(Context context, Uri imageUri) {
         context.getContentResolver().delete(imageUri, null, null);
     }
 

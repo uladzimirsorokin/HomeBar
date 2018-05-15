@@ -46,17 +46,24 @@ public class FoundDrinksFragment extends Fragment {
     private ImageView mIvEmptyState;
     private TextView mTvEmptyStateMessage;
 
+    public static FoundDrinksFragment getNewInstance(String name, Bundle bundle) {
+        FoundDrinksFragment fragment = new FoundDrinksFragment();
+        Bundle arguments = new Bundle();
+        arguments.putString(EXTRA_NAME, name);
+        arguments.putBundle(EXTRA_BUNDLE, bundle);
+        fragment.setArguments(arguments);
+
+        return fragment;
+    }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fr_items_list, container, false);
-
         mViewModel = ViewModelProviders.of(this).get(FoundDrinksViewModel.class);
-
-        if(savedInstanceState != null) {
-            mRequestConditions = savedInstanceState.getString("conditions");
+        if (savedInstanceState != null) {
+            mRequestConditions = savedInstanceState.getString(Constants.Extra.CONDITIONS);
         }
-
         initViews(rootView);
         initFAB(rootView);
         initToolbar(rootView);
@@ -89,7 +96,7 @@ public class FoundDrinksFragment extends Fragment {
             if (drinkEntities != null) {
                 mSwipeRefreshLayout.setRefreshing(false);
                 mAdapter.setData(drinkEntities);
-                if (drinkEntities.size() == 0) {
+                if (drinkEntities.isEmpty()) {
                     setEmptyState(R.drawable.list_empty_state, getString(R.string.no_items_found), true);
                 } else {
                     setEmptyState(0, null, false);
@@ -101,10 +108,10 @@ public class FoundDrinksFragment extends Fragment {
     private void initViews(View rootView) {
         mSwipeRefreshLayout = rootView.findViewById(R.id.swipe_refresh_layout);
         mSwipeRefreshLayout.setOnRefreshListener(() -> {
-        if (mRequestConditions != null){
-            mSwipeRefreshLayout.setRefreshing(true);
-            searchDrinks(mRequestConditions, QueryType.CURRENT, true);
-        }
+            if (mRequestConditions != null) {
+                mSwipeRefreshLayout.setRefreshing(true);
+                searchDrinks(mRequestConditions, QueryType.CURRENT, true);
+            }
             mSwipeRefreshLayout.setRefreshing(false);
         });
 
@@ -124,23 +131,12 @@ public class FoundDrinksFragment extends Fragment {
         }
     }
 
-    public static FoundDrinksFragment getNewInstance(String name, Bundle bundle) {
-        FoundDrinksFragment fragment = new FoundDrinksFragment();
-
-        Bundle arguments = new Bundle();
-        arguments.putString(EXTRA_NAME, name);
-        arguments.putBundle(EXTRA_BUNDLE, bundle);
-        fragment.setArguments(arguments);
-
-        return fragment;
-    }
-
-    private void initFAB(View view){
+    private void initFAB(View view) {
         FloatingActionButton mFab = view.findViewById(R.id.fab);
         mFab.setImageDrawable(ContextCompat.getDrawable(Objects.requireNonNull(getContext()), R.drawable.ic_search));
         mFab.setOnClickListener(view1 -> {
             if (getParentFragment() != null) {
-                ((RouterProvider)getParentFragment()).getRouter().navigateTo(Screens.SEARCH_DRINKS);
+                ((RouterProvider) getParentFragment()).getRouter().navigateTo(Screens.SEARCH_DRINKS);
             }
         });
     }
@@ -166,7 +162,6 @@ public class FoundDrinksFragment extends Fragment {
                 ((RouterProvider) getParentFragment()).getRouter().navigateTo(Screens.SINGLE_DRINK, bundle);
             }
         }, () -> searchDrinks(mRequestConditions, QueryType.CURRENT, false));
-
         recyclerView.setAdapter(mAdapter);
     }
 
@@ -178,7 +173,7 @@ public class FoundDrinksFragment extends Fragment {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.list_with_search_menu, menu);
-        MenuItem myActionMenuItem = menu.findItem( R.id.action_search);
+        MenuItem myActionMenuItem = menu.findItem(R.id.action_search);
         searchView = (SearchView) myActionMenuItem.getActionView();
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -186,15 +181,15 @@ public class FoundDrinksFragment extends Fragment {
                 mRequestConditions = query;
                 mSwipeRefreshLayout.setRefreshing(true);
                 searchDrinks(mRequestConditions, QueryType.SEARCH_BY_NAME, true);
-                if( ! searchView.isIconified()) {
+                if (!searchView.isIconified()) {
                     searchView.setIconified(true);
                 }
                 myActionMenuItem.collapseActionView();
                 return false;
             }
+
             @Override
             public boolean onQueryTextChange(String s) {
-
                 return false;
             }
         });
@@ -202,24 +197,19 @@ public class FoundDrinksFragment extends Fragment {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.action_about) {
-            if (getParentFragment() != null) {
-                ((RouterProvider)getParentFragment()).getRouter().navigateTo(Screens.ABOUT, "Found drinks fragment anbout text");
-            }
+        if (item.getItemId() == R.id.action_about && getParentFragment() != null) {
+            ((RouterProvider) getParentFragment()).getRouter().navigateTo(Screens.ABOUT, "Found drinks fragment anbout text");
         }
-        if (item.getItemId() == R.id.action_settings) {
-            if (getParentFragment() != null) {
-                ((RouterProvider)getParentFragment()).getRouter().navigateTo(Screens.SETTINGS);
-            }
+        if (item.getItemId() == R.id.action_settings && getParentFragment() != null) {
+            ((RouterProvider) getParentFragment()).getRouter().navigateTo(Screens.SETTINGS);
         }
-
         return super.onOptionsItemSelected(item);
     }
 
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putString("conditions", mRequestConditions);
+        outState.putString(Constants.Extra.CONDITIONS, mRequestConditions);
     }
 
 }

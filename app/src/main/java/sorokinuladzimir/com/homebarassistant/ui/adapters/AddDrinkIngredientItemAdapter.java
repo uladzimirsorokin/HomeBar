@@ -5,6 +5,7 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,22 +25,15 @@ import sorokinuladzimir.com.homebarassistant.db.entity.WholeCocktail;
 
 public class AddDrinkIngredientItemAdapter extends RecyclerView.Adapter<AddDrinkIngredientItemAdapter.IngredientViewHolder> {
 
+    private final OnDeleteClickListener listener;
+    private final String[] unitArray;
+    private List<WholeCocktail> mIngredients = new ArrayList<>();
+    private Context mContext;
     public AddDrinkIngredientItemAdapter(Context context, OnDeleteClickListener deleteClickListener) {
         this.listener = deleteClickListener;
         this.mContext = context;
         unitArray = mContext.getResources().getStringArray(R.array.ingredient_unit);
     }
-
-    public interface OnDeleteClickListener {
-        void onDeleteItemClick(int position, WholeCocktail ingredient);
-    }
-
-    private List<WholeCocktail> mIngredients = new ArrayList<>();
-
-    private final OnDeleteClickListener listener;
-    private Context mContext;
-
-    private final String[] unitArray;
 
     public List<WholeCocktail> getIngredients() {
         return mIngredients;
@@ -49,15 +43,15 @@ public class AddDrinkIngredientItemAdapter extends RecyclerView.Adapter<AddDrink
     @Override
     public IngredientViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         return new IngredientViewHolder(LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.add_drink_ingredient_item, parent,false), new MyAmountListener(), new UnitListener());
+                .inflate(R.layout.add_drink_ingredient_item, parent, false), new MyAmountListener(), new UnitListener());
     }
 
     @Override
     public void onBindViewHolder(@NonNull IngredientViewHolder holder, int position) {
         holder.myAmountListener.updatePosition(holder.getAdapterPosition());
         WholeCocktail cocktail = mIngredients.get(holder.getAdapterPosition());
-        if (cocktail.getAmount() != null){
-            holder.amount.setText("" + cocktail.getAmount());
+        if (!TextUtils.isEmpty(cocktail.getAmount())) {
+            holder.amount.setText(cocktail.getAmount());
         } else {
             holder.amount.setText("");
         }
@@ -84,11 +78,15 @@ public class AddDrinkIngredientItemAdapter extends RecyclerView.Adapter<AddDrink
         notifyDataSetChanged();
     }
 
-    public class IngredientViewHolder extends RecyclerView.ViewHolder {
+    public interface OnDeleteClickListener {
+        void onDeleteItemClick(int position, WholeCocktail ingredient);
+    }
 
-        public TextView name;
+    class IngredientViewHolder extends RecyclerView.ViewHolder {
+
+        TextView name;
         EditText amount;
-        public Spinner unit;
+        Spinner unit;
         View deleteButton;
         MyAmountListener myAmountListener;
         UnitListener unitListener;
@@ -151,7 +149,7 @@ public class AddDrinkIngredientItemAdapter extends RecyclerView.Adapter<AddDrink
 
         @Override
         public void onTextChanged(CharSequence charSequence, int i, int i2, int i3) {
-            if(charSequence.length() > 0){
+            if (charSequence.length() > 0) {
                 mIngredients.get(position).setAmount(charSequence.toString());
             } else {
                 mIngredients.get(position).setAmount("");

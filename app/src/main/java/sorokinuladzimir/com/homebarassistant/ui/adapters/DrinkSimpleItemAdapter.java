@@ -14,7 +14,6 @@ import com.bumptech.glide.request.RequestOptions;
 import java.util.ArrayList;
 import java.util.List;
 
-import sorokinuladzimir.com.homebarassistant.Constants;
 import sorokinuladzimir.com.homebarassistant.R;
 import sorokinuladzimir.com.homebarassistant.db.entity.Drink;
 
@@ -33,11 +32,10 @@ public class DrinkSimpleItemAdapter extends RecyclerView.Adapter<DrinkSimpleItem
     }
 
 
-    
     @Override
     public SimpleDrinkVH onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         return new SimpleDrinkVH(LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.simple_drink_item, parent,false));
+                .inflate(R.layout.simple_drink_item, parent, false));
     }
 
     @Override
@@ -56,7 +54,7 @@ public class DrinkSimpleItemAdapter extends RecyclerView.Adapter<DrinkSimpleItem
         notifyDataSetChanged();
     }
 
-    public static class SimpleDrinkVH extends RecyclerView.ViewHolder{
+    public static class SimpleDrinkVH extends RecyclerView.ViewHolder {
 
         final ImageView image;
         final TextView name;

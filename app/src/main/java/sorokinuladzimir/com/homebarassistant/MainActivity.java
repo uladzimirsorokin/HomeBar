@@ -4,10 +4,10 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.res.TypedArray;
 import android.graphics.Color;
+import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.TypedValue;
 import android.widget.Toast;
 
@@ -25,6 +25,8 @@ import sorokinuladzimir.com.homebarassistant.ui.fragments.TabContainerFragment;
 import sorokinuladzimir.com.homebarassistant.ui.subnavigation.BackButtonListener;
 import sorokinuladzimir.com.homebarassistant.ui.utils.ThemeUtils;
 
+import static sorokinuladzimir.com.homebarassistant.BarApp.getInstance;
+
 
 public class MainActivity extends AppCompatActivity {
 
@@ -32,27 +34,6 @@ public class MainActivity extends AppCompatActivity {
     private TabContainerFragment searchTabFragment;
     private TabContainerFragment drinksTabFragment;
     private TabContainerFragment ingredientsTabFragment;
-
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        ThemeUtils.onActivityCreateSetTheme(this);
-
-        setContentView(R.layout.activity_main);
-
-        initBottomNavigation();
-        initContainers();
-
-        if (savedInstanceState == null) {
-            bottomNavigation.setCurrentItem(1);
-        }
-
-        checkPermissons();
-    }
-
-
     private Navigator navigator = new Navigator() {
         @Override
         public void applyCommand(Command command) {
@@ -91,33 +72,46 @@ public class MainActivity extends AppCompatActivity {
     };
 
     @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        ThemeUtils.onActivityCreateSetTheme(this);
+        setContentView(R.layout.activity_main);
+        initBottomNavigation();
+        initContainers();
+        if (savedInstanceState == null) {
+            bottomNavigation.setCurrentItem(1);
+        }
+
+        checkPermissons();
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
-        BarApp.getInstance().getNavigatorHolder().setNavigator(navigator);
+        getInstance().getNavigatorHolder().setNavigator(navigator);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        BarApp.getInstance().getNavigatorHolder().removeNavigator();
+        getInstance().getNavigatorHolder().removeNavigator();
     }
 
     @SuppressLint("CheckResult")
     private void checkPermissons() {
         RxPermissions rxPermissions = new RxPermissions(this);
-        // Must be done during an initialization phase like onCreate
         rxPermissions
                 .request(Manifest.permission.WRITE_EXTERNAL_STORAGE)
                 .subscribe(granted -> {
                     if (granted) {
 
                     } else {
-                        Toast.makeText(this,"Permisson denied, photo capture disabled",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, "Permisson denied, photo capture disabled", Toast.LENGTH_SHORT).show();
                     }
                 });
     }
 
-    private void initBottomNavigation(){
+    private void initBottomNavigation() {
         bottomNavigation = findViewById(R.id.bottom_navigation);
         bottomNavigation.setDefaultBackgroundColor(fetchPrimaryColor());
         bottomNavigation.setAccentColor(Color.parseColor("#FFFFFF"));
@@ -132,15 +126,15 @@ public class MainActivity extends AppCompatActivity {
         bottomNavigation.setTitleState(AHBottomNavigation.TitleState.ALWAYS_SHOW);
 
         bottomNavigation.setOnTabSelectedListener((position, wasSelected) -> {
-            switch (position){
+            switch (position) {
                 case 0:
-                    BarApp.getInstance().getRouter().replaceScreen(Screens.SEARCH);
+                    getInstance().getRouter().replaceScreen(Screens.SEARCH);
                     break;
                 case 1:
-                    BarApp.getInstance().getRouter().replaceScreen(Screens.DRINKS);
+                    getInstance().getRouter().replaceScreen(Screens.DRINKS);
                     break;
                 case 2:
-                    BarApp.getInstance().getRouter().replaceScreen(Screens.INGREDIENTS);
+                    getInstance().getRouter().replaceScreen(Screens.INGREDIENTS);
                     break;
             }
 
@@ -154,7 +148,7 @@ public class MainActivity extends AppCompatActivity {
     private int fetchPrimaryColor() {
         TypedValue typedValue = new TypedValue();
 
-        TypedArray a = this.obtainStyledAttributes(typedValue.data, new int[] { R.attr.colorPrimary });
+        TypedArray a = this.obtainStyledAttributes(typedValue.data, new int[]{R.attr.colorPrimary});
         int color = a.getColor(0, 0);
 
         a.recycle();
@@ -165,12 +159,11 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
-        if (fragment != null
-                && fragment instanceof BackButtonListener
+        if (fragment instanceof BackButtonListener
                 && ((BackButtonListener) fragment).onBackPressed()) {
             return;
         } else {
-            BarApp.getInstance().getRouter().exit();
+            getInstance().getRouter().exit();
         }
     }
 

@@ -1,8 +1,5 @@
 package sorokinuladzimir.com.homebarassistant.ui.fragments;
 
-/**
- * Created by sorok on 17.10.2017.
- */
 
 public class Screens {
     public static final String SEARCH = "search screen";
@@ -20,4 +17,7 @@ public class Screens {
     public static final String ADD_DRINK = "add drink screen";
     public static final String ADD_INGREDIENT = "add ingredient screen";
     public static final String ADD_DRINK_INGREDIENTS = "add drink ingredients screen";
+
+    private Screens() {
+    }
 }

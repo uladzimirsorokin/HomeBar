@@ -1,32 +1,90 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/fr_about_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true"
-    android:id="@+id/fr_about_layout">
+    android:fitsSystemWindows="true">
 
-    <include layout="@layout/toolbar"
-        android:id="@+id/include" />
+    <include
+        android:id="@+id/include"
+        layout="@layout/toolbar" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="56dp"
         android:orientation="vertical"
-        android:layout_marginTop="48dp">
+        android:layout_marginStart="@dimen/standard_spacing"
+        android:layout_marginEnd="@dimen/standard_spacing">
+
+        <ImageView
+            android:layout_width="72dp"
+            android:layout_height="72dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_margin="8dp"
+            android:src="@mipmap/ic_launcher_round"/>
+
+        <TextView
+            android:id="@+id/tv_app_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:fontFamily="sans-serif-smallcaps"
+            android:textColor="@color/about_description_text_color"
+            android:textSize="24sp"
+            android:text="@string/app_name"/>
+
+        <TextView
+            android:id="@+id/tv_version"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:fontFamily="sans-serif"
+            android:textColor="@color/about_description_text_color"
+            android:textSize="14sp"
+            android:text="Version 1.0"/>
+
+        <TextView
+            android:id="@+id/tv_about_description"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:fontFamily="sans-serif"
+            android:lineSpacingExtra="8dp"
+            android:layout_marginBottom="20dp"
+            android:textColor="@color/about_description_text_color"
+            android:textSize="16sp"
+            android:text="Some about text asdfij asdklfaslk d fjaosidfjaosdi fasoidfjaoisdfjaosidfjaosidfoasidfjoaisdfjoiasdfjoiasdfjaoisdfoisadfjoiasdjfoiasjdfioasjdfoiasjdfoiasdfiasdfjoiasdfjoiasdifo"/>
+
+
+        <TextView
+            android:id="@+id/tv_resources"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:fontFamily="sans-serif"
+            android:textColor="@color/about_item_text_color"
+            android:gravity="center_vertical"
+            android:textSize="18sp"
+            android:background="?selectableItemBackground"
+            android:text="Resources" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/about_separator_color"/>
 
         <TextView
             android:id="@+id/tv_licences"
             android:layout_width="match_parent"
             android:layout_height="48dp"
-            android:text="Licences"/>
+            android:fontFamily="sans-serif"
+            android:textColor="@color/about_item_text_color"
+            android:gravity="center_vertical"
+            android:textSize="18sp"
+            android:background="?selectableItemBackground"
+            android:text="Licences" />
 
     </LinearLayout>
-
-
-
 
 
 </android.support.design.widget.CoordinatorLayout>

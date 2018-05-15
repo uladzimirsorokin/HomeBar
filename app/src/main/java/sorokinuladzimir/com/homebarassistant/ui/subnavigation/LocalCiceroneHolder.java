@@ -5,9 +5,6 @@ import java.util.HashMap;
 import ru.terrakok.cicerone.Cicerone;
 import ru.terrakok.cicerone.Router;
 
-/**
- * Created by sorok on 18.10.2017.
- */
 
 public class LocalCiceroneHolder {
     private HashMap<String, Cicerone<Router>> containers;

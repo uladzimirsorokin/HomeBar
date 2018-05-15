@@ -1,6 +1,8 @@
 package sorokinuladzimir.com.homebarassistant.db.entity;
 
-public class Glass {
+import java.io.Serializable;
+
+public class Glass implements Serializable {
 
     private int glassId;
 

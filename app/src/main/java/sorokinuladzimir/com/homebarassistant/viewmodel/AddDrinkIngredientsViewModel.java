@@ -39,13 +39,9 @@ public class AddDrinkIngredientsViewModel extends AndroidViewModel {
 
     public AddDrinkIngredientsViewModel(Application application) {
         super(application);
-
         mObservableIngredients = new MediatorLiveData<>();
-
         mObservableIngredients.setValue(null);
-
-        LiveData<List<Ingredient>> liveIngredients = BarApp.getInstance().getBarRepository().getIngredients();
-
+        LiveData<List<Ingredient>> liveIngredients = BarApp.getBarRepository().getIngredients();
         mObservableIngredients.addSource(liveIngredients, mObservableIngredients::setValue);
     }
 

@@ -24,7 +24,6 @@ import android.arch.lifecycle.ViewModelProvider;
 import android.graphics.Bitmap;
 import android.support.annotation.NonNull;
 
-
 import java.util.List;
 
 import sorokinuladzimir.com.homebarassistant.BarApp;
@@ -36,7 +35,6 @@ import sorokinuladzimir.com.homebarassistant.net.entity.DrinkEntity;
 
 
 public class RemoteDrinkViewModel extends AndroidViewModel {
-
 
     private final DrinkEntity mDrinkEntity;
 
@@ -50,20 +48,14 @@ public class RemoteDrinkViewModel extends AndroidViewModel {
 
     RemoteDrinkViewModel(@NonNull Application application, DrinkEntity drinkEntity) {
         super(application);
-
         mDrinkEntity = drinkEntity;
-
-        mRepository = BarApp.getInstance().getBarRepository();
+        mRepository = BarApp.getBarRepository();
         getIngredients(drinkEntity.getId());
-
         mObservableDrink = new MediatorLiveData<>();
         mObservableDrink.setValue(DrinkEntityToDrinkMapper.getInstance().reverseMap(mDrinkEntity));
-
         mDrinkIngredients = new MediatorLiveData<>();
         mDrinkIngredients.setValue(null);
-
         mDrinkIngredients.addSource(mRepository.getRemoteDrinkIngredients(), mDrinkIngredients::setValue);
-
     }
 
     public MediatorLiveData<Drink> getDrink() {

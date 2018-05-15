@@ -11,7 +11,6 @@ public class SharedViewModel extends ViewModel {
 
     private final MediatorLiveData<List<Long>> selectedIds = new MediatorLiveData<>();
 
-
     public LiveData<List<Long>> getSelectedIds() {
         return selectedIds;
     }

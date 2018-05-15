@@ -31,37 +31,21 @@ import sorokinuladzimir.com.homebarassistant.db.entity.Drink;
 import sorokinuladzimir.com.homebarassistant.db.entity.Ingredient;
 
 
-
 public class IngredientViewModel extends AndroidViewModel {
 
     private final MediatorLiveData<Ingredient> mObservableIngredient;
-
     private final MediatorLiveData<List<Drink>> mRelatedDrinks;
 
-
-    private final Long mIngredientId;
-    private final LiveData<Ingredient> mLiveIngredient;
-
-    IngredientViewModel(Application application, Long ingredientId) {
+    private IngredientViewModel(Application application, Long ingredientId) {
         super(application);
-
-        mIngredientId = ingredientId;
-
         mObservableIngredient = new MediatorLiveData<>();
         mRelatedDrinks = new MediatorLiveData<>();
-
-        // set by default null, until we get data from the database.
         mObservableIngredient.setValue(null);
         mRelatedDrinks.setValue(null);
-
-        mLiveIngredient = BarApp.getInstance().getBarRepository().getIngredient(mIngredientId);
-
-        mRelatedDrinks.addSource(BarApp.getInstance().getBarRepository().getDrinksByIngredient(mIngredientId), mRelatedDrinks::setValue);
-
+        LiveData<Ingredient> mLiveIngredient = BarApp.getBarRepository().getIngredient(ingredientId);
+        mRelatedDrinks.addSource(BarApp.getBarRepository().getDrinksByIngredient(ingredientId), mRelatedDrinks::setValue);
         mObservableIngredient.addSource(mLiveIngredient, mObservableIngredient::setValue);
-
     }
-
 
     public LiveData<Ingredient> getIngredient() {
         return mObservableIngredient;

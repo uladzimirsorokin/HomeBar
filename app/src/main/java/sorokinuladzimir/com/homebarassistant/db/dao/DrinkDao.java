@@ -18,18 +18,15 @@ package sorokinuladzimir.com.homebarassistant.db.dao;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.persistence.room.Dao;
-import android.arch.persistence.room.Delete;
 import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.Query;
 import android.arch.persistence.room.TypeConverters;
-import android.arch.persistence.room.Update;
 
 import java.util.List;
 
-import sorokinuladzimir.com.homebarassistant.db.entity.Drink;
 import sorokinuladzimir.com.homebarassistant.db.converter.TasteConverter;
+import sorokinuladzimir.com.homebarassistant.db.entity.Drink;
 
-import static android.arch.persistence.room.OnConflictStrategy.IGNORE;
 import static android.arch.persistence.room.OnConflictStrategy.REPLACE;
 
 
@@ -40,9 +37,6 @@ public interface DrinkDao {
     @Query("SELECT * FROM Drink WHERE id = :id")
     LiveData<Drink> loadDrinkById(Long id);
 
-    @Query("SELECT * FROM Drink WHERE id = :id")
-    Drink getDrink(Long id);
-
     @Query("SELECT * FROM Drink ORDER BY name ASC")
     LiveData<List<Drink>> loadAllDrinks();
 
@@ -52,16 +46,7 @@ public interface DrinkDao {
     @Insert(onConflict = REPLACE)
     Long insertDrink(Drink drink);
 
-    @Update(onConflict = REPLACE)
-    void updateDrink(Drink book);
-
-    @Delete
-    void delete(Drink drink);
-
     @Query("delete from Drink where id = :drinkId")
     void deleteDrinkById(Long drinkId);
-
-    @Query("DELETE FROM Drink")
-    void deleteAll();
 
 }

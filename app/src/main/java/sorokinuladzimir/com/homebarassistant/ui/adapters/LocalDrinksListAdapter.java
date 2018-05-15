@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.support.annotation.NonNull;
 import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,33 +31,29 @@ import sorokinuladzimir.com.homebarassistant.ui.utils.TastesHelper;
 
 public class LocalDrinksListAdapter extends RecyclerView.Adapter<LocalDrinksListAdapter.CardViewHolder> implements INameableAdapter {
 
+    private final OnItemClickListener listener;
+    private List<Drink> mDrinkList;
+    private Deque<List<Drink>> pendingUpdates = new ArrayDeque<>();
+
     public LocalDrinksListAdapter(OnItemClickListener listener) {
         this.listener = listener;
     }
 
     @Override
     public Character getCharacterForElement(int element) {
-        Character c = mDrinkList.get(element).getName().equals("") ? Character.MIN_VALUE : mDrinkList.get(element).getName().charAt(0);
-        if(Character.isDigit(c)) {
+        Character c = TextUtils.isEmpty(mDrinkList.get(element).getName()) ?
+                Character.MIN_VALUE : mDrinkList.get(element).getName().charAt(0);
+        if (Character.isDigit(c)) {
             c = '#';
         }
         return c;
     }
 
-    public interface OnItemClickListener {
-        void onItemClick(Drink item);
-    }
-
-    private List<Drink> mDrinkList;
-    private final OnItemClickListener listener;
-
-    private Deque<List<Drink>> pendingUpdates = new ArrayDeque<>();
-
     @NonNull
     @Override
     public CardViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         return new CardViewHolder(LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.card_view_cocktail_item,parent,false));
+                .inflate(R.layout.card_view_cocktail_item, parent, false));
     }
 
     @Override
@@ -78,14 +75,14 @@ public class LocalDrinksListAdapter extends RecyclerView.Adapter<LocalDrinksList
         if (mDrinkList == null) {
             pendingUpdates.remove(drinks);
             mDrinkList = drinks;
-            notifyItemRangeInserted(0, mDrinkList.size()-1);
-            if (pendingUpdates.size() > 0) {
+            notifyItemRangeInserted(0, mDrinkList.size() - 1);
+            if (!pendingUpdates.isEmpty()) {
                 List<Drink> latest = pendingUpdates.pop();
                 pendingUpdates.clear();
                 setDrinks(latest);
             }
         } else {
-            BarApp.getInstance().getExecutors().diskIO().execute(
+            BarApp.getExecutors().diskIO().execute(
                     () -> {
                         DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new DiffUtil.Callback() {
                             @Override
@@ -109,11 +106,11 @@ public class LocalDrinksListAdapter extends RecyclerView.Adapter<LocalDrinksList
                             }
                         });
 
-                        BarApp.getInstance().getExecutors().mainThread().execute(() -> {
+                        BarApp.getExecutors().mainThread().execute(() -> {
                             pendingUpdates.remove(drinks);
                             mDrinkList = drinks;
                             diffResult.dispatchUpdatesTo(LocalDrinksListAdapter.this);
-                            if (pendingUpdates.size() > 0) {
+                            if (!pendingUpdates.isEmpty()) {
                                 List<Drink> latest = pendingUpdates.pop();
                                 pendingUpdates.clear();
                                 setDrinks(latest);
@@ -124,20 +121,21 @@ public class LocalDrinksListAdapter extends RecyclerView.Adapter<LocalDrinksList
         }
     }
 
-    static class CardViewHolder extends RecyclerView.ViewHolder{
+    public interface OnItemClickListener {
+        void onItemClick(Drink item);
+    }
+
+    static class CardViewHolder extends RecyclerView.ViewHolder {
 
         final ImageView cardImage;
         final TextView title;
         final TextView subtitle;
-        final RatingBar rating;
 
         CardViewHolder(View itemView) {
             super(itemView);
-
             cardImage = itemView.findViewById(R.id.card_image);
             title = itemView.findViewById(R.id.card_title);
             subtitle = itemView.findViewById(R.id.card_subtitle);
-            rating = itemView.findViewById(R.id.card_rating_bar);
         }
 
         void bind(final Drink drinkItem, final OnItemClickListener listener) {
@@ -146,18 +144,11 @@ public class LocalDrinksListAdapter extends RecyclerView.Adapter<LocalDrinksList
                     .load(drinkItem.getImage() != null ? drinkItem.getImage() : R.drawable.camera_placeholder)
                     .apply(RequestOptions.centerCropTransform())
                     .into(cardImage);
-
             title.setText(drinkItem.getName());
-
             ArrayList<Taste> tastes = drinkItem.getTastes();
-
             subtitle.setText(TastesHelper.tastesToString(tastes));
-
-            rating.setProgress(drinkItem.getRating() / 10);
-
             itemView.setOnClickListener(v -> listener.onItemClick(drinkItem));
         }
-
 
 
     }

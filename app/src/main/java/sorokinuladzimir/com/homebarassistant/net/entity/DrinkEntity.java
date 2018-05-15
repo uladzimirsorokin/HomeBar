@@ -5,12 +5,9 @@ import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.List;
 
 import sorokinuladzimir.com.homebarassistant.db.entity.Taste;
-
-/**
- * Created by 1 on 10/18/2016.
- */
 
 public class DrinkEntity implements Serializable {
 
@@ -99,11 +96,11 @@ public class DrinkEntity implements Serializable {
         this.servedIn = servedIn;
     }
 
-    public ArrayList<Taste> getTastes() {
+    public List<Taste> getTastes() {
         return tastes;
     }
 
-    public void setTastes(ArrayList<Taste> tastes) {
-        this.tastes = tastes;
+    public void setTastes(List<Taste> tastes) {
+        this.tastes = new ArrayList<>(tastes);
     }
 }

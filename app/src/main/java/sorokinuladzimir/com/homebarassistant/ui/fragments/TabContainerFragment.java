@@ -23,9 +23,8 @@ import sorokinuladzimir.com.homebarassistant.ui.subnavigation.RouterProvider;
 public class TabContainerFragment extends Fragment implements RouterProvider, BackButtonListener {
 
     private static final String EXTRA_NAME = "tcf_extra_name";
-
-    private Navigator navigator;
     LocalCiceroneHolder ciceroneHolder = new LocalCiceroneHolder();
+    private Navigator navigator;
 
     public static TabContainerFragment getNewInstance(String name) {
         TabContainerFragment fragment = new TabContainerFragment();
@@ -55,7 +54,7 @@ public class TabContainerFragment extends Fragment implements RouterProvider, Ba
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         if (getChildFragmentManager().findFragmentById(R.id.ftc_container) == null) {
-            switch (getContainerName()){
+            switch (getContainerName()) {
                 case Screens.SEARCH:
                     getCicerone().getRouter().replaceScreen(Screens.FOUND_DRINKS);
                     break;
@@ -87,9 +86,9 @@ public class TabContainerFragment extends Fragment implements RouterProvider, Ba
 
                 @Override
                 protected Fragment createFragment(String screenKey, Object data) {
-                    switch (screenKey){
+                    switch (screenKey) {
                         case Screens.FOUND_DRINKS:
-                            return FoundDrinksFragment.getNewInstance(getContainerName(),(Bundle) data);
+                            return FoundDrinksFragment.getNewInstance(getContainerName(), (Bundle) data);
                         case Screens.SEARCH_DRINKS:
                             return SearchDrinksFragment.getNewInstance(getContainerName());
                         case Screens.DRINKS_LIST:
@@ -97,9 +96,9 @@ public class TabContainerFragment extends Fragment implements RouterProvider, Ba
                         case Screens.INGREDIENTS_LIST:
                             return IngredientsListFragment.getNewInstance(getContainerName());
                         case Screens.SINGLE_DRINK:
-                            return RemoteDrinkFragment.getNewInstance(getContainerName(),(Bundle) data);
+                            return RemoteDrinkFragment.getNewInstance(getContainerName(), (Bundle) data);
                         case Screens.ADD_DRINK:
-                            return AddDrinkFragment.getNewInstance(getContainerName(),(Long) data);
+                            return AddDrinkFragment.getNewInstance(getContainerName(), (Long) data);
                         case Screens.LOCAL_DRINK:
                             return LocalDrinkFragment.getNewInstance(getContainerName(), (Bundle) data);
                         case Screens.LOCAL_INGREDIENT:
@@ -139,8 +138,7 @@ public class TabContainerFragment extends Fragment implements RouterProvider, Ba
     @Override
     public boolean onBackPressed() {
         Fragment fragment = getChildFragmentManager().findFragmentById(R.id.ftc_container);
-        if (fragment != null
-                && fragment instanceof BackButtonListener
+        if (fragment instanceof BackButtonListener
                 && ((BackButtonListener) fragment).onBackPressed()) {
             return true;
         } else {

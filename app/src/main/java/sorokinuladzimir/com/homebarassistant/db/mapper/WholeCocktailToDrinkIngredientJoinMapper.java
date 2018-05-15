@@ -1,7 +1,6 @@
 package sorokinuladzimir.com.homebarassistant.db.mapper;
 
 import sorokinuladzimir.com.homebarassistant.db.entity.DrinkIngredientJoin;
-import sorokinuladzimir.com.homebarassistant.db.entity.Ingredient;
 import sorokinuladzimir.com.homebarassistant.db.entity.WholeCocktail;
 
 public class WholeCocktailToDrinkIngredientJoinMapper extends Mapper<DrinkIngredientJoin, WholeCocktail> {
@@ -12,7 +11,8 @@ public class WholeCocktailToDrinkIngredientJoinMapper extends Mapper<DrinkIngred
         sInstance = new WholeCocktailToDrinkIngredientJoinMapper();
     }
 
-    private WholeCocktailToDrinkIngredientJoinMapper() {}
+    private WholeCocktailToDrinkIngredientJoinMapper() {
+    }
 
     public static WholeCocktailToDrinkIngredientJoinMapper getInstance() {
         return sInstance;

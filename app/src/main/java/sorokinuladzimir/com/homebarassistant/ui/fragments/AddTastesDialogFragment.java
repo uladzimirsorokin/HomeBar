@@ -11,54 +11,48 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
+import sorokinuladzimir.com.homebarassistant.Constants;
 import sorokinuladzimir.com.homebarassistant.R;
 
 
 public class AddTastesDialogFragment extends DialogFragment {
 
-
     private final ArrayList<Integer> mSelection = new ArrayList<>();
 
-    public interface AddTastesDialogFragmentCallback{
-        void addTastesDialogCallback(List<Integer> tastes);
-    }
-
-    public static AddTastesDialogFragment newInstance(String title, ArrayList<Integer> mSelection) {
+    public static AddTastesDialogFragment newInstance(String title, List<Integer> mSelection) {
         AddTastesDialogFragment frag = new AddTastesDialogFragment();
         Bundle args = new Bundle();
-        args.putString("title", title);
-        args.putIntegerArrayList("selection", mSelection);
+        args.putString(Constants.Extra.TITLE, title);
+        args.putIntegerArrayList(Constants.Extra.SELECTION, new ArrayList<>(mSelection));
         frag.setArguments(args);
         return frag;
     }
 
-   @NonNull
-   @Override
+    @NonNull
+    @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-       String title = null;
-       if (getArguments() != null) {
-           title = getArguments().getString("title");
-       }
-
-       if (savedInstanceState != null) {
+        String title = null;
+        if (getArguments() != null) {
+            title = getArguments().getString(Constants.Extra.TITLE);
+        }
+        if (savedInstanceState != null) {
             mSelection.clear();
-            mSelection.addAll(savedInstanceState.getIntegerArrayList("selection"));
+            mSelection.addAll(savedInstanceState.getIntegerArrayList(Constants.Extra.SELECTION));
         } else {
             mSelection.clear();
-           if (getArguments() != null) {
-               mSelection.addAll(getArguments().getIntegerArrayList("selection"));
-           }
-       }
+            if (getArguments() != null) {
+                mSelection.addAll(getArguments().getIntegerArrayList(Constants.Extra.SELECTION));
+            }
+        }
 
         AddTastesDialogFragmentCallback callback = (AddTastesDialogFragmentCallback) getTargetFragment();
-
-       String[] tastes = getResources().getStringArray(R.array.taste_name);
-       boolean[] selection = new boolean[tastes.length];
+        String[] tastes = getResources().getStringArray(R.array.taste_name);
+        boolean[] selection = new boolean[tastes.length];
         Arrays.fill(selection, false);
-        if (mSelection.size() != 0) {
-           for (int i : mSelection) {
-               selection[i] = true;
-           }
+        if (!mSelection.isEmpty()) {
+            for (int i : mSelection) {
+                selection[i] = true;
+            }
         }
 
         return new AlertDialog.Builder(Objects.requireNonNull(getContext()))
@@ -77,13 +71,17 @@ public class AddTastesDialogFragment extends DialogFragment {
                                 callback.addTastesDialogCallback(mSelection);
                             }
                             dialog.dismiss();
-                })
+                        })
                 .create();
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putIntegerArrayList("selection", mSelection);
+        outState.putIntegerArrayList(Constants.Extra.SELECTION, mSelection);
+    }
+
+    public interface AddTastesDialogFragmentCallback {
+        void addTastesDialogCallback(List<Integer> tastes);
     }
 }

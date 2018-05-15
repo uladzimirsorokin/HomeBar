@@ -20,29 +20,26 @@ import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MediatorLiveData;
+import android.text.TextUtils;
 
 import java.util.List;
 
-import sorokinuladzimir.com.homebarassistant.BarApp;
 import sorokinuladzimir.com.homebarassistant.db.entity.Ingredient;
+
+import static sorokinuladzimir.com.homebarassistant.BarApp.getBarRepository;
 
 
 public class IngredientListViewModel extends AndroidViewModel {
 
-    // MediatorLiveData can observe other LiveData objects and react on their emissions.
     private final MediatorLiveData<List<Ingredient>> mObservableIngredients;
     private final LiveData<List<Ingredient>> mLiveIngredients;
     private LiveData<List<Ingredient>> mLiveSearchIngredients;
 
     public IngredientListViewModel(Application application) {
         super(application);
-
         mObservableIngredients = new MediatorLiveData<>();
-        // set by default null, until we get data from the database.
         mObservableIngredients.setValue(null);
-
-        mLiveIngredients = BarApp.getInstance().getBarRepository().getIngredients();
-
+        mLiveIngredients = getBarRepository().getIngredients();
         mObservableIngredients.addSource(mLiveIngredients, mObservableIngredients::setValue);
     }
 
@@ -52,12 +49,11 @@ public class IngredientListViewModel extends AndroidViewModel {
 
     public void searchIngredients(String query) {
         removeAllSources();
-        if (query != null && !query.equals("")){
+        if (!TextUtils.isEmpty(query)) {
             addSearchResultSource(query);
         } else {
             restoreInitialSource();
         }
-
     }
 
     private void removeAllSources() {
@@ -66,7 +62,7 @@ public class IngredientListViewModel extends AndroidViewModel {
     }
 
     private void addSearchResultSource(String query) {
-        mLiveSearchIngredients = BarApp.getInstance().getBarRepository().getIngredientsByName(query);
+        mLiveSearchIngredients = getBarRepository().getIngredientsByName(query);
         mObservableIngredients.addSource(mLiveSearchIngredients, mObservableIngredients::setValue);
     }
 

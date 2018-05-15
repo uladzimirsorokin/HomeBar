@@ -5,6 +5,7 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,9 +37,9 @@ public class IngredientsListItemAdapter extends RecyclerView.Adapter<Ingredients
 
     @Override
     public Character getCharacterForElement(int element) {
-        Character c = mFilteredIngredientsList.get(element).getName().equals("") ?
+        Character c = TextUtils.isEmpty(mFilteredIngredientsList.get(element).getName()) ?
                 Character.MIN_VALUE : mFilteredIngredientsList.get(element).getName().charAt(0);
-        if(Character.isDigit(c)) {
+        if (Character.isDigit(c)) {
             c = '#';
         }
         return c;
@@ -71,7 +72,7 @@ public class IngredientsListItemAdapter extends RecyclerView.Adapter<Ingredients
         return new IngredientViewHolder(LayoutInflater.from(parent.getContext())
                 .inflate(mContainerName.equals(Screens.INGREDIENTS) ? R.layout.ingredients_list_ingredient_item :
                                 R.layout.ingredients_list_single_ingredient_item,
-                        parent,false));
+                        parent, false));
     }
 
     @Override
@@ -97,9 +98,9 @@ public class IngredientsListItemAdapter extends RecyclerView.Adapter<Ingredients
         if (mIngredientsList == null) {
             mIngredientsList = ingredients;
             mFilteredIngredientsList = ingredients;
-            notifyItemRangeInserted(0, mFilteredIngredientsList.size()-1);
+            notifyItemRangeInserted(0, mFilteredIngredientsList.size() - 1);
         } else {
-            BarApp.getInstance().getExecutors().diskIO().execute(
+            BarApp.getExecutors().diskIO().execute(
                     () -> {
                         DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new DiffUtil.Callback() {
                             @Override
@@ -124,13 +125,13 @@ public class IngredientsListItemAdapter extends RecyclerView.Adapter<Ingredients
                             }
                         });
 
-                        BarApp.getInstance().getExecutors().mainThread().execute(() -> {
+                        BarApp.getExecutors().mainThread().execute(() -> {
                             pendingUpdates.remove(ingredients);
                             mIngredientsList = ingredients;
                             mFilteredIngredientsList = ingredients;
                             restoreSelection();
                             diffResult.dispatchUpdatesTo(IngredientsListItemAdapter.this);
-                            if (pendingUpdates.size() > 0) {
+                            if (!pendingUpdates.isEmpty()) {
                                 List<Ingredient> latest = pendingUpdates.pop();
                                 pendingUpdates.clear();
                                 setIngredients(latest);
@@ -141,7 +142,7 @@ public class IngredientsListItemAdapter extends RecyclerView.Adapter<Ingredients
         }
     }
 
-    static class IngredientViewHolder extends RecyclerView.ViewHolder{
+    static class IngredientViewHolder extends RecyclerView.ViewHolder {
 
         final TextView ingredientName;
         final ImageView ingredientImage;
@@ -158,7 +159,7 @@ public class IngredientsListItemAdapter extends RecyclerView.Adapter<Ingredients
 
         void bind(Context mContext, final Ingredient item, final OnItemClickListener listener, boolean selected) {
 
-            if(item.getName() != null) ingredientName.setText(item.getName());
+            if (item.getName() != null) ingredientName.setText(item.getName());
 
             if (selected) {
                 itemView.setActivated(true);
@@ -185,7 +186,7 @@ public class IngredientsListItemAdapter extends RecyclerView.Adapter<Ingredients
 
     public void toggleSelection(Ingredient item) {
         int position = mFilteredIngredientsList.indexOf(item);
-        if (position != -1){
+        if (position != -1) {
             if (selectedSet.contains(item)) {
                 selectedSet.remove(item);
                 selectedIds.remove(item.getId());
@@ -210,10 +211,10 @@ public class IngredientsListItemAdapter extends RecyclerView.Adapter<Ingredients
         this.selectedIds.addAll(selectedIds);
     }
 
-    private void restoreSelection(){
+    private void restoreSelection() {
         if (selectedSet.isEmpty()) {
             for (Ingredient ingredient : mFilteredIngredientsList) {
-                if (selectedIds.indexOf(ingredient.getId()) != -1){
+                if (selectedIds.indexOf(ingredient.getId()) != -1) {
                     selectedSet.add(ingredient);
                     notifyItemChanged(mFilteredIngredientsList.indexOf(ingredient));
                 }
@@ -231,7 +232,7 @@ public class IngredientsListItemAdapter extends RecyclerView.Adapter<Ingredients
                     mFilteredIngredientsList = mIngredientsList;
                 } else {
                     List<Ingredient> filteredList = new ArrayList<>();
-                    for (Ingredient  ingredient: mIngredientsList) {
+                    for (Ingredient ingredient : mIngredientsList) {
                         if (ingredient.getName().toLowerCase().contains(charString.toLowerCase())) {
                             filteredList.add(ingredient);
                         }

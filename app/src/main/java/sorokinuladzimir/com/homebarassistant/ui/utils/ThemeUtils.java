@@ -10,9 +10,12 @@ import sorokinuladzimir.com.homebarassistant.R;
 
 public class ThemeUtils {
 
-    public final static int INDIGO = 0;
-    public final static int PINK = 1;
-    public final static int BLACK = 2;
+    private ThemeUtils() {
+    }
+
+    private static final int INDIGO = 0;
+    private static final int PINK = 1;
+    private static final int BLACK = 2;
 
     public static void changeToTheme(Activity activity, int theme) {
         SharedPreferences sharedPref = activity.getPreferences(Context.MODE_PRIVATE);

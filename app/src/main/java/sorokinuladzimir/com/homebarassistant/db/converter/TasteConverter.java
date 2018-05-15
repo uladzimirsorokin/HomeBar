@@ -12,16 +12,19 @@ import sorokinuladzimir.com.homebarassistant.db.entity.Taste;
 
 public class TasteConverter {
 
+    private TasteConverter() {
+    }
+
     @TypeConverter
     public static ArrayList<Taste> toList(String value) {
-        Type listType = new TypeToken<ArrayList<Taste>>() {}.getType();
+        Type listType = new TypeToken<ArrayList<Taste>>() {
+        }.getType();
         return new Gson().fromJson(value, listType);
     }
 
     @TypeConverter
     public static String toString(ArrayList<Taste> list) {
         Gson gson = new Gson();
-        String json = gson.toJson(list);
-        return json;
+        return gson.toJson(list);
     }
 }

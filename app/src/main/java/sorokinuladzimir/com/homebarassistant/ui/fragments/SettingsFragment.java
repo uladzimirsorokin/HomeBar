@@ -31,15 +31,21 @@ public class SettingsFragment extends Fragment implements BackButtonListener {
 
     private static final String EXTRA_NAME = "extra_name";
 
+    public static SettingsFragment getNewInstance(String name) {
+        SettingsFragment fragment = new SettingsFragment();
+        Bundle arguments = new Bundle();
+        arguments.putString(EXTRA_NAME, name);
+        fragment.setArguments(arguments);
+
+        return fragment;
+    }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fr_settings, container, false);
-
-
         initToolbar(rootView);
         initViews(rootView);
-
         return rootView;
     }
 
@@ -47,16 +53,13 @@ public class SettingsFragment extends Fragment implements BackButtonListener {
         final RecyclerView recyclerView = view.findViewById(R.id.rv_theme);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        ThemeItemAdapter adapter = new ThemeItemAdapter(item -> {
-            swapTheme(item.getId());
-        });
+        ThemeItemAdapter adapter = new ThemeItemAdapter(item -> swapTheme(item.getId()));
         adapter.setData(initThemes(Objects.requireNonNull(getActivity())
                 .getPreferences(Context.MODE_PRIVATE).getInt(Constants.Extra.APP_THEME, 0)));
         recyclerView.setAdapter(adapter);
-
     }
 
-    private List<ThemeItem> initThemes(int currentTheme){
+    private List<ThemeItem> initThemes(int currentTheme) {
         List<ThemeItem> themes = new ArrayList<>();
         ThemeItem themeItem1 = new ThemeItem(0, getResources().getColor(R.color.indigoDark),
                 currentTheme == 0, "Indigo");
@@ -76,22 +79,12 @@ public class SettingsFragment extends Fragment implements BackButtonListener {
         if (currentTheme != theme && theme != -1) ThemeUtils.changeToTheme(getActivity(), theme);
     }
 
-
-    public static SettingsFragment getNewInstance(String name) {
-        SettingsFragment fragment = new SettingsFragment();
-        Bundle arguments = new Bundle();
-        arguments.putString(EXTRA_NAME, name);
-        fragment.setArguments(arguments);
-
-        return fragment;
-    }
-
-    private void initToolbar(View view){
+    private void initToolbar(View view) {
         setHasOptionsMenu(true);
         Toolbar toolbar = view.findViewById(R.id.toolbar);
         ((AppCompatActivity) Objects.requireNonNull(getActivity())).setSupportActionBar(toolbar);
         ActionBar mToolbar = ((AppCompatActivity) getActivity()).getSupportActionBar();
-        if(mToolbar != null) {
+        if (mToolbar != null) {
             mToolbar.setDisplayHomeAsUpEnabled(true);
             mToolbar.setTitle(R.string.settings_fragment_title);
         }
@@ -99,18 +92,17 @@ public class SettingsFragment extends Fragment implements BackButtonListener {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if(item.getItemId() == android.R.id.home){
+        if (item.getItemId() == android.R.id.home) {
             onBackPressed();
             return true;
         }
-
         return false;
     }
 
     @Override
     public boolean onBackPressed() {
         if (getParentFragment() != null) {
-            ((RouterProvider)getParentFragment()).getRouter().exit();
+            ((RouterProvider) getParentFragment()).getRouter().exit();
         }
         return true;
     }

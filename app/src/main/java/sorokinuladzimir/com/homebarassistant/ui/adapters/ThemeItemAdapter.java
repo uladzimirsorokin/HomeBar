@@ -9,14 +9,10 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.RequestOptions;
-
 import java.util.ArrayList;
 import java.util.List;
 
 import sorokinuladzimir.com.homebarassistant.R;
-import sorokinuladzimir.com.homebarassistant.db.entity.Drink;
 import sorokinuladzimir.com.homebarassistant.ui.ThemeItem;
 
 
@@ -36,7 +32,7 @@ public class ThemeItemAdapter extends RecyclerView.Adapter<ThemeItemAdapter.Them
     @Override
     public ThemeItemVH onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         return new ThemeItemVH(LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.theme_item, parent,false));
+                .inflate(R.layout.theme_item, parent, false));
     }
 
     @Override
@@ -55,7 +51,7 @@ public class ThemeItemAdapter extends RecyclerView.Adapter<ThemeItemAdapter.Them
         notifyDataSetChanged();
     }
 
-    public static class ThemeItemVH extends RecyclerView.ViewHolder{
+    public static class ThemeItemVH extends RecyclerView.ViewHolder {
 
         final ImageView image;
         final ImageView selectedIcon;
@@ -72,8 +68,7 @@ public class ThemeItemAdapter extends RecyclerView.Adapter<ThemeItemAdapter.Them
 
         public void bind(final ThemeItem theme, final OnItemClickListener listener) {
 
-            //image.setBackgroundColor(theme.getColor());
-            ((GradientDrawable)image.getBackground()).setColor(theme.getColor());
+            ((GradientDrawable) image.getBackground()).setColor(theme.getColor());
             selectedIcon.setVisibility(theme.isSelected() ? View.VISIBLE : View.INVISIBLE);
             name.setText(theme.getName());
 

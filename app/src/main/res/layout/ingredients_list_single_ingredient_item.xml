@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="56dp"
     android:background="@drawable/bg_list_row"
@@ -24,20 +22,20 @@
 
             <ImageView
                 android:id="@+id/image_ingredient_item"
-                android:paddingLeft="16dp"
-                android:paddingRight="16dp"
                 android:layout_width="72dp"
                 android:layout_height="56dp"
-                android:src="@drawable/alco"/>
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                android:src="@drawable/alco" />
 
             <ImageView
                 android:layout_width="40dp"
                 android:layout_height="40dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="8dp"
                 android:layout_marginLeft="16dp"
+                android:layout_marginTop="8dp"
                 android:layout_marginRight="16dp"
-                android:background="@drawable/oval"/>
+                android:layout_marginBottom="8dp"
+                android:background="@drawable/oval" />
         </RelativeLayout>
 
         <RelativeLayout
@@ -50,38 +48,38 @@
             <ImageView
                 android:layout_width="40dp"
                 android:layout_height="40dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="8dp"
                 android:layout_marginLeft="16dp"
+                android:layout_marginTop="8dp"
                 android:layout_marginRight="16dp"
-                android:background="@drawable/bg_circle"/>
+                android:layout_marginBottom="8dp"
+                android:background="@drawable/bg_circle" />
 
 
             <ImageView
                 android:layout_width="40dp"
                 android:layout_height="40dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="8dp"
                 android:layout_marginLeft="16dp"
+                android:layout_marginTop="8dp"
                 android:layout_marginRight="16dp"
-                android:background="@drawable/ic_done"/>
+                android:layout_marginBottom="8dp"
+                android:background="@drawable/ic_done" />
         </RelativeLayout>
     </RelativeLayout>
 
 
     <TextView
         android:id="@+id/tv_ingredient_item"
-        android:layout_toRightOf="@+id/image_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingRight="16dp"
-        android:paddingTop="16dp"
-        android:textSize="16sp"
-        android:textColor="#f3000000"
-        android:fontFamily="sans-serif"
-        android:singleLine="true"
+        android:layout_toRightOf="@+id/image_container"
         android:ellipsize="end"
-        android:text="Some ingredient"/>
+        android:fontFamily="sans-serif"
+        android:paddingTop="16dp"
+        android:paddingRight="16dp"
+        android:singleLine="true"
+        android:text="Some ingredient"
+        android:textColor="#f3000000"
+        android:textSize="16sp" />
 
 
 </RelativeLayout>

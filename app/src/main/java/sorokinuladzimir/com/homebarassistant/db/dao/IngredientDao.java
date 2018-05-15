@@ -18,26 +18,18 @@ package sorokinuladzimir.com.homebarassistant.db.dao;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.persistence.room.Dao;
-import android.arch.persistence.room.Delete;
 import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.Query;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import ru.terrakok.cicerone.commands.Replace;
-import sorokinuladzimir.com.homebarassistant.db.entity.Drink;
-import sorokinuladzimir.com.homebarassistant.db.entity.DrinkIngredientJoin;
 import sorokinuladzimir.com.homebarassistant.db.entity.Ingredient;
 import sorokinuladzimir.com.homebarassistant.db.entity.WholeCocktail;
 
-import static android.arch.persistence.room.OnConflictStrategy.IGNORE;
 import static android.arch.persistence.room.OnConflictStrategy.REPLACE;
 
 @Dao
 public interface IngredientDao {
-    @Query("SELECT * FROM Ingredient")
-    List<Ingredient> loadAllIngredients();
 
     @Query("SELECT * FROM Ingredient")
     LiveData<List<Ingredient>> loadIngredients();
@@ -45,14 +37,8 @@ public interface IngredientDao {
     @Query("SELECT * FROM Ingredient WHERE name LIKE :query ORDER BY name ASC")
     LiveData<List<Ingredient>> searchIngredientsByName(String query);
 
-    @Query("SELECT id, name FROM Ingredient WHERE id IN (:ingredientIds)")
-    LiveData<List<Ingredient>> loadIngredients(List<Long> ingredientIds);
-
     @Query("SELECT Ingredient.id as id, Ingredient.name as ingredient FROM Ingredient WHERE Ingredient.id IN (:ingredientIds)")
     LiveData<List<WholeCocktail>> loadCocktailIngredients(List<Long> ingredientIds);
-
-    @Query("SELECT * FROM Ingredient where id = :id")
-    Ingredient loadIngredientById(Long id);
 
     @Query("SELECT * FROM Ingredient where name = :name LIMIT 1")
     Ingredient getIngredientByName(String name);
@@ -61,26 +47,9 @@ public interface IngredientDao {
     LiveData<Ingredient> loadIngredient(Long id);
 
     @Insert(onConflict = REPLACE)
-    void insertIngredient(Ingredient ingredient);
-
-    @Insert(onConflict = REPLACE)
     Long insertOrReplaceIngredient(Ingredient ingredient);
-
-    @Delete
-    void deleteIngredient(Ingredient ingredient);
 
     @Query("delete from Ingredient where id = :ingredientId")
     void deleteIngredientById(Long ingredientId);
 
-    @Insert(onConflict = IGNORE)
-    void insertOrReplaceIngredient(Ingredient... ingredient);
-
-    @Insert(onConflict = REPLACE)
-    Long[] insertOrReplaceIngredient(List<Ingredient> ingredients);
-
-    @Delete
-    void deleteIngredients(Ingredient ingredient1, Ingredient ingredient2);
-
-    @Query("DELETE FROM Ingredient")
-    void deleteAll();
 }

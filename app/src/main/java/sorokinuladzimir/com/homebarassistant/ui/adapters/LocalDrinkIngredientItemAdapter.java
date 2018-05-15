@@ -8,16 +8,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-
 import com.bumptech.glide.request.RequestOptions;
 
 import java.util.ArrayList;
 import java.util.List;
 
-
 import sorokinuladzimir.com.homebarassistant.R;
 import sorokinuladzimir.com.homebarassistant.db.entity.WholeCocktail;
-
 
 
 public class LocalDrinkIngredientItemAdapter extends RecyclerView.Adapter<LocalDrinkIngredientItemAdapter.IngredientViewHolder> {
@@ -32,16 +29,16 @@ public class LocalDrinkIngredientItemAdapter extends RecyclerView.Adapter<LocalD
 
     private List<WholeCocktail> mData = new ArrayList();
     private final OnItemClickListener listener;
-    
+
     @Override
     public IngredientViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         return new IngredientViewHolder(LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.single_drink_ingredient_item,parent,false));
+                .inflate(R.layout.single_drink_ingredient_item, parent, false));
     }
 
     @Override
     public void onBindViewHolder(IngredientViewHolder holder, int position) {
-        holder.bind(mData.get(position),listener);
+        holder.bind(mData.get(position), listener);
     }
 
     @Override
@@ -55,7 +52,7 @@ public class LocalDrinkIngredientItemAdapter extends RecyclerView.Adapter<LocalD
         notifyDataSetChanged();
     }
 
-    public static class IngredientViewHolder extends RecyclerView.ViewHolder{
+    public static class IngredientViewHolder extends RecyclerView.ViewHolder {
 
         final TextView ingredientName;
         final ImageView ingredientImage;
@@ -78,7 +75,7 @@ public class LocalDrinkIngredientItemAdapter extends RecyclerView.Adapter<LocalD
                 ingredientName.setText("");
             }
 
-            if(item.getAmount() != null) {
+            if (item.getAmount() != null) {
                 ingredientAmount.setText(item.getAmount());
             } else {
                 ingredientAmount.setText("");

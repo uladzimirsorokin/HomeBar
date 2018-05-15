@@ -3,22 +3,6 @@ package sorokinuladzimir.com.homebarassistant.net.entity;
 
 import com.google.gson.annotations.SerializedName;
 
-/*  {
-          "text": "[Добавьте|Action|add] 2 чайные ложки [малиновое варенье|Ingredient|raspberry-jam].",
-          "description": "Сладкая масса густой консистенции, сваренная из малины и сахара. Доступно в большинстве продуктовых магазинов.\r\n",
-          "imagePath": "tools",
-          "imageName": "boston-shaker",
-          "action": "add",
-          "quantity": 2.0,
-          "measurement": "Чайные ложки",
-          "ingredient": "Малиновое варенье",
-          "ingredientType": "BaseSpirit",
-          "container": "boston-shaker",
-          "containerType": "Tool",
-          "centilitres": 4.0,
-          "textPlain": "Добавьте 2 чайные ложки малиновое варенье."
-          }
-*/
 public class PreparationStep {
 
     @SerializedName("description")

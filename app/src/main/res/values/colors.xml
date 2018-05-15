@@ -16,6 +16,13 @@
     <color name="red">#ff0000</color>
     <color name="dark_gray">#a9a9a9</color>
 
+    <color name="about_separator_color">#e1e1e1</color>
+
+    <!-- Text -->
+    <color name="about_description_text_color">#595959</color>
+    <color name="about_item_text_color">#7c7c7c</color>
+    <color name="about_text_color">#595959</color>
+
     <color name="indigo">#3F51B5</color>
     <color name="indigoDark">#303F9F</color>
     <color name="indigoAccent">#FF4081</color>

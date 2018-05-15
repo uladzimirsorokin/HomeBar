@@ -19,26 +19,22 @@ import sorokinuladzimir.com.homebarassistant.db.entity.WholeCocktail;
 
 public class RemoteDrinkIngredientItemAdapter extends RecyclerView.Adapter<RemoteDrinkIngredientItemAdapter.IngredientViewHolder> {
 
+    private final OnItemClickListener listener;
+    private ArrayList<WholeCocktail> mData = new ArrayList();
+
     public RemoteDrinkIngredientItemAdapter(OnItemClickListener listener) {
         this.listener = listener;
     }
 
-    public interface OnItemClickListener {
-        void onItemClick(WholeCocktail item);
-    }
-
-    private ArrayList<WholeCocktail> mData = new ArrayList();
-    private final OnItemClickListener listener;
-    
     @Override
     public IngredientViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         return new IngredientViewHolder(LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.single_drink_ingredient_item, parent,false));
+                .inflate(R.layout.single_drink_ingredient_item, parent, false));
     }
 
     @Override
     public void onBindViewHolder(IngredientViewHolder holder, int position) {
-        holder.bind(mData.get(position),listener);
+        holder.bind(mData.get(position), listener);
     }
 
     @Override
@@ -52,14 +48,18 @@ public class RemoteDrinkIngredientItemAdapter extends RecyclerView.Adapter<Remot
         notifyDataSetChanged();
     }
 
-    public static class IngredientViewHolder extends RecyclerView.ViewHolder{
+    public interface OnItemClickListener {
+        void onItemClick(WholeCocktail item);
+    }
+
+    public static class IngredientViewHolder extends RecyclerView.ViewHolder {
 
         final TextView ingredientName;
         final TextView ingredientUnit;
         final TextView ingredientAmount;
         final ImageView ingredientImage;
 
-        public IngredientViewHolder(View itemView) {
+        IngredientViewHolder(View itemView) {
             super(itemView);
             ingredientName = itemView.findViewById(R.id.tv_singledrink_ingredient);
             ingredientUnit = itemView.findViewById(R.id.tv_singledrink_unit);
@@ -69,16 +69,16 @@ public class RemoteDrinkIngredientItemAdapter extends RecyclerView.Adapter<Remot
 
         public void bind(final WholeCocktail item, final OnItemClickListener listener) {
 
-            if(item.getIngredientName() != null){
+            if (item.getIngredientName() != null) {
                 ingredientName.setText(item.getIngredientName());
             } else {
                 ingredientName.setText(R.string.noname_drink);
             }
 
 
-            if(item.getAmount() != null){
+            if (item.getAmount() != null) {
                 ingredientAmount.setText(item.getAmount());
-            } else  {
+            } else {
                 ingredientAmount.setText("");
             }
 
@@ -89,7 +89,7 @@ public class RemoteDrinkIngredientItemAdapter extends RecyclerView.Adapter<Remot
                 ingredientUnit.setText("");
             }
 
-            if(item.getImage() != null){
+            if (item.getImage() != null) {
                 Glide.with(ingredientImage.getContext())
                         .load(item.getImage())
                         .apply(RequestOptions.circleCropTransform())
