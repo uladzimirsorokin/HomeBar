@@ -32,7 +32,7 @@ public class ThemeItemAdapter extends RecyclerView.Adapter<ThemeItemAdapter.Them
     @Override
     public ThemeItemVH onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         return new ThemeItemVH(LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.theme_item, parent, false));
+                .inflate(R.layout.item_theme, parent, false));
     }
 
     @Override

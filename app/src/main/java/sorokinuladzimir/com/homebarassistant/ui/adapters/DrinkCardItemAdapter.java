@@ -5,7 +5,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.RatingBar;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -43,7 +42,7 @@ public class DrinkCardItemAdapter extends RecyclerView.Adapter<DrinkCardItemAdap
     @Override
     public CardViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         return new CardViewHolder(LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.card_view_cocktail_item, parent, false));
+                .inflate(R.layout.item_card_view_cocktail, parent, false));
     }
 
     @Override

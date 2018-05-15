@@ -29,11 +29,23 @@ import java.util.Objects;
 import sorokinuladzimir.com.homebarassistant.BarApp;
 import sorokinuladzimir.com.homebarassistant.R;
 import sorokinuladzimir.com.homebarassistant.db.entity.Ingredient;
-import sorokinuladzimir.com.homebarassistant.ui.fragments.Screens;
 
 
 public class IngredientsListItemAdapter extends RecyclerView.Adapter<IngredientsListItemAdapter.IngredientViewHolder>
         implements Filterable, INameableAdapter {
+
+    private final OnItemClickListener listener;
+    private List<Ingredient> mIngredientsList = new ArrayList();
+    private List<Ingredient> mFilteredIngredientsList = new ArrayList();
+    private Context mContext;
+    private HashSet<Ingredient> selectedSet = new HashSet<>();
+    private List<Long> selectedIds = new ArrayList<>();
+    private Deque<List<Ingredient>> pendingUpdates = new ArrayDeque<>();
+    
+    public IngredientsListItemAdapter(Context context, OnItemClickListener listener) {
+        this.listener = listener;
+        this.mContext = context;
+    }
 
     @Override
     public Character getCharacterForElement(int element) {
@@ -45,34 +57,11 @@ public class IngredientsListItemAdapter extends RecyclerView.Adapter<Ingredients
         return c;
     }
 
-    public interface OnItemClickListener {
-        void onItemClick(Ingredient item);
-    }
-
-    private List<Ingredient> mIngredientsList = new ArrayList();
-    private List<Ingredient> mFilteredIngredientsList = new ArrayList();
-    private Context mContext;
-    private String mContainerName;
-    private final OnItemClickListener listener;
-
-    private HashSet<Ingredient> selectedSet = new HashSet<>();
-    private List<Long> selectedIds = new ArrayList<>();
-
-    private Deque<List<Ingredient>> pendingUpdates = new ArrayDeque<>();
-
-    public IngredientsListItemAdapter(Context context, String containerName, OnItemClickListener listener) {
-        this.listener = listener;
-        this.mContext = context;
-        this.mContainerName = containerName;
-    }
-
     @NonNull
     @Override
     public IngredientViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         return new IngredientViewHolder(LayoutInflater.from(parent.getContext())
-                .inflate(mContainerName.equals(Screens.INGREDIENTS) ? R.layout.ingredients_list_ingredient_item :
-                                R.layout.ingredients_list_single_ingredient_item,
-                        parent, false));
+                .inflate(R.layout.item_selectable_ingredient, parent, false));
     }
 
     @Override
@@ -86,7 +75,7 @@ public class IngredientsListItemAdapter extends RecyclerView.Adapter<Ingredients
 
     @Override
     public int getItemCount() {
-        return mContainerName.equals(Screens.INGREDIENTS) ? mIngredientsList.size() : mFilteredIngredientsList.size();
+        return mFilteredIngredientsList.size();
     }
 
     @SuppressLint("StaticFieldLeak")
@@ -139,48 +128,6 @@ public class IngredientsListItemAdapter extends RecyclerView.Adapter<Ingredients
                         });
                     }
             );
-        }
-    }
-
-    static class IngredientViewHolder extends RecyclerView.ViewHolder {
-
-        final TextView ingredientName;
-        final ImageView ingredientImage;
-        final RelativeLayout imageBack;
-        final RelativeLayout imageFront;
-
-        IngredientViewHolder(View itemView) {
-            super(itemView);
-            ingredientName = itemView.findViewById(R.id.tv_ingredient_item);
-            ingredientImage = itemView.findViewById(R.id.image_ingredient_item);
-            imageBack = itemView.findViewById(R.id.image_back);
-            imageFront = itemView.findViewById(R.id.image_front);
-        }
-
-        void bind(Context mContext, final Ingredient item, final OnItemClickListener listener, boolean selected) {
-
-            if (item.getName() != null) ingredientName.setText(item.getName());
-
-            if (selected) {
-                itemView.setActivated(true);
-                imageFront.setVisibility(View.INVISIBLE);
-                imageBack.setVisibility(View.VISIBLE);
-                imageBack.setAlpha(1);
-
-            } else {
-                itemView.setActivated(false);
-                imageFront.setVisibility(View.VISIBLE);
-                imageBack.setVisibility(View.INVISIBLE);
-                imageBack.setAlpha(1);
-
-                Glide.with(mContext)
-                        .load(item.getImage() != null ? item.getImage() : R.drawable.camera_placeholder)
-                        .apply(RequestOptions.circleCropTransform())
-                        .into(ingredientImage);
-
-            }
-
-            itemView.setOnClickListener(v -> listener.onItemClick(item));
         }
     }
 
@@ -251,5 +198,46 @@ public class IngredientsListItemAdapter extends RecyclerView.Adapter<Ingredients
                 notifyDataSetChanged();
             }
         };
+    }
+
+    public interface OnItemClickListener {
+        void onItemClick(Ingredient item);
+    }
+
+    static class IngredientViewHolder extends RecyclerView.ViewHolder {
+
+        final TextView ingredientName;
+        final ImageView ingredientImage;
+        final RelativeLayout imageBack;
+        final RelativeLayout imageFront;
+
+        IngredientViewHolder(View itemView) {
+            super(itemView);
+            ingredientName = itemView.findViewById(R.id.tv_ingredient_item);
+            ingredientImage = itemView.findViewById(R.id.image_ingredient_item);
+            imageBack = itemView.findViewById(R.id.image_back);
+            imageFront = itemView.findViewById(R.id.image_front);
+        }
+
+        void bind(Context mContext, final Ingredient item, final OnItemClickListener listener, boolean selected) {
+            if (item.getName() != null) ingredientName.setText(item.getName());
+            if (selected) {
+                itemView.setActivated(true);
+                imageFront.setVisibility(View.INVISIBLE);
+                imageBack.setVisibility(View.VISIBLE);
+                imageBack.setAlpha(1);
+            } else {
+                itemView.setActivated(false);
+                imageFront.setVisibility(View.VISIBLE);
+                imageBack.setVisibility(View.INVISIBLE);
+                imageBack.setAlpha(1);
+
+                Glide.with(mContext)
+                        .load(item.getImage() != null ? item.getImage() : R.drawable.camera_placeholder)
+                        .apply(RequestOptions.circleCropTransform())
+                        .into(ingredientImage);
+            }
+            itemView.setOnClickListener(v -> listener.onItemClick(item));
+        }
     }
 }

@@ -51,7 +51,7 @@
                 android:layout_height="?attr/actionBarSize"
                 android:background="?selectableItemBackground"
                 app:layout_collapseMode="pin"
-                app:popupTheme="@style/ThemeOverlay.AppCompat.Light"></android.support.v7.widget.Toolbar>
+                app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
 
         </android.support.design.widget.CollapsingToolbarLayout>
 
@@ -107,8 +107,7 @@
                         android:layout_marginEnd="8dp"
                         android:fontFamily="sans-serif"
                         android:paddingTop="8dp"
-                        android:paddingRight="16dp"
-                        android:text="Винный бокал"
+                        android:paddingEnd="16dp"
                         android:textColor="#f3000000"
                         android:textSize="18sp"
                         app:layout_constraintEnd_toEndOf="parent"
@@ -134,8 +133,7 @@
                         android:layout_marginEnd="8dp"
                         android:fontFamily="sans-serif"
                         android:paddingTop="8dp"
-                        android:paddingRight="16dp"
-                        android:text="Сладкий, фруктовый, Сладкий, Кислый, Сладкий, Кислый, Сладкий, Кислый"
+                        android:paddingEnd="16dp"
                         android:textColor="#f3000000"
                         android:textSize="18sp"
                         app:layout_constraintEnd_toEndOf="parent"
@@ -161,9 +159,7 @@
                         android:layout_marginEnd="8dp"
                         android:fontFamily="sans-serif"
                         android:paddingTop="8dp"
-
-                        android:paddingRight="16dp"
-                        android:text="Алкогольный, Горячий, Сладкий, Кислый, Сладкий, Кислый, Сладкий, Кислый"
+                        android:paddingEnd="16dp"
                         android:textColor="#f3000000"
                         android:textSize="18sp"
                         app:layout_constraintEnd_toEndOf="parent"
@@ -190,9 +186,8 @@
                         android:layout_marginEnd="8dp"
                         android:fontFamily="sans-serif-smallcaps"
                         android:paddingTop="8dp"
-                        android:paddingRight="16dp"
+                        android:paddingEnd="16dp"
                         android:paddingBottom="16dp"
-                        android:text="100"
                         android:textColor="#f3000000"
                         android:textSize="20sp"
                         app:layout_constraintEnd_toEndOf="parent"

@@ -50,7 +50,7 @@ public class IngredientsItemAdapter extends RecyclerView.Adapter<IngredientsItem
     @Override
     public IngredientViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         return new IngredientViewHolder(LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.simple_drink_item, parent, false));
+                .inflate(R.layout.item_simple_drink, parent, false));
     }
 
     @Override

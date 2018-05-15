@@ -19,26 +19,13 @@
             android:id="@+id/card_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_toLeftOf="@+id/card_image"
+            android:layout_toStartOf="@+id/card_image"
             android:ellipsize="end"
             android:ems="15"
             android:fontFamily="sans-serif"
             android:maxLines="2"
             android:textColor="#000000"
             android:textSize="24sp" />
-
-
-     <!--   <RatingBar
-            android:id="@+id/card_rating_bar"
-            style="@style/Widget.AppCompat.RatingBar.Indicator"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_marginTop="16dp"
-            android:numStars="5"
-            android:rating="3"
-            android:stepSize="0.5" />-->
-        <!--android:layout_above="@+id/card_rating_bar"-->
 
         <TextView
             android:id="@+id/card_subtitle"

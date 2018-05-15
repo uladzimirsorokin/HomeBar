@@ -7,6 +7,7 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -44,7 +45,6 @@ public class AddDrinkIngredientsFragment extends Fragment implements BackButtonL
 
     public static AddDrinkIngredientsFragment getNewInstance(String name) {
         AddDrinkIngredientsFragment fragment = new AddDrinkIngredientsFragment();
-
         Bundle arguments = new Bundle();
         arguments.putString(EXTRA_NAME, name);
         fragment.setArguments(arguments);
@@ -56,13 +56,11 @@ public class AddDrinkIngredientsFragment extends Fragment implements BackButtonL
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fr_items_list, container, false);
-
+        initViews(rootView);
         initFAB(rootView);
         initRecyclerView(rootView);
         initToolbar(rootView);
-
         mSharedIngredientsViewModel = ViewModelProviders.of(Objects.requireNonNull(getActivity())).get(SharedViewModel.class);
-
         mViewModel = ViewModelProviders.of(this).get(AddDrinkIngredientsViewModel.class);
         subscribeUi(mViewModel, mSharedIngredientsViewModel);
 
@@ -70,23 +68,20 @@ public class AddDrinkIngredientsFragment extends Fragment implements BackButtonL
     }
 
     private void subscribeUi(AddDrinkIngredientsViewModel model, SharedViewModel sharedIngredients) {
-
         model.getIngredients().observe(this, ingredients -> {
             if (ingredients != null) {
                 mAdapter.setIngredients(ingredients);
             }
         });
-
         model.getQuery().observe(this, query -> {
             if (query != null) mAdapter.getFilter().filter(query);
         });
-
         sharedIngredients.getSelectedIds().observe(this, list -> {
-            if (list != null && !list.isEmpty() && (model.getLocalSelection().getValue() == null || model.getLocalSelection().getValue().isEmpty())) {
+            if (list != null && !list.isEmpty() && (model.getLocalSelection().getValue() == null
+                    || model.getLocalSelection().getValue().isEmpty())) {
                 model.setLocalSelection(list);
             }
         });
-
         model.getLocalSelection().observe(this, list -> {
             if (list != null && !list.isEmpty()) {
                 mAdapter.setSelectedIds(list);
@@ -115,13 +110,19 @@ public class AddDrinkIngredientsFragment extends Fragment implements BackButtonL
         }
     }
 
+
+    private void initViews(View rootView) {
+        SwipeRefreshLayout swipeRefreshLayout = rootView.findViewById(R.id.swipe_refresh_layout);
+        swipeRefreshLayout.setOnRefreshListener(() -> swipeRefreshLayout.setRefreshing(false));
+    }
+
     private void initRecyclerView(View rootView) {
         final RecyclerView recyclerView = rootView.findViewById(R.id.recycler_view);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        mAdapter = new IngredientsListItemAdapter(getContext(),
-                Objects.requireNonNull(getArguments()).getString(EXTRA_NAME), this::toggleSelection);
-        recyclerView.addItemDecoration(new DividerItemDecoration(Objects.requireNonNull(getContext()), DividerItemDecoration.VERTICAL));
+        mAdapter = new IngredientsListItemAdapter(getContext(), this::toggleSelection);
+        recyclerView.addItemDecoration(new DividerItemDecoration(Objects.requireNonNull(getContext()),
+                DividerItemDecoration.VERTICAL));
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(mAdapter);
     }
@@ -169,7 +170,7 @@ public class AddDrinkIngredientsFragment extends Fragment implements BackButtonL
             return true;
         }
         if (item.getItemId() == R.id.action_about && getParentFragment() != null) {
-            ((RouterProvider) getParentFragment()).getRouter().navigateTo(Screens.ABOUT, "Drink ingredientrs fragment about text");
+            ((RouterProvider) getParentFragment()).getRouter().navigateTo(Screens.ABOUT, "");
         }
         if (item.getItemId() == R.id.ab_add) {
             mSharedIngredientsViewModel.selectIds(mAdapter.getSelectedIds());

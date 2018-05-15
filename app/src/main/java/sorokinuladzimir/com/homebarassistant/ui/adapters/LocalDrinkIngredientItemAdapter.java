@@ -33,7 +33,7 @@ public class LocalDrinkIngredientItemAdapter extends RecyclerView.Adapter<LocalD
     @Override
     public IngredientViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         return new IngredientViewHolder(LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.single_drink_ingredient_item, parent, false));
+                .inflate(R.layout.item_single_drink_ingredient, parent, false));
     }
 
     @Override

@@ -35,7 +35,7 @@ public class DrinkSimpleItemAdapter extends RecyclerView.Adapter<DrinkSimpleItem
     @Override
     public SimpleDrinkVH onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         return new SimpleDrinkVH(LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.simple_drink_item, parent, false));
+                .inflate(R.layout.item_simple_drink, parent, false));
     }
 
     @Override
