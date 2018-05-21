@@ -32,7 +32,7 @@ public class Constants {
 
     public static class Values {
         public static final int DEFAULT_ITEM_AMOUNT = 5;
-        public static final int DEFAULT_IMAGE_SIZE = 500;
+        public static final int DEFAULT_IMAGE_SIZE = 750;
 
         private Values() {
         }

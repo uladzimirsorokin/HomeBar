@@ -35,7 +35,7 @@ public class ThemeUtils {
                 activity.setTheme(R.style.AppTheme_Indigo);
                 break;
             case PINK:
-                activity.setTheme(R.style.AppTheme_Pink);
+                activity.setTheme(R.style.AppTheme_Purple);
                 break;
             case BLACK:
                 activity.setTheme(R.style.AppTheme_Black);

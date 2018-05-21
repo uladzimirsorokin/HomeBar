@@ -24,7 +24,7 @@ public class DrinkSimpleItemAdapter extends RecyclerView.Adapter<DrinkSimpleItem
         void onItemClick(Drink item);
     }
 
-    private ArrayList<Drink> mData = new ArrayList();
+    private final ArrayList<Drink> mData = new ArrayList();
     private final OnItemClickListener listener;
 
     public DrinkSimpleItemAdapter(OnItemClickListener listener) {

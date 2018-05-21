@@ -64,7 +64,7 @@ public class DrinksListFragment extends Fragment {
         initToolbar(rootView);
         mViewModel = ViewModelProviders.of(Objects.requireNonNull(getActivity())).get(DrinkListViewModel.class);
         mViewModel.restoreSources();
-
+        
         return rootView;
     }
 

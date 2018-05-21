@@ -38,7 +38,7 @@ import sorokinuladzimir.com.homebarassistant.viewmodel.IngredientViewModel;
 
 public class IngredientFragment extends Fragment implements BackButtonListener {
 
-    public static final String MENU_ITEM_EDIT = "Edit";
+    private static final String MENU_ITEM_EDIT = "Edit";
 
     private static final String EXTRA_NAME = "extra_name";
     private static final String EXTRA_ID = "extra_id";
@@ -139,12 +139,16 @@ public class IngredientFragment extends Fragment implements BackButtonListener {
         if (mToolbar != null) mToolbar.setDisplayHomeAsUpEnabled(true);
         AppBarLayout appBarLayout = view.findViewById(R.id.singleIngredientAppbar);
         appBarLayout.addOnOffsetChangedListener((appBarLayout1, verticalOffset) -> {
-            if (Math.abs(verticalOffset) > appBarLayout.getTotalScrollRange() - 140) {
-                appBarExpanded = false;
-                getActivity().invalidateOptionsMenu();
+            if (Math.abs(verticalOffset) >  appBarLayout.getTotalScrollRange() - 140) {
+                if (appBarExpanded) {
+                    appBarExpanded = false;
+                    getActivity().invalidateOptionsMenu();
+                }
             } else {
-                appBarExpanded = true;
-                getActivity().invalidateOptionsMenu();
+                if (!appBarExpanded) {
+                    appBarExpanded = true;
+                    getActivity().invalidateOptionsMenu();
+                }
             }
         });
     }
@@ -179,7 +183,6 @@ public class IngredientFragment extends Fragment implements BackButtonListener {
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.list_without_search_menu, menu);
         collapsedMenu = menu;
     }
 
@@ -213,12 +216,6 @@ public class IngredientFragment extends Fragment implements BackButtonListener {
                 ((RouterProvider) getParentFragment()).getRouter().exit();
             }
             return true;
-        }
-        if (item.getItemId() == R.id.action_about && getParentFragment() != null) {
-            ((RouterProvider) getParentFragment()).getRouter().navigateTo(Screens.ABOUT, "Ingredient fragment about text");
-        }
-        if (item.getItemId() == R.id.action_settings && getParentFragment() != null) {
-            ((RouterProvider) getParentFragment()).getRouter().navigateTo(Screens.SETTINGS);
         }
         if (item.getTitle() == MENU_ITEM_EDIT) {
             ((RouterProvider) getParentFragment()).getRouter().navigateTo(Screens.ADD_INGREDIENT, mIngredientId);

@@ -44,7 +44,7 @@ import static sorokinuladzimir.com.homebarassistant.Constants.Values.DEFAULT_IMA
 
 public class AddIngredientFragment extends Fragment implements BackButtonListener, AddImageDialogFragment.AddImageDialogFragmentCallback {
 
-    static final int REQUEST_IMAGE_CAPTURE = 1;
+    private static final int REQUEST_IMAGE_CAPTURE = 1;
     private static final String EXTRA_NAME = "extra_name";
     private static final String EXTRA_ID = "extra_id";
     private static final int OPEN_PICTURE_CODE = 2;
@@ -128,11 +128,9 @@ public class AddIngredientFragment extends Fragment implements BackButtonListene
         Toolbar toolbar = view.findViewById(R.id.toolbar);
         ((AppCompatActivity) Objects.requireNonNull(getActivity())).setSupportActionBar(toolbar);
         ActionBar mToolbar = ((AppCompatActivity) getActivity()).getSupportActionBar();
-
         if (mToolbar != null) {
             mToolbar.setDisplayHomeAsUpEnabled(true);
             mToolbar.setHomeAsUpIndicator(R.drawable.ic_close);
-
             if (mViewModel.getIsNewIngredient()) {
                 mToolbar.setTitle(R.string.title_new_ingredient);
             } else {
@@ -153,7 +151,6 @@ public class AddIngredientFragment extends Fragment implements BackButtonListene
                 int i = event.getAction() & MotionEvent.ACTION_MASK;
                 if (i == MotionEvent.ACTION_UP) {
                     v.getParent().requestDisallowInterceptTouchEvent(false);
-
                 }
             }
             return false;
@@ -195,7 +192,7 @@ public class AddIngredientFragment extends Fragment implements BackButtonListene
         mViewModel.handleImage(imageUri, DEFAULT_IMAGE_SIZE, true);
     }
 
-    void showAddImageDialog() {
+    private void showAddImageDialog() {
         DialogFragment newFragment = AddImageDialogFragment.newInstance("Change photo",
                 mViewModel.getCurrentImagePath().getValue() != null);
         newFragment.setTargetFragment(this, 911);
@@ -259,7 +256,6 @@ public class AddIngredientFragment extends Fragment implements BackButtonListene
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-
         switch (item.getItemId()) {
             case android.R.id.home:
                 onBackPressed();

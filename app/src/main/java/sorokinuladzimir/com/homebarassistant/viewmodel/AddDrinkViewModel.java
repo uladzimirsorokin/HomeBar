@@ -51,7 +51,7 @@ public class AddDrinkViewModel extends AndroidViewModel {
     private final LinkedHashMap<Long, WholeCocktail> tempIngredients = new LinkedHashMap<>();
     private final MediatorLiveData<List<WholeCocktail>> mObservableLiveIngredients = new MediatorLiveData<>();
     private final MediatorLiveData<ArrayList<Taste>> mCurrentTastesList = new MediatorLiveData<>();
-    private BarDataRepository mRepository;
+    private final BarDataRepository mRepository;
     private Uri mPhotoUri = null;
     private boolean mIsNewDrink = true;
     private boolean mIsImageRemoved = false;

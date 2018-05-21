@@ -9,7 +9,7 @@ import sorokinuladzimir.com.homebarassistant.net.entity.DrinkEntity;
 
 public class DrinkEntityToDrinkMapper extends Mapper<Drink, DrinkEntity> {
 
-    private static DrinkEntityToDrinkMapper sInstance;
+    private static final DrinkEntityToDrinkMapper sInstance;
 
     static {
         sInstance = new DrinkEntityToDrinkMapper();

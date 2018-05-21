@@ -30,7 +30,7 @@ public class IngredientsItemAdapter extends RecyclerView.Adapter<IngredientsItem
 
     private final OnItemClickListener listener;
     private List<Ingredient> mIngredientsList;
-    private Deque<List<Ingredient>> pendingUpdates = new ArrayDeque<>();
+    private final Deque<List<Ingredient>> pendingUpdates = new ArrayDeque<>();
 
     public IngredientsItemAdapter(OnItemClickListener listener) {
         this.listener = listener;

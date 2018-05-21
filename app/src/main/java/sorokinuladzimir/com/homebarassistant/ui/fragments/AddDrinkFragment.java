@@ -58,7 +58,7 @@ public class AddDrinkFragment extends Fragment implements BackButtonListener,
         AddImageDialogFragment.AddImageDialogFragmentCallback,
         AddTastesDialogFragment.AddTastesDialogFragmentCallback {
 
-    static final int REQUEST_IMAGE_CAPTURE = 1;
+    private static final int REQUEST_IMAGE_CAPTURE = 1;
     private static final String EXTRA_NAME = "extra_name";
     private static final String EXTRA_ID = "extra_id";
     private static final int OPEN_PICTURE_CODE = 2;
@@ -285,14 +285,14 @@ public class AddDrinkFragment extends Fragment implements BackButtonListener,
         mViewModel.handleImage(imageUri, DEFAULT_IMAGE_SIZE, true);
     }
 
-    void showAddImageDialog() {
+    private void showAddImageDialog() {
         DialogFragment newFragment = AddImageDialogFragment.newInstance("Change photo",
                 mViewModel.getCurrentImagePath().getValue() != null);
         newFragment.setTargetFragment(this, 911);
         newFragment.show(Objects.requireNonNull(getFragmentManager()), "dialog");
     }
 
-    void showAddTastesDialog() {
+    private void showAddTastesDialog() {
         DialogFragment newFragment = AddTastesDialogFragment.newInstance(getString(R.string.title_choose_tastes),
                 mViewModel.getTastes(getResources().getStringArray(R.array.taste_name)));
         newFragment.setTargetFragment(this, 911);

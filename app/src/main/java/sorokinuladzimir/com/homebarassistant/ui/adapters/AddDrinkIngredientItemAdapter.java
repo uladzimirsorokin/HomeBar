@@ -27,8 +27,8 @@ public class AddDrinkIngredientItemAdapter extends RecyclerView.Adapter<AddDrink
 
     private final OnDeleteClickListener listener;
     private final String[] unitArray;
-    private List<WholeCocktail> mIngredients = new ArrayList<>();
-    private Context mContext;
+    private final List<WholeCocktail> mIngredients = new ArrayList<>();
+    private final Context mContext;
     public AddDrinkIngredientItemAdapter(Context context, OnDeleteClickListener deleteClickListener) {
         this.listener = deleteClickListener;
         this.mContext = context;
@@ -84,12 +84,12 @@ public class AddDrinkIngredientItemAdapter extends RecyclerView.Adapter<AddDrink
 
     class IngredientViewHolder extends RecyclerView.ViewHolder {
 
-        TextView name;
-        EditText amount;
-        Spinner unit;
-        View deleteButton;
-        MyAmountListener myAmountListener;
-        UnitListener unitListener;
+        final TextView name;
+        final EditText amount;
+        final Spinner unit;
+        final View deleteButton;
+        final MyAmountListener myAmountListener;
+        final UnitListener unitListener;
 
 
         IngredientViewHolder(View itemView, MyAmountListener myAmountListener, UnitListener unitListener) {

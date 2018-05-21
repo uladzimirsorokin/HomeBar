@@ -27,7 +27,8 @@
                 android:id="@+id/recycler_view"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:padding="@dimen/medium_spacing" />
+                android:paddingStart="@dimen/medium_spacing"
+                android:paddingEnd="@dimen/medium_spacing" />
 
             <com.turingtechnologies.materialscrollbar.DragScrollBar
                 android:id="@+id/dragScrollBar"
@@ -72,6 +73,7 @@
         android:layout_gravity="bottom|end"
         android:layout_margin="16dp"
         android:clickable="true"
-        app:elevation="6dp" />
+        app:elevation="6dp"
+        android:focusable="true" />
 
 </android.support.design.widget.CoordinatorLayout>

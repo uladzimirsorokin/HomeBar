@@ -4,6 +4,7 @@ package sorokinuladzimir.com.homebarassistant.db.entity;
 import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.ForeignKey;
+import android.arch.persistence.room.Index;
 import android.arch.persistence.room.PrimaryKey;
 
 @Entity(foreignKeys = {
@@ -13,7 +14,9 @@ import android.arch.persistence.room.PrimaryKey;
 
         @ForeignKey(entity = Ingredient.class,
                 parentColumns = "id",
-                childColumns = "ingredient_id")})
+                childColumns = "ingredient_id")},
+            indices = {@Index(value = "drink_id"),
+                    @Index(value = "ingredient_id")})
 public class DrinkIngredientJoin {
 
     @PrimaryKey(autoGenerate = true)

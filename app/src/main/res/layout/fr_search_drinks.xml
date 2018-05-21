@@ -268,7 +268,7 @@
                         android:layout_gravity="center_vertical"
                         android:layout_marginStart="16dp"
                         android:background="@drawable/color_circle"
-                        android:outlineProvider="bounds"></ImageView>
+                        android:outlineProvider="bounds"/>
 
                     <TextView
                         android:layout_width="match_parent"

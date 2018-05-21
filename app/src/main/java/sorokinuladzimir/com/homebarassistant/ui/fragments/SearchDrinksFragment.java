@@ -56,7 +56,7 @@ public class SearchDrinksFragment extends Fragment implements BackButtonListener
     private int mSkill;
     private Switch mSwIsAlcoholic;
     private TextView mTvSkill;
-    private AdapterView.OnItemSelectedListener adapterListener = new AdapterView.OnItemSelectedListener() {
+    private final AdapterView.OnItemSelectedListener adapterListener = new AdapterView.OnItemSelectedListener() {
         @Override
         public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
             int parentId = parent.getId();
@@ -76,7 +76,7 @@ public class SearchDrinksFragment extends Fragment implements BackButtonListener
             //auto-select any glass option
         }
     };
-    private CompoundButton.OnCheckedChangeListener switchListener = new CompoundButton.OnCheckedChangeListener() {
+    private final CompoundButton.OnCheckedChangeListener switchListener = new CompoundButton.OnCheckedChangeListener() {
         @Override
         public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
             if (buttonView.getId() == mSwIsCarbonated.getId()) {
@@ -87,7 +87,7 @@ public class SearchDrinksFragment extends Fragment implements BackButtonListener
             }
         }
     };
-    private SeekBar.OnSeekBarChangeListener skillListener = new SeekBar.OnSeekBarChangeListener() {
+    private final SeekBar.OnSeekBarChangeListener skillListener = new SeekBar.OnSeekBarChangeListener() {
         @Override
         public void onProgressChanged(SeekBar seekBar, int progress, boolean b) {
             mSkill = progress;
@@ -116,7 +116,7 @@ public class SearchDrinksFragment extends Fragment implements BackButtonListener
 
         }
     };
-    private View.OnClickListener colorListener = new View.OnClickListener() {
+    private final View.OnClickListener colorListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             final int[] colors = getResources().getIntArray(R.array.colors);

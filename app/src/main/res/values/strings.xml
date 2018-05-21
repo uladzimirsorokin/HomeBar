@@ -30,8 +30,8 @@
     <string name="ingredient_name_title">Название</string>
     <string name="drinks_list_fragment_title">Мои коктейли</string>
     <string name="search_cocktails_toolbar_title">Поиск коктейлей</string>
-    <string name="menu_about">about</string>
-    <string name="menu_settings">settings</string>
+    <string name="menu_about">О приложении</string>
+    <string name="menu_settings">Настройки</string>
     <string name="menu_search">ИСКАТЬ</string>
     <string name="menu_delete">Удалить</string>
     <string name="menu_add">ДОБАВИТЬ</string>
@@ -73,9 +73,15 @@
     <string name="ingredient_notes_hint">Заметки об ингридиенте</string>
     <string name="settings_fragment_title">Настройки</string>
     <string name="app_theme_color_title">Темы</string>
-    <string name="bottom_bar_search">search</string>
-    <string name="bottom_bar_drinks">drinks</string>
-    <string name="bottom_bar_ingredients">ingredients</string>
+    <string name="bottom_bar_search">Поиск</string>
+    <string name="bottom_bar_drinks">Коктейли</string>
+    <string name="bottom_bar_ingredients">Ингридиенты</string>
+    <string name="absolut_credits">Absolut Drinks is a website with drink and cocktail recipes.</string>
+    <string name="freepic_credits">This app uses Freepic icons.</string>
+    <string name="main_theme_name">Indigo</string>
+    <string name="second_theme_name">Deep Purple</string>
+    <string name="third_theme_name">Black</string>
+    <string name="item_search_title">Search</string>
 
 
 </resources>

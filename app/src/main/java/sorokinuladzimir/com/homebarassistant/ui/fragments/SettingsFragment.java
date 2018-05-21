@@ -62,11 +62,11 @@ public class SettingsFragment extends Fragment implements BackButtonListener {
     private List<ThemeItem> initThemes(int currentTheme) {
         List<ThemeItem> themes = new ArrayList<>();
         ThemeItem themeItem1 = new ThemeItem(0, getResources().getColor(R.color.indigoDark),
-                currentTheme == 0, "Indigo");
-        ThemeItem themeItem2 = new ThemeItem(1, getResources().getColor(R.color.pinkDark),
-                currentTheme == 1, "Pink");
+                currentTheme == 0, getString(R.string.main_theme_name));
+        ThemeItem themeItem2 = new ThemeItem(1, getResources().getColor(R.color.purpleDark),
+                currentTheme == 1, getString(R.string.second_theme_name));
         ThemeItem themeItem3 = new ThemeItem(2, getResources().getColor(R.color.blackDark),
-                currentTheme == 2, "Black");
+                currentTheme == 2, getString(R.string.third_theme_name));
         themes.add(themeItem1);
         themes.add(themeItem2);
         themes.add(themeItem3);

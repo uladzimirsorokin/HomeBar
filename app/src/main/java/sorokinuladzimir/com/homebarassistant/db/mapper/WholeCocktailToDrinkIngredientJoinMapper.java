@@ -5,7 +5,7 @@ import sorokinuladzimir.com.homebarassistant.db.entity.WholeCocktail;
 
 public class WholeCocktailToDrinkIngredientJoinMapper extends Mapper<DrinkIngredientJoin, WholeCocktail> {
 
-    private static WholeCocktailToDrinkIngredientJoinMapper sInstance;
+    private static final WholeCocktailToDrinkIngredientJoinMapper sInstance;
 
     static {
         sInstance = new WholeCocktailToDrinkIngredientJoinMapper();

@@ -52,11 +52,9 @@
                 app:layout_collapseMode="pin"
                 app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
                 android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
-
             </android.support.v7.widget.Toolbar>
 
         </android.support.design.widget.CollapsingToolbarLayout>
-
     </android.support.design.widget.AppBarLayout>
 
     <android.support.v4.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
@@ -64,14 +62,15 @@
         android:id="@+id/nest_scroll_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="16dp"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical"
-            android:padding="@dimen/medium_spacing">
+            android:layout_marginTop="24dp"
+            android:paddingStart="@dimen/medium_spacing"
+            android:paddingEnd="@dimen/medium_spacing">
 
             <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
                 xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -115,9 +114,7 @@
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@id/tv_singleingredient_description_title" />
-
                 </android.support.constraint.ConstraintLayout>
-
             </android.support.v7.widget.CardView>
 
             <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
@@ -164,7 +161,6 @@
                         app:layout_constraintTop_toBottomOf="@id/tv_singleingredient_notes_title" />
 
                 </android.support.constraint.ConstraintLayout>
-
             </android.support.v7.widget.CardView>
 
             <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
@@ -172,7 +168,7 @@
                 android:id="@+id/card_related_drinks"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/standard_spacing"
+                android:layout_marginBottom="@dimen/large_spacing"
                 app:cardCornerRadius="3dp"
                 app:cardElevation="4dp"
                 app:cardUseCompatPadding="true">
@@ -209,11 +205,8 @@
                         app:layout_constraintTop_toBottomOf="@id/tv_singleingredient_drinks_title" />
 
                 </android.support.constraint.ConstraintLayout>
-
             </android.support.v7.widget.CardView>
-
         </LinearLayout>
-
     </android.support.v4.widget.NestedScrollView>
 
     <android.support.design.widget.FloatingActionButton
@@ -225,5 +218,4 @@
         android:src="@drawable/ic_edit_done"
         app:layout_anchor="@+id/singleIngredientAppbar"
         app:layout_anchorGravity="bottom|right|end" />
-
 </android.support.design.widget.CoordinatorLayout>

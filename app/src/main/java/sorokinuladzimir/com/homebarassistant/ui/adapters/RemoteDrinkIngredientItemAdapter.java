@@ -20,7 +20,7 @@ import sorokinuladzimir.com.homebarassistant.db.entity.WholeCocktail;
 public class RemoteDrinkIngredientItemAdapter extends RecyclerView.Adapter<RemoteDrinkIngredientItemAdapter.IngredientViewHolder> {
 
     private final OnItemClickListener listener;
-    private ArrayList<WholeCocktail> mData = new ArrayList();
+    private final ArrayList<WholeCocktail> mData = new ArrayList();
 
     public RemoteDrinkIngredientItemAdapter(OnItemClickListener listener) {
         this.listener = listener;
@@ -67,35 +67,28 @@ public class RemoteDrinkIngredientItemAdapter extends RecyclerView.Adapter<Remot
             ingredientImage = itemView.findViewById(R.id.image_singledrink_ingredient_item);
         }
 
-        public void bind(final WholeCocktail item, final OnItemClickListener listener) {
-
+        void bind(final WholeCocktail item, final OnItemClickListener listener) {
             if (item.getIngredientName() != null) {
                 ingredientName.setText(item.getIngredientName());
             } else {
                 ingredientName.setText(R.string.noname_drink);
             }
-
-
             if (item.getAmount() != null) {
                 ingredientAmount.setText(item.getAmount());
             } else {
                 ingredientAmount.setText("");
             }
-
-
             if (item.getUnit() != null) {
                 ingredientUnit.setText(item.getUnit());
             } else {
                 ingredientUnit.setText("");
             }
-
             if (item.getImage() != null) {
                 Glide.with(ingredientImage.getContext())
                         .load(item.getImage())
                         .apply(RequestOptions.circleCropTransform())
                         .into(ingredientImage);
             }
-
             itemView.setOnClickListener(v -> listener.onItemClick(item));
         }
     }

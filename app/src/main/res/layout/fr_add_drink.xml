@@ -12,7 +12,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fitsSystemWindows="true"
-        android:paddingBottom="@dimen/standard_spacing"
         android:scrollbarAlwaysDrawVerticalTrack="true"
         android:scrollbars="vertical"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
@@ -113,6 +112,7 @@
                     android:layout_marginStart="@dimen/large_spacing"
                     android:layout_marginTop="8dp"
                     android:layout_marginEnd="@dimen/standard_spacing"
+                    android:padding="8dp"
                     android:background="?selectableItemBackground"
                     android:drawableStart="@drawable/ic_add_drink_ingredients"
                     android:text="@string/bt_add_ingredients" />
@@ -149,6 +149,7 @@
                     android:layout_marginStart="@dimen/large_spacing"
                     android:layout_marginTop="@dimen/medium_spacing"
                     android:layout_marginEnd="@dimen/standard_spacing"
+                    android:padding="8dp"
                     android:background="?selectableItemBackground"
                     android:drawableStart="@drawable/ic_add_drink_ingredients"
                     android:text="@string/bt_add_tastes" />
@@ -183,7 +184,6 @@
                     app:mrb_tickEnd="100"
                     app:mrb_tickInterval="5"
                     app:mrb_tickStart="0" />
-
             </RelativeLayout>
 
             <FrameLayout
@@ -245,7 +245,6 @@
                     android:fontFamily="sans-serif"
                     android:text="@string/carbonated"
                     android:textSize="16sp" />
-
             </LinearLayout>
 
             <LinearLayout
@@ -304,7 +303,6 @@
                     android:hint="@string/drink_notes_hint"
                     android:nestedScrollingEnabled="false" />
             </FrameLayout>
-
         </LinearLayout>
     </android.support.v4.widget.NestedScrollView>
 

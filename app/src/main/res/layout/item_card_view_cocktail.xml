@@ -13,7 +13,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="@dimen/card_height"
-        android:layout_margin="@dimen/standard_spacing">
+        android:layout_margin="@dimen/medium_spacing">
 
         <TextView
             android:id="@+id/card_title"
@@ -39,7 +39,43 @@
             android:ellipsize="end"
             android:fontFamily="sans-serif"
             android:maxLines="2"
+            android:minLines="2"
             android:textSize="14sp" />
+
+        <ImageView
+            android:id="@+id/icon_rating"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginBottom="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentBottom="true"
+            android:alpha="0.5"
+            android:src="@drawable/ic_drink_rating" />
+
+        <TextView
+            android:id="@+id/tv_rating"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_alignParentBottom="true"
+            android:layout_toEndOf="@+id/icon_rating"
+            android:layout_marginStart="8dp"
+            android:text="100"
+            android:textSize="18sp" />
+
+        <ImageView
+            android:id="@+id/icon_carbonated"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginTop="@dimen/medium_spacing"
+            android:paddingBottom="4dp"
+            android:layout_toEndOf="@+id/tv_rating"
+            android:layout_alignParentBottom="true"
+            android:layout_marginStart="16dp"
+            android:layout_marginBottom="8dp"
+            android:src="@drawable/carbonated"
+            android:alpha="0.5"/>
 
         <ImageView
             android:id="@+id/card_image"
@@ -47,7 +83,6 @@
             android:layout_height="match_parent"
             android:layout_alignParentTop="true"
             android:layout_alignParentEnd="true" />
-
     </RelativeLayout>
 
 </android.support.v7.widget.CardView>

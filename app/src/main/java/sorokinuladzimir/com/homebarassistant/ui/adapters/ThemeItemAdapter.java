@@ -22,7 +22,7 @@ public class ThemeItemAdapter extends RecyclerView.Adapter<ThemeItemAdapter.Them
         void onItemClick(ThemeItem item);
     }
 
-    private ArrayList<ThemeItem> mData = new ArrayList();
+    private final ArrayList<ThemeItem> mData = new ArrayList();
     private final OnItemClickListener listener;
 
     public ThemeItemAdapter(OnItemClickListener listener) {

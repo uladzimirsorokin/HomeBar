@@ -45,12 +45,12 @@ public class BarDataRepository implements BarData {
     private ArrayList<Ingredient> mRemoteIngredients;
     private final MediatorLiveData<List<Drink>> mObservableDrinks;
     private final MediatorLiveData<List<Ingredient>> mObservableIngredients;
-    private MediatorLiveData<String> mObservableIngredientImagePath;
-    private MediatorLiveData<String> mObservableDrinkImagePath;
-    private AppExecutors mExecutors;
-    private ImageHandler imageHandler;
-    private MediatorLiveData<List<DrinkEntity>> mObservableRemoteDrinks;
-    private MediatorLiveData<List<WholeCocktail>> mRemoteDrinkIngredients;
+    private final  MediatorLiveData<String> mObservableIngredientImagePath;
+    private final  MediatorLiveData<String> mObservableDrinkImagePath;
+    private final  AppExecutors mExecutors;
+    private final  ImageHandler imageHandler;
+    private final  MediatorLiveData<List<DrinkEntity>> mObservableRemoteDrinks;
+    private final  MediatorLiveData<List<WholeCocktail>> mRemoteDrinkIngredients;
     private int mTotalResult = 0;
     private String mNextLink;
     private QueryType mCurrentSearchType;
@@ -225,7 +225,7 @@ public class BarDataRepository implements BarData {
                         // No internet connection
                         Toast.makeText(BarApp.getAppContext(), "no internet", Toast.LENGTH_SHORT).show();
                     } else {
-                        Toast.makeText(BarApp.getAppContext(), "conversion issue! big problems :(", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(BarApp.getAppContext(), "server error, try again later", Toast.LENGTH_SHORT).show();
                     }
                 }
             });
@@ -449,7 +449,7 @@ public class BarDataRepository implements BarData {
                     // No internet connection
                     Toast.makeText(BarApp.getAppContext(), "no internet", Toast.LENGTH_SHORT).show();
                 } else {
-                    Toast.makeText(BarApp.getAppContext(), "conversion issue! big problems :(", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(BarApp.getAppContext(), "server error, try again later", Toast.LENGTH_SHORT).show();
                 }
             }
         });

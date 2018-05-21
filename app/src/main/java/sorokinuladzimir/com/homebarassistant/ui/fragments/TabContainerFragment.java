@@ -23,12 +23,11 @@ import sorokinuladzimir.com.homebarassistant.ui.subnavigation.RouterProvider;
 public class TabContainerFragment extends Fragment implements RouterProvider, BackButtonListener {
 
     private static final String EXTRA_NAME = "tcf_extra_name";
-    LocalCiceroneHolder ciceroneHolder = new LocalCiceroneHolder();
+    final LocalCiceroneHolder ciceroneHolder = new LocalCiceroneHolder();
     private Navigator navigator;
 
     public static TabContainerFragment getNewInstance(String name) {
         TabContainerFragment fragment = new TabContainerFragment();
-
         Bundle arguments = new Bundle();
         arguments.putString(EXTRA_NAME, name);
         fragment.setArguments(arguments);

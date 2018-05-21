@@ -169,12 +169,16 @@ public class RemoteDrinkFragment extends Fragment implements BackButtonListener 
         if (mToolbar != null) mToolbar.setDisplayHomeAsUpEnabled(true);
         AppBarLayout appBarLayout = view.findViewById(R.id.singleDrinkAppbar);
         appBarLayout.addOnOffsetChangedListener((appBarLayout1, verticalOffset) -> {
-            if (Math.abs(verticalOffset) > appBarLayout.getTotalScrollRange() - 140) {
-                appBarExpanded = false;
-                getActivity().invalidateOptionsMenu();
+            if (Math.abs(verticalOffset) >  appBarLayout.getTotalScrollRange() - 140) {
+                if (appBarExpanded) {
+                    appBarExpanded = false;
+                    getActivity().invalidateOptionsMenu();
+                }
             } else {
-                appBarExpanded = true;
-                getActivity().invalidateOptionsMenu();
+                if (!appBarExpanded) {
+                    appBarExpanded = true;
+                    getActivity().invalidateOptionsMenu();
+                }
             }
         });
     }
@@ -193,7 +197,6 @@ public class RemoteDrinkFragment extends Fragment implements BackButtonListener 
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.list_without_search_menu, menu);
         collapsedMenu = menu;
     }
 
@@ -231,12 +234,6 @@ public class RemoteDrinkFragment extends Fragment implements BackButtonListener 
         if (item.getItemId() == android.R.id.home) {
             onBackPressed();
             return true;
-        }
-        if (item.getItemId() == R.id.action_about && getParentFragment() != null) {
-            ((RouterProvider) getParentFragment()).getRouter().navigateTo(Screens.ABOUT, "Single drink fragment anbout text");
-        }
-        if (item.getItemId() == R.id.action_settings && getParentFragment() != null) {
-            ((RouterProvider) getParentFragment()).getRouter().navigateTo(Screens.SETTINGS);
         }
         if (item.getTitle() == getString(R.string.menu_add)) {
             item.setEnabled(false);

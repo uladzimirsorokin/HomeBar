@@ -65,7 +65,7 @@ public final class ServiceGenerator {
 
     public class DrinksRequestInterceptor implements Interceptor {
 
-        private String lang;
+        private final String lang;
 
         DrinksRequestInterceptor(String lang) {
             this.lang = lang;

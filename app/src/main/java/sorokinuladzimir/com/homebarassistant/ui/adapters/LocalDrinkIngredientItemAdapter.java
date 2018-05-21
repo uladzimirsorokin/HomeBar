@@ -27,7 +27,7 @@ public class LocalDrinkIngredientItemAdapter extends RecyclerView.Adapter<LocalD
         void onItemClick(WholeCocktail item);
     }
 
-    private List<WholeCocktail> mData = new ArrayList();
+    private final List<WholeCocktail> mData = new ArrayList();
     private final OnItemClickListener listener;
 
     @Override
@@ -59,7 +59,7 @@ public class LocalDrinkIngredientItemAdapter extends RecyclerView.Adapter<LocalD
         final TextView ingredientAmount;
         final TextView ingredientUnit;
 
-        public IngredientViewHolder(View itemView) {
+        IngredientViewHolder(View itemView) {
             super(itemView);
             ingredientName = itemView.findViewById(R.id.tv_singledrink_ingredient);
             ingredientImage = itemView.findViewById(R.id.image_singledrink_ingredient_item);
@@ -67,7 +67,7 @@ public class LocalDrinkIngredientItemAdapter extends RecyclerView.Adapter<LocalD
             ingredientUnit = itemView.findViewById(R.id.tv_singledrink_unit);
         }
 
-        public void bind(final WholeCocktail item, final OnItemClickListener listener) {
+        void bind(final WholeCocktail item, final OnItemClickListener listener) {
 
             if (item.getIngredientName() != null) {
                 ingredientName.setText(item.getIngredientName());

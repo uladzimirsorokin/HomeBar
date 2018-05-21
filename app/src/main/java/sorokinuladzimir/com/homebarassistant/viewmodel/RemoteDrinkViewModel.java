@@ -42,7 +42,7 @@ public class RemoteDrinkViewModel extends AndroidViewModel {
 
     private final MediatorLiveData<List<WholeCocktail>> mDrinkIngredients;
 
-    private BarDataRepository mRepository;
+    private final BarDataRepository mRepository;
 
     private Bitmap mBitmap = null;
 

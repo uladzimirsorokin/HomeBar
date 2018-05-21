@@ -7,7 +7,7 @@ import ru.terrakok.cicerone.Router;
 
 
 public class LocalCiceroneHolder {
-    private HashMap<String, Cicerone<Router>> containers;
+    private final HashMap<String, Cicerone<Router>> containers;
 
     public LocalCiceroneHolder() {
         containers = new HashMap<>();

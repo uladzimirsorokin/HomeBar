@@ -22,7 +22,6 @@
             app:expandedTitleMarginStart="@dimen/expanded_toolbar_title_margin_start"
             app:layout_scrollFlags="scroll|exitUntilCollapsed">
 
-
             <ImageView
                 android:id="@+id/image_singledrink"
                 android:layout_width="match_parent"
@@ -62,20 +61,20 @@
         android:id="@+id/nest_scroll_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingTop="@dimen/standard_spacing"
-        android:paddingBottom="@dimen/standard_spacing"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical"
-            android:padding="@dimen/medium_spacing">
+            android:paddingStart="@dimen/medium_spacing"
+            android:paddingEnd="@dimen/medium_spacing">
 
             <android.support.v7.widget.CardView
                 android:id="@+id/card_general"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
                 app:cardCornerRadius="3dp"
                 app:cardElevation="4dp"
                 app:cardUseCompatPadding="true">
@@ -83,7 +82,6 @@
                 <android.support.constraint.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
-
 
                     <ImageView
                         android:id="@+id/tv_title_general"

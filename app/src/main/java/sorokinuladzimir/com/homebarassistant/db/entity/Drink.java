@@ -2,6 +2,7 @@ package sorokinuladzimir.com.homebarassistant.db.entity;
 
 import android.arch.persistence.room.Embedded;
 import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.Index;
 import android.arch.persistence.room.PrimaryKey;
 import android.arch.persistence.room.TypeConverters;
 
@@ -10,7 +11,7 @@ import java.util.ArrayList;
 
 import sorokinuladzimir.com.homebarassistant.db.converter.TasteConverter;
 
-@Entity
+@Entity(indices = @Index(value = "id", unique = true))
 @TypeConverters(TasteConverter.class)
 public class Drink implements Serializable {
 

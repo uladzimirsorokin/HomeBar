@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    android:orientation="vertical"
+    tools:context=".ResourcesActivity">
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/card_absolut"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:focusable="true"
+        android:foreground="?android:attr/selectableItemBackground"
+        app:cardCornerRadius="3dp"
+        app:cardElevation="4dp"
+        app:cardUseCompatPadding="true">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:layout_margin="@dimen/medium_spacing">
+
+            <ImageView
+                android:id="@+id/card_image"
+                android:layout_width="100dp"
+                android:layout_height="match_parent"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentStart="true"
+                android:src="@drawable/ic_absolut_logo"/>
+
+            <TextView
+                android:id="@+id/card_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_toEndOf="@+id/card_image"
+                android:layout_centerVertical="true"
+                android:paddingStart="16dp"
+                android:text="@string/absolut_credits"
+                android:fontFamily="sans-serif"
+                android:textColor="#aa000000"
+                android:textSize="18sp" />
+        </RelativeLayout>
+    </android.support.v7.widget.CardView>
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/card_pic"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:focusable="true"
+        android:foreground="?android:attr/selectableItemBackground"
+        app:cardCornerRadius="3dp"
+        app:cardElevation="4dp"
+        app:cardUseCompatPadding="true">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:layout_margin="@dimen/medium_spacing">
+
+            <ImageView
+                android:id="@+id/card_image2"
+                android:layout_width="100dp"
+                android:layout_height="match_parent"
+                android:src="@drawable/ic_freepik_logo"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentStart="true" />
+
+            <TextView
+                android:id="@+id/card_title2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_toEndOf="@+id/card_image2"
+                android:layout_centerVertical="true"
+                android:paddingStart="16dp"
+                android:text="@string/freepic_credits"
+                android:fontFamily="sans-serif"
+                android:textColor="#aa000000"
+                android:textSize="18sp" />
+        </RelativeLayout>
+    </android.support.v7.widget.CardView>
+
+</LinearLayout>

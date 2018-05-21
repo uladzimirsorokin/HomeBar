@@ -1,7 +1,6 @@
 package sorokinuladzimir.com.homebarassistant.ui.fragments;
 
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -20,6 +19,7 @@ import com.google.android.gms.oss.licenses.OssLicensesMenuActivity;
 import java.util.Objects;
 
 import sorokinuladzimir.com.homebarassistant.R;
+import sorokinuladzimir.com.homebarassistant.ResourcesActivity;
 import sorokinuladzimir.com.homebarassistant.ui.subnavigation.BackButtonListener;
 import sorokinuladzimir.com.homebarassistant.ui.subnavigation.RouterProvider;
 
@@ -54,10 +54,8 @@ public class AboutFragment extends Fragment implements BackButtonListener {
                 // When the user selects an option to see the licenses:
                 startActivity(new Intent(getContext(), OssLicensesMenuActivity.class))
         );
-
         TextView tvResources = rootView.findViewById(R.id.tv_resources);
-        tvResources.setOnClickListener(view -> startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.google.com/"))));
-
+        tvResources.setOnClickListener(view -> startActivity(new Intent(getContext(), ResourcesActivity.class)));
     }
 
     private void initToolbar(View view) {

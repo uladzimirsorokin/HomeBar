@@ -1,11 +1,12 @@
 package sorokinuladzimir.com.homebarassistant.db.entity;
 
 import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.Index;
 import android.arch.persistence.room.PrimaryKey;
 
 import java.util.Objects;
 
-@Entity
+@Entity(indices = @Index(value = "id", unique = true))
 public class Ingredient {
 
     @PrimaryKey(autoGenerate = true)

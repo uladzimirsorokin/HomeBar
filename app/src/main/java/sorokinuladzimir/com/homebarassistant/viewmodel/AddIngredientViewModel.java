@@ -46,7 +46,7 @@ public class AddIngredientViewModel extends AndroidViewModel {
 
     private boolean mIsImageRemoved = false;
 
-    private BarDataRepository mRepository;
+    private final BarDataRepository mRepository;
 
     AddIngredientViewModel(Application application, Long ingredientId) {
         super(application);

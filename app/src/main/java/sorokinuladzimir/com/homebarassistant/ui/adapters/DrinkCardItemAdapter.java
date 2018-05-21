@@ -28,7 +28,7 @@ public class DrinkCardItemAdapter extends RecyclerView.Adapter<DrinkCardItemAdap
         void loadMoreCocktails();
     }
 
-    private ArrayList<DrinkEntity> mData = new ArrayList();
+    private final ArrayList<DrinkEntity> mData = new ArrayList();
     private final OnItemClickListener listener;
     private final LoadMoreListener loadMoreListener;
 
@@ -67,28 +67,32 @@ public class DrinkCardItemAdapter extends RecyclerView.Adapter<DrinkCardItemAdap
         final ImageView cardImage;
         final TextView title;
         final TextView subtitle;
-        //final RatingBar rating;
+        final TextView rating;
+        final View carbonatedIcon;
 
         CardViewHolder(View itemView) {
             super(itemView);
-
             cardImage = itemView.findViewById(R.id.card_image);
             title = itemView.findViewById(R.id.card_title);
             subtitle = itemView.findViewById(R.id.card_subtitle);
-            //rating = itemView.findViewById(R.id.card_rating_bar);
+            rating = itemView.findViewById(R.id.tv_rating);
+            carbonatedIcon = itemView.findViewById(R.id.icon_carbonated);
         }
 
-        public void bind(final DrinkEntity drinkItem, final OnItemClickListener listener) {
-
+        void bind(final DrinkEntity drinkItem, final OnItemClickListener listener) {
             Glide.with(cardImage.getContext())
                     .load(Constants.Uri.ABSOLUT_DRINKS_IMAGE_ROOT + drinkItem.getId() + ".png")
                     .apply(RequestOptions.centerCropTransform())
                     .error(Glide.with(cardImage.getContext()).load(R.drawable.camera_placeholder))
                     .into(cardImage);
-
             title.setText(drinkItem.getName());
             subtitle.setText(TastesHelper.tastesToString(drinkItem.getTastes()));
-            //rating.setProgress(drinkItem.getRating() / 10);
+            rating.setText(String.valueOf(drinkItem.getRating()));
+            if (drinkItem.isCarbonated()) {
+                carbonatedIcon.setVisibility(View.VISIBLE);
+            } else {
+                carbonatedIcon.setVisibility(View.GONE);
+            }
             itemView.setOnClickListener(v -> listener.onItemClick(drinkItem));
         }
     }

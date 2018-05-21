@@ -27,9 +27,9 @@
     <color name="indigoDark">#303F9F</color>
     <color name="indigoAccent">#FF4081</color>
 
-    <color name="pink">#e91e63</color>
-    <color name="pinkDark">#b0003a</color>
-    <color name="pinkAccent">#AA00FF</color>
+    <color name="purple">#311b92</color>
+    <color name="purpleDark">#000063</color>
+    <color name="purpleAccent">#6746c3</color>
 
     <color name="black">#212121</color>
     <color name="blackDark">#000000</color>

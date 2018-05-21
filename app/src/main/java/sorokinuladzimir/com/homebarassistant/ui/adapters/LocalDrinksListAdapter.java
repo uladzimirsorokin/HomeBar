@@ -32,7 +32,7 @@ public class LocalDrinksListAdapter extends RecyclerView.Adapter<LocalDrinksList
 
     private final OnItemClickListener listener;
     private List<Drink> mDrinkList;
-    private Deque<List<Drink>> pendingUpdates = new ArrayDeque<>();
+    private final Deque<List<Drink>> pendingUpdates = new ArrayDeque<>();
 
     public LocalDrinksListAdapter(OnItemClickListener listener) {
         this.listener = listener;
@@ -129,16 +129,19 @@ public class LocalDrinksListAdapter extends RecyclerView.Adapter<LocalDrinksList
         final ImageView cardImage;
         final TextView title;
         final TextView subtitle;
+        final TextView rating;
+        final View carbonatedIcon;
 
         CardViewHolder(View itemView) {
             super(itemView);
             cardImage = itemView.findViewById(R.id.card_image);
             title = itemView.findViewById(R.id.card_title);
             subtitle = itemView.findViewById(R.id.card_subtitle);
+            rating = itemView.findViewById(R.id.tv_rating);
+            carbonatedIcon = itemView.findViewById(R.id.icon_carbonated);
         }
 
         void bind(final Drink drinkItem, final OnItemClickListener listener) {
-
             Glide.with(cardImage.getContext())
                     .load(drinkItem.getImage() != null ? drinkItem.getImage() : R.drawable.camera_placeholder)
                     .apply(RequestOptions.centerCropTransform())
@@ -146,9 +149,13 @@ public class LocalDrinksListAdapter extends RecyclerView.Adapter<LocalDrinksList
             title.setText(drinkItem.getName());
             ArrayList<Taste> tastes = drinkItem.getTastes();
             subtitle.setText(TastesHelper.tastesToString(tastes));
+            rating.setText(String.valueOf(drinkItem.getRating()));
+            if (drinkItem.isCarbonated()) {
+                carbonatedIcon.setVisibility(View.VISIBLE);
+            } else {
+                carbonatedIcon.setVisibility(View.GONE);
+            }
             itemView.setOnClickListener(v -> listener.onItemClick(drinkItem));
         }
-
-
     }
 }

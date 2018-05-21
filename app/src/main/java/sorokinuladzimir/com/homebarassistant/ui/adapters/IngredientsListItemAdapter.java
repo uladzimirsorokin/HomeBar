@@ -37,11 +37,11 @@ public class IngredientsListItemAdapter extends RecyclerView.Adapter<Ingredients
     private final OnItemClickListener listener;
     private List<Ingredient> mIngredientsList = new ArrayList();
     private List<Ingredient> mFilteredIngredientsList = new ArrayList();
-    private Context mContext;
-    private HashSet<Ingredient> selectedSet = new HashSet<>();
+    private final  Context mContext;
+    private final  HashSet<Ingredient> selectedSet = new HashSet<>();
     private List<Long> selectedIds = new ArrayList<>();
-    private Deque<List<Ingredient>> pendingUpdates = new ArrayDeque<>();
-    
+    private final Deque<List<Ingredient>> pendingUpdates = new ArrayDeque<>();
+
     public IngredientsListItemAdapter(Context context, OnItemClickListener listener) {
         this.listener = listener;
         this.mContext = context;

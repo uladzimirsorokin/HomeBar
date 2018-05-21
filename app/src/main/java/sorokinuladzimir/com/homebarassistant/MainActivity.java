@@ -34,7 +34,7 @@ public class MainActivity extends AppCompatActivity {
     private TabContainerFragment searchTabFragment;
     private TabContainerFragment drinksTabFragment;
     private TabContainerFragment ingredientsTabFragment;
-    private Navigator navigator = new Navigator() {
+    private final Navigator navigator = new Navigator() {
         @Override
         public void applyCommand(Command command) {
             if (command instanceof Back) {
@@ -118,13 +118,10 @@ public class MainActivity extends AppCompatActivity {
         AHBottomNavigationItem item1 = new AHBottomNavigationItem(getString(R.string.bottom_bar_search), R.drawable.ic_search);
         AHBottomNavigationItem item2 = new AHBottomNavigationItem(getString(R.string.bottom_bar_drinks), R.drawable.cocktail);
         AHBottomNavigationItem item3 = new AHBottomNavigationItem(getString(R.string.bottom_bar_ingredients), R.drawable.bottles);
-
         bottomNavigation.addItem(item1);
         bottomNavigation.addItem(item2);
         bottomNavigation.addItem(item3);
-
         bottomNavigation.setTitleState(AHBottomNavigation.TitleState.ALWAYS_SHOW);
-
         bottomNavigation.setOnTabSelectedListener((position, wasSelected) -> {
             switch (position) {
                 case 0:
@@ -147,10 +144,8 @@ public class MainActivity extends AppCompatActivity {
 
     private int fetchPrimaryColor() {
         TypedValue typedValue = new TypedValue();
-
         TypedArray a = this.obtainStyledAttributes(typedValue.data, new int[]{R.attr.colorPrimary});
         int color = a.getColor(0, 0);
-
         a.recycle();
 
         return color;
