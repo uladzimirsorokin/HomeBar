@@ -81,7 +81,6 @@ public class MainActivity extends AppCompatActivity {
         if (savedInstanceState == null) {
             bottomNavigation.setCurrentItem(1);
         }
-
         checkPermissons();
     }
 

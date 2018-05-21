@@ -54,7 +54,7 @@
             android:layout_marginBottom="20dp"
             android:textColor="@color/about_description_text_color"
             android:textSize="16sp"
-            android:text="Some about text asdfij asdklfaslk d fjaosidfjaosdi fasoidfjaoisdfjaosidfjaosidfoasidfjoaisdfjoiasdfjoiasdfjaoisdfoisadfjoiasdjfoiasjdfioasjdfoiasjdfoiasdfiasdfjoiasdfjoiasdifo"/>
+            android:text="@string/about_app_text"/>
 
 
         <TextView

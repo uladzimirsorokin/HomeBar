@@ -14,6 +14,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -80,6 +81,10 @@ public class FoundDrinksFragment extends Fragment {
             args.clear();
         }
 
+        if (TextUtils.isEmpty(mRequestConditions)) {
+            setDefaultCocktailsList();
+        }
+
         return rootView;
     }
 
@@ -91,7 +96,6 @@ public class FoundDrinksFragment extends Fragment {
 
     private void subscribeUi() {
         setEmptyState(R.drawable.list_empty_state, getString(R.string.no_items_founddrinks), true);
-
         mViewModel.getDrinks().observe(this, drinkEntities -> {
             if (drinkEntities != null) {
                 mSwipeRefreshLayout.setRefreshing(false);
@@ -169,6 +173,13 @@ public class FoundDrinksFragment extends Fragment {
         mViewModel.searchDrinks(query, searchType, clearList);
     }
 
+    private void setDefaultCocktailsList() {
+        if (mRequestConditions == null) {
+            mRequestConditions = "";
+            mSwipeRefreshLayout.setRefreshing(true);
+            searchDrinks(mRequestConditions, QueryType.SEARCH_BY_CONDITIONS, true);
+        }
+    }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
