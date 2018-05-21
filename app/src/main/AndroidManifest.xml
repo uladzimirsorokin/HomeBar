@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="sorokinuladzimir.com.homebarassistant">
+    package="com.sorokinuladzimir.homebarassistant">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -50,6 +50,9 @@
                 android:resource="@xml/file_paths"/>
         </provider>
 
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="35815bb42993c6b8b7b8a2bffad80070dcd133a6" />
     </application>
 
 </manifest>
