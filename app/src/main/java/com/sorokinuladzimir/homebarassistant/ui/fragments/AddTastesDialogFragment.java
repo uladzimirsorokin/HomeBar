@@ -59,7 +59,7 @@ public class AddTastesDialogFragment extends DialogFragment {
                 .setTitle(title)
                 .setMultiChoiceItems(tastes, selection, (dialogInterface, item, state) -> {
                     if (!state) {
-                        mSelection.remove(item);
+                        mSelection.remove((Integer) item);
                     } else {
                         mSelection.add(item);
                     }

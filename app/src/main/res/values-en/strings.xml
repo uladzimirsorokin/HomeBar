@@ -83,4 +83,6 @@
     <string name="third_theme_name">Black</string>
     <string name="item_search_title">Search</string>
     <string name="about_app_text">Simple app which helps you to manage your home bar, hope you enjoy using it!</string>
+    <string name="unknown_menu_item_toast">Unknown menu item</string>
+    <string name="change_photo">Change photo</string>
 </resources>

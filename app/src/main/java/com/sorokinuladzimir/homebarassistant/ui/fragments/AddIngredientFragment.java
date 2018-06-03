@@ -29,6 +29,7 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.sorokinuladzimir.homebarassistant.Constants;
 import com.sorokinuladzimir.homebarassistant.R;
 import com.sorokinuladzimir.homebarassistant.db.entity.Ingredient;
 import com.sorokinuladzimir.homebarassistant.ui.subnavigation.BackButtonListener;
@@ -192,11 +193,11 @@ public class AddIngredientFragment extends Fragment implements BackButtonListene
     }
 
     private void showAddImageDialog() {
-        DialogFragment newFragment = AddImageDialogFragment.newInstance("Change photo",
+        DialogFragment newFragment = AddImageDialogFragment.newInstance(getString(R.string.change_photo),
                 mViewModel.getCurrentImagePath().getValue() != null);
         newFragment.setTargetFragment(this, 911);
         if (getFragmentManager() != null) {
-            newFragment.show(getFragmentManager(), "dialog");
+            newFragment.show(getFragmentManager(), Constants.Extra.DIALOG);
         }
     }
 
@@ -213,7 +214,6 @@ public class AddIngredientFragment extends Fragment implements BackButtonListene
                 mViewModel.removeCurrentImage();
                 break;
             default:
-                Log.d(TAG, "Some strange type of taking photo");
                 break;
         }
     }
@@ -271,7 +271,7 @@ public class AddIngredientFragment extends Fragment implements BackButtonListene
                 }
                 return true;
             default:
-                Toast.makeText(getContext(), "Unknown menu item", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), R.string.unknown_menu_item_toast, Toast.LENGTH_SHORT).show();
                 break;
         }
         return false;

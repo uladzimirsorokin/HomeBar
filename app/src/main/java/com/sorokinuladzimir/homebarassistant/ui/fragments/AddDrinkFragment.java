@@ -17,7 +17,6 @@ import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -36,6 +35,7 @@ import android.widget.Toast;
 import com.appyvet.materialrangebar.RangeBar;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.sorokinuladzimir.homebarassistant.Constants;
 import com.sorokinuladzimir.homebarassistant.R;
 import com.sorokinuladzimir.homebarassistant.db.entity.Drink;
 import com.sorokinuladzimir.homebarassistant.ui.adapters.AddDrinkIngredientItemAdapter;
@@ -285,17 +285,17 @@ public class AddDrinkFragment extends Fragment implements BackButtonListener,
     }
 
     private void showAddImageDialog() {
-        DialogFragment newFragment = AddImageDialogFragment.newInstance("Change photo",
+        DialogFragment newFragment = AddImageDialogFragment.newInstance(getString(R.string.change_photo),
                 mViewModel.getCurrentImagePath().getValue() != null);
         newFragment.setTargetFragment(this, 911);
-        newFragment.show(Objects.requireNonNull(getFragmentManager()), "dialog");
+        newFragment.show(Objects.requireNonNull(getFragmentManager()), Constants.Extra.DIALOG);
     }
 
     private void showAddTastesDialog() {
         DialogFragment newFragment = AddTastesDialogFragment.newInstance(getString(R.string.title_choose_tastes),
                 mViewModel.getTastes(getResources().getStringArray(R.array.taste_name)));
         newFragment.setTargetFragment(this, 911);
-        newFragment.show(Objects.requireNonNull(getFragmentManager()), "dialog");
+        newFragment.show(Objects.requireNonNull(getFragmentManager()), Constants.Extra.DIALOG);
     }
 
     @Override
@@ -316,7 +316,6 @@ public class AddDrinkFragment extends Fragment implements BackButtonListener,
                 mViewModel.removeCurrentImage();
                 break;
             default:
-                Log.d(Objects.requireNonNull(getContext()).getClass().getSimpleName(), "Some strange type of taking photo");
                 break;
         }
     }
@@ -378,7 +377,7 @@ public class AddDrinkFragment extends Fragment implements BackButtonListener,
                 }
                 return true;
             default:
-                Toast.makeText(getContext(), "Unknown menu item", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), R.string.unknown_menu_item_toast, Toast.LENGTH_SHORT).show();
                 break;
         }
 

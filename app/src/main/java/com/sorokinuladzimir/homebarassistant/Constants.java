@@ -61,6 +61,7 @@ public class Constants {
         public static final String CONDITIONS = "conditions";
         public static final String EDITABLE = "editable";
         public static final String EXTRA_ID = "extraId";
+        public static final String DIALOG = "dialog";
 
         private Extra() {
         }
