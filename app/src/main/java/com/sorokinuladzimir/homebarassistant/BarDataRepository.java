@@ -1,12 +1,12 @@
 package com.sorokinuladzimir.homebarassistant;
 
-import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.MediatorLiveData;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MediatorLiveData;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Process;
-import android.support.annotation.NonNull;
-import android.support.v4.content.FileProvider;
+import androidx.annotation.NonNull;
+import androidx.core.content.FileProvider;
 import android.widget.Toast;
 
 import com.sorokinuladzimir.homebarassistant.db.CocktailsDatabase;

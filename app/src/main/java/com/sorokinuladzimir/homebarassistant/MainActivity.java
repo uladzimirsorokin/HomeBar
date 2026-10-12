@@ -1,13 +1,15 @@
 package com.sorokinuladzimir.homebarassistant;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
+import android.content.pm.PackageManager;
 import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v7.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import android.util.TypedValue;
 import android.widget.Toast;
 
@@ -17,7 +19,6 @@ import com.sorokinuladzimir.homebarassistant.ui.fragments.Screens;
 import com.sorokinuladzimir.homebarassistant.ui.fragments.TabContainerFragment;
 import com.sorokinuladzimir.homebarassistant.ui.subnavigation.BackButtonListener;
 import com.sorokinuladzimir.homebarassistant.ui.utils.ThemeUtils;
-import com.tbruyelle.rxpermissions2.RxPermissions;
 
 import ru.terrakok.cicerone.Navigator;
 import ru.terrakok.cicerone.commands.Back;
@@ -96,18 +97,12 @@ public class MainActivity extends AppCompatActivity {
         getInstance().getNavigatorHolder().removeNavigator();
     }
 
-    @SuppressLint("CheckResult")
     private void checkPermissons() {
-        RxPermissions rxPermissions = new RxPermissions(this);
-        rxPermissions
-                .request(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                .subscribe(granted -> {
-                    if (granted) {
-
-                    } else {
-                        Toast.makeText(this, "Permisson denied, photo capture disabled", Toast.LENGTH_SHORT).show();
-                    }
-                });
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
+        }
     }
 
     private void initBottomNavigation() {

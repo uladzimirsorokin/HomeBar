@@ -2,21 +2,23 @@ package com.sorokinuladzimir.homebarassistant.ui.fragments;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.arch.lifecycle.ViewModelProviders;
+import android.content.pm.PackageManager;
+import androidx.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.DialogFragment;
-import android.support.v4.app.Fragment;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.DividerItemDecoration;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.Fragment;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.appcompat.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -45,7 +47,6 @@ import com.sorokinuladzimir.homebarassistant.ui.utils.SpinnerGlassMatcher;
 import com.sorokinuladzimir.homebarassistant.ui.utils.TastesHelper;
 import com.sorokinuladzimir.homebarassistant.viewmodel.AddDrinkViewModel;
 import com.sorokinuladzimir.homebarassistant.viewmodel.SharedViewModel;
-import com.tbruyelle.rxpermissions2.RxPermissions;
 
 import java.util.List;
 import java.util.Objects;
@@ -61,6 +62,7 @@ public class AddDrinkFragment extends Fragment implements BackButtonListener,
     private static final String EXTRA_NAME = "extra_name";
     private static final String EXTRA_ID = "extra_id";
     private static final int OPEN_PICTURE_CODE = 2;
+    private static final int REQUEST_PERMISSION_CODE = 3;
 
     private AddDrinkIngredientItemAdapter mAdapter;
     private AddDrinkViewModel mViewModel;
@@ -192,22 +194,15 @@ public class AddDrinkFragment extends Fragment implements BackButtonListener,
         mTvTastes = view.findViewById(R.id.tv_tastes);
         mTvAddTastes.setOnClickListener(v -> showAddTastesDialog());
         mDrinkImage = view.findViewById(R.id.image_add_drink);
-        RxPermissions rxPermissions = new RxPermissions(Objects.requireNonNull(getActivity()));
-        mDrinkImage.setOnClickListener(image ->
-                rxPermissions
-                        .requestEach(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                        .subscribe(permission -> {
-                            if (permission.granted) {
-                                showAddImageDialog();
-                            } else if (permission.shouldShowRequestPermissionRationale) {
-                                // Denied permission with ask never again
-                                Toast.makeText(getContext(), "denied", Toast.LENGTH_SHORT).show();
-                            } else {
-                                // Denied permission with ask never again
-                                // Need to go to the settings
-                                Toast.makeText(getContext(), "denied, ask never again", Toast.LENGTH_SHORT).show();
-                            }
-                        }));
+        mDrinkImage.setOnClickListener(image -> {
+            if (ContextCompat.checkSelfPermission(Objects.requireNonNull(getContext()),
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+                showAddImageDialog();
+            } else {
+                requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                        REQUEST_PERMISSION_CODE);
+            }
+        });
 
         RecyclerView mRvIngredients = view.findViewById(R.id.rv_ingredients);
         mRvIngredients.setHasFixedSize(true);
@@ -273,6 +268,20 @@ public class AddDrinkFragment extends Fragment implements BackButtonListener,
         }
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
             handleTakenPicture(mViewModel.getPhotoUri());
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        if (requestCode == REQUEST_PERMISSION_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                showAddImageDialog();
+            } else {
+                Toast.makeText(getContext(), "denied", Toast.LENGTH_SHORT).show();
+            }
+        } else {
+            super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         }
     }
 

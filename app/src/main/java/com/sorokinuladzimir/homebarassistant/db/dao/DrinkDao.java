@@ -16,18 +16,18 @@
 
 package com.sorokinuladzimir.homebarassistant.db.dao;
 
-import android.arch.lifecycle.LiveData;
-import android.arch.persistence.room.Dao;
-import android.arch.persistence.room.Insert;
-import android.arch.persistence.room.Query;
-import android.arch.persistence.room.TypeConverters;
+import androidx.lifecycle.LiveData;
+import androidx.room.Dao;
+import androidx.room.Insert;
+import androidx.room.Query;
+import androidx.room.TypeConverters;
 
 import com.sorokinuladzimir.homebarassistant.db.converter.TasteConverter;
 import com.sorokinuladzimir.homebarassistant.db.entity.Drink;
 
 import java.util.List;
 
-import static android.arch.persistence.room.OnConflictStrategy.REPLACE;
+import static androidx.room.OnConflictStrategy.REPLACE;
 
 
 @Dao

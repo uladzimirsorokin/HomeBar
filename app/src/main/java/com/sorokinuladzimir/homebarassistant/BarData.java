@@ -1,6 +1,6 @@
 package com.sorokinuladzimir.homebarassistant;
 
-import android.arch.lifecycle.LiveData;
+import androidx.lifecycle.LiveData;
 import android.graphics.Bitmap;
 import android.net.Uri;
 
