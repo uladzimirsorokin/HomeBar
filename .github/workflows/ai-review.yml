@@ -27,6 +27,7 @@ jobs:
           LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
+          PR_REVIEW_REASONING_EFFORT: low
         run: |
           python tools/pr_review.py \
             --base "${{ github.event.pull_request.base.sha }}" \
