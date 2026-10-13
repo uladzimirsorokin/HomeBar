@@ -17,9 +17,9 @@
 package com.sorokinuladzimir.homebarassistant.viewmodel;
 
 import android.app.Application;
-import android.arch.lifecycle.AndroidViewModel;
-import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.MediatorLiveData;
+import androidx.lifecycle.AndroidViewModel;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MediatorLiveData;
 import android.text.TextUtils;
 
 import com.sorokinuladzimir.homebarassistant.db.entity.Drink;

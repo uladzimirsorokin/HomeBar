@@ -1,6 +1,6 @@
 package com.sorokinuladzimir.homebarassistant.db.entity;
 
-import android.arch.persistence.room.ColumnInfo;
+import androidx.room.ColumnInfo;
 
 import java.util.Objects;
 

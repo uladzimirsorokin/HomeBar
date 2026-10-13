@@ -1,6 +1,6 @@
 package com.sorokinuladzimir.homebarassistant.net;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.sorokinuladzimir.homebarassistant.BarApp;
 import com.sorokinuladzimir.homebarassistant.Constants;

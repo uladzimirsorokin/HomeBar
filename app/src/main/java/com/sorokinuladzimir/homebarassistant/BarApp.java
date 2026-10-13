@@ -4,10 +4,8 @@ import android.app.Application;
 import android.content.Context;
 import android.os.Build;
 
-import com.crashlytics.android.Crashlytics;
 import com.sorokinuladzimir.homebarassistant.db.CocktailsDatabase;
 
-import io.fabric.sdk.android.Fabric;
 import ru.terrakok.cicerone.Cicerone;
 import ru.terrakok.cicerone.NavigatorHolder;
 import ru.terrakok.cicerone.Router;
@@ -48,7 +46,6 @@ public class BarApp extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        Fabric.with(this, new Crashlytics());
         sDefSystemLanguage = getSystemLang();
         sInstance = this;
         context = getApplicationContext();
