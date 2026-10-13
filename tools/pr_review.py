@@ -271,6 +271,8 @@ def build_context(index: dict, files: list, diff: str, top_k: int) -> str:
 
 def chat(messages: list, cfg: dict) -> str:
     body = {"model": cfg["model"], "messages": messages, "temperature": cfg.get("temperature", 0.2)}
+    if cfg.get("reasoning_effort"):
+        body["reasoning_effort"] = cfg["reasoning_effort"]
     req = urllib.request.Request(
         cfg["endpoint"], data=json.dumps(body, ensure_ascii=False).encode("utf-8"),
         headers={"Content-Type": "application/json"},
@@ -330,12 +332,15 @@ def main() -> int:
     ap.add_argument("--endpoint", default=os.environ.get("PR_REVIEW_ENDPOINT") or os.environ.get("LLM_ENDPOINT") or DEFAULT_ENDPOINT)
     ap.add_argument("--model", default=os.environ.get("PR_REVIEW_MODEL") or os.environ.get("LLM_MODEL") or DEFAULT_MODEL)
     ap.add_argument("--api-key", default=os.environ.get("PR_REVIEW_API_KEY") or os.environ.get("LLM_API_KEY") or "")
+    ap.add_argument("--reasoning-effort", default=os.environ.get("PR_REVIEW_REASONING_EFFORT", ""),
+                    help="reasoning_effort для reasoning-моделей (gpt-oss): low|medium|high; пусто — не слать")
     ap.add_argument("--out", default="")
     ap.add_argument("--post", action="store_true")
     args = ap.parse_args()
 
     repo = os.path.abspath(args.repo)
-    cfg = {"endpoint": args.endpoint, "model": args.model, "api_key": args.api_key}
+    cfg = {"endpoint": args.endpoint, "model": args.model, "api_key": args.api_key,
+           "reasoning_effort": args.reasoning_effort}
 
     try:
         files = changed_files(repo, args.base, args.head)
