@@ -76,7 +76,13 @@ dependencies {
 
     // --- Room ---
     implementation libs.androidx.room.runtime
-    annotationProcessor libs.androidx.room.compiler
+    implementation libs.androidx.room.ktx
+    ksp libs.androidx.room.compiler
+
+    // --- Coroutines / lifecycle ktx ---
+    implementation libs.kotlinx.coroutines.android
+    implementation libs.androidx.lifecycle.livedata.ktx
+    implementation libs.androidx.lifecycle.runtime.ktx
 
     // --- Networking / serialization ---
     implementation libs.retrofit

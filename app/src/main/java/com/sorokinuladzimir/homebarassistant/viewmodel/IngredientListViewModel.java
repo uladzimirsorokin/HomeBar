@@ -27,7 +27,6 @@ import com.sorokinuladzimir.homebarassistant.db.entity.Ingredient;
 import java.util.List;
 
 import static com.sorokinuladzimir.homebarassistant.BarApp.getBarRepository;
-import static com.sorokinuladzimir.homebarassistant.BarApp.getDatabase;
 
 
 public class IngredientListViewModel extends AndroidViewModel {
@@ -40,7 +39,7 @@ public class IngredientListViewModel extends AndroidViewModel {
         super(application);
         mObservableIngredients = new MediatorLiveData<>();
         mObservableIngredients.setValue(null);
-        mLiveIngredients = getDatabase().getIngredientDao().loadIngredients();
+        mLiveIngredients = getBarRepository().getIngredients();
         mObservableIngredients.addSource(mLiveIngredients, mObservableIngredients::setValue);
     }
 

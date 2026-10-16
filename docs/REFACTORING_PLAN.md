@@ -264,7 +264,7 @@ com.sorokinuladzimir.homebarassistant
 | Этап | Статус | Заметки |
 |------|--------|---------|
 | 0. Фундамент | ✅ готово | Kotlin 2.2.0, Compose BOM 2025.06.01, Hilt 2.57.1, KSP 2.2.0-2.0.2; version catalog; тема `core/ui/theme` |
-| 1. Data + Flow | ⬜ не начат | |
+| 1. Data + Flow | ✅ готово | `db/` и `BarDataRepository`/`BarData` на Kotlin; DAO → `Flow`/`suspend`; мост `asLiveData()`; Room compiler переведён на KSP. KSP2 отключён (`ksp.useKSP2=false`) из-за несовместимости Room 2.6.1; `AppExecutors` оставлен для адаптеров (удалим на этапе 5) |
 | 2. Hilt | ⬜ не начат | |
 | 3. Сеть | ⬜ не начат | |
 | 4. Compose-фундамент | ⬜ не начат | |
