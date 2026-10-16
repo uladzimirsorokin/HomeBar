@@ -18,26 +18,22 @@ import java.util.Locale
 
 class ImageHandler {
 
-    private fun isExternalStorageWritable(): Boolean =
-        Environment.MEDIA_MOUNTED == Environment.getExternalStorageState()
-
-    private fun getAlbumStorageDir(): File {
-        val file = File(
-            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),
+    private fun getAlbumStorageDir(context: Context): File {
+        val dir = File(
+            context.getExternalFilesDir(Environment.DIRECTORY_PICTURES),
             Constants.Strings.ALBUM_NAME
         )
-        if (!file.mkdirs()) {
+        if (!dir.exists() && !dir.mkdirs()) {
             Log.e(TAG, "Directory not created")
         }
-        return file
+        return dir
     }
 
     @Throws(IOException::class)
-    private fun createImageFile(): File {
+    private fun createTempImageFile(context: Context): File {
         val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
         val imageFileName = IMG_FILE_PREFIX + timeStamp + "_"
-        val albumF = getAlbumStorageDir()
-        return File.createTempFile(imageFileName, JPEG_FILE_SUFFIX, albumF)
+        return File.createTempFile(imageFileName, JPEG_FILE_SUFFIX, getAlbumStorageDir(context))
     }
 
     @Throws(IOException::class)
@@ -60,28 +56,27 @@ class ImageHandler {
     }
 
     //Save in PNG
-    fun saveImage(bitmap: Bitmap?): String? {
-        if (isExternalStorageWritable()) {
-            try {
-                val imageFile = createImageFile()
-                val fos = FileOutputStream(imageFile)
+    fun saveImage(context: Context, bitmap: Bitmap?): String? {
+        return try {
+            val imageFile = createTempImageFile(context)
+            FileOutputStream(imageFile).use { fos ->
                 if (bitmap != null) {
                     bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos)
                 }
-                fos.close()
-                return imageFile.absolutePath
-            } catch (e: FileNotFoundException) {
-                Log.d(TAG, "File not found: ${e.message}")
-            } catch (e: IOException) {
-                Log.d(TAG, "Error accessing file: ${e.message}")
             }
+            imageFile.absolutePath
+        } catch (e: FileNotFoundException) {
+            Log.d(TAG, "File not found: ${e.message}")
+            null
+        } catch (e: IOException) {
+            Log.d(TAG, "Error accessing file: ${e.message}")
+            null
         }
-        return null
     }
 
     fun createImageFile(context: Context): Uri? {
         val photoFile = try {
-            createImageFile()
+            createTempImageFile(context)
         } catch (ignored: IOException) {
             null
         }

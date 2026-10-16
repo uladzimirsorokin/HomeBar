@@ -134,9 +134,9 @@ class BarDataRepository @Inject constructor(
                 val bitmap = imageHandler.getBitmapFromUri(context, imageUri, sizeForScale)
                 if (deleteSource) imageHandler.deleteImage(context, imageUri)
                 if (ingredientImage) {
-                    mObservableIngredientImagePath.postValue(imageHandler.saveImage(bitmap))
+                    mObservableIngredientImagePath.postValue(imageHandler.saveImage(context, bitmap))
                 } else {
-                    mObservableDrinkImagePath.postValue(imageHandler.saveImage(bitmap))
+                    mObservableDrinkImagePath.postValue(imageHandler.saveImage(context, bitmap))
                 }
             } catch (e: IOException) {
                 e.printStackTrace()
@@ -251,7 +251,7 @@ class BarDataRepository @Inject constructor(
         mScope.launch {
             val drink = DrinkEntityToDrinkMapper.getInstance().reverseMap(drinkEntity)
             try {
-                drink.image = imageHandler.saveImage(bitmap)
+                drink.image = imageHandler.saveImage(context, bitmap)
             } catch (e: IOException) {
                 e.printStackTrace()
             }
