@@ -13,21 +13,26 @@ Android-приложение для поиска, создания и веден
 - **Свои рецепты** — создание и редактирование коктейлей и ингредиентов, загрузка фото
   из галереи или камеры.
 - **Ингредиенты** — база ингредиентов с описанием, заметками и связанными коктейлями.
-- **Темы оформления** — три цветовые схемы (Indigo, Purple, Black).
+- **Темы оформления** — три цветовые схемы (Indigo, Purple, Black), выбор сохраняется в DataStore.
 - **Локализация** — русский и английский языки интерфейса.
 
 ## Технологии
 
 | Компонент | Технология |
 |-----------|------------|
-| Язык | Java 17 |
-| Архитектура | MVVM (ViewModel + LiveData/MediatorLiveData) |
-| Локальная БД | Room 2.6.1 |
-| Сеть | Retrofit 2.9.0 + OkHttp + Gson 2.10.1 |
-| Навигация | Cicerone 2.1.0 |
-| Изображения | Glide 4.16.0 |
-| UI | AndroidX, Material Components, AHBottomNavigation, MaterialScrollBar, MaterialRangeBar, Spectrum |
-| Сборка | Gradle 8.14.3 + Android Gradle Plugin 8.13.2 |
+| Язык | Kotlin 2.2.0 |
+| UI | Jetpack Compose (Material 3) |
+| Архитектура | MVVM |
+| Асинхронность | Coroutines + Flow / StateFlow |
+| Навигация | Navigation Compose |
+| DI | Hilt 2.57.1 |
+| Локальная БД | Room 2.6.1 (Kotlin, Flow, KSP) |
+| Сеть | Retrofit 2.9.0 + OkHttp 4.12 + kotlinx.serialization |
+| Изображения | Coil 2.7.0 |
+| Настройки | DataStore (Preferences) |
+| Сборка | Gradle 8.14.3 + AGP 8.13.2, R8 |
+| Тесты | JUnit + MockK + Coroutines Test + Compose UI Test |
+| CI | GitHub Actions (build / test / lint) |
 
 - `compileSdk` / `targetSdk`: **35**, `minSdk`: **21**
 - `applicationId`: `com.sorokinuladzimir.homebarassistant`
@@ -40,48 +45,85 @@ Android-приложение для поиска, создания и веден
 # сборка debug-APK
 ./gradlew :app:assembleDebug
 
-# сборка и установка на подключённое устройство/эмулятор
-./gradlew :app:installDebug
+# сборка release-APK (с R8)
+./gradlew :app:assembleRelease
 
-# запуск приложения
+# unit-тесты
+./gradlew :app:testDebugUnitTest
+
+# instrumented-тесты (нужен эмулятор/устройство)
+./gradlew :app:connectedDebugAndroidTest
+
+# lint
+./gradlew :app:lintDebug
+
+# установка и запуск
+./gradlew :app:installDebug
 adb shell am start -n com.sorokinuladzimir.homebarassistant/.SplashActivity
 ```
 
-Подробности по настройке окружения и решению проблем — в [docs/BUILD.md](docs/BUILD.md).
+API-ключ и URL Absolut Drinks можно переопределить в `local.properties`
+(иначе используются значения по умолчанию):
+
+```properties
+ABSOLUT_API_KEY=...
+ABSOLUT_DRINKS_ROOT=http://addb.absolutdrinks.com
+```
+
+Подробности по настройке окружения — в [docs/BUILD.md](docs/BUILD.md).
 
 ## Структура проекта
 
 ```
 HomeBar/
 ├── app/
-│   └── src/main/
-│       ├── java/com/sorokinuladzimir/homebarassistant/
-│       │   ├── BarApp.java              # Application, глобальные синглтоны
-│       │   ├── MainActivity.java        # хост нижней навигации
-│       │   ├── SplashActivity.java      # экран-заставка (launcher)
-│       │   ├── BarDataRepository.java   # единый источник данных
-│       │   ├── BarData.java             # контракт репозитория
-│       │   ├── AppExecutors.java        # пулы потоков (disk/network/main)
-│       │   ├── Constants.java           # ключи API, URL, Extra-ключи
-│       │   ├── db/                      # Room: entity, dao, mapper, converter
-│       │   ├── net/                     # Retrofit: api, entity, ServiceGenerator
-│       │   ├── viewmodel/               # 10 ViewModel-классов
-│       │   └── ui/                      # fragments, adapters, subnavigation, utils
-│       └── res/                         # layout, drawable, values (+values-en)
-├── docs/                                # документация
-├── build.gradle                         # корневой скрипт (AGP 8.13.2)
-├── settings.gradle                      # репозитории и модули
-└── gradle.properties                    # AndroidX / Jetifier
+│   └── src/
+│       ├── main/
+│       │   ├── java/com/sorokinuladzimir/homebarassistant/
+│       │   │   ├── BarApp.kt             # @HiltAndroidApp
+│       │   │   ├── MainActivity.kt       # Compose-хост с NavHost
+│       │   │   ├── SplashActivity.kt     # launcher
+│       │   │   ├── ResourcesActivity.kt  # экран «Ресурсы»
+│       │   │   ├── BarData.kt            # контракт репозитория
+│       │   │   ├── BarDataRepository.kt  # реализация (Room + Retrofit)
+│       │   │   ├── Constants.kt          # ключи API, URL, Extra-ключи
+│       │   │   ├── core/
+│       │   │   │   ├── data/             # DataStore (ThemePreferences)
+│       │   │   │   ├── di/               # Hilt-модули
+│       │   │   │   ├── ui/               # компоненты и тема Compose
+│       │   │   │   └── util/
+│       │   │   ├── db/                   # Room: entity, dao, mapper, converter
+│       │   │   ├── net/                  # Retrofit: api, dto, interceptor
+│       │   │   ├── viewmodel/            # ViewModel-классы
+│       │   │   └── ui/                   # feature-пакеты Compose-экранов + navigation
+│       │   └── res/                      # drawable, mipmap, values, xml
+│       ├── test/                         # unit-тесты
+│       └── androidTest/                  # Compose UI-тесты
+├── docs/                                 # документация
+├── .github/workflows/                    # CI
+├── build.gradle                          # корневой скрипт
+├── settings.gradle                       # репозитории и модули
+└── gradle/libs.versions.toml             # version catalog
 ```
+
+## Тестирование и CI
+
+- **Unit-тесты** (`src/test`): мапперы, `TasteConverter`, `TastesHelper`, `DrinksPathManager`,
+  `SpinnerGlassMatcher`, `SharedViewModel`, `DrinkListViewModel`.
+- **Compose UI-тесты** (`src/androidTest`): `EmptyState`, `DetailCard`, `AboutScreen`,
+  `HomeBarBottomBar`.
+- **CI** (`.github/workflows/ci.yml`): `assembleDebug` + `testDebugUnitTest` + `lintDebug`
+  на каждый push/PR.
 
 ## Документация
 
-- [Архитектура](docs/ARCHITECTURE.md) — слои приложения, MVVM, навигация, репозиторий.
-- [Сборка и окружение](docs/BUILD.md) — требования, команды, модернизация и troubleshooting.
-- [База данных](docs/DATABASE.md) — схема Room, сущности, DAO, связи.
+- [Архитектура](docs/ARCHITECTURE.md) — слои, DI, репозиторий, навигация.
+- [Сборка и окружение](docs/BUILD.md) — требования, команды, R8, troubleshooting.
+- [База данных](docs/DATABASE.md) — схема Room, сущности, DAO, конвертеры.
 - [Сеть](docs/NETWORKING.md) — Absolut Drinks API, эндпоинты, модели, пагинация.
-- [UI и навигация](docs/UI.md) — экраны, карта навигации, адаптеры, темы.
-- [План рефакторинга](docs/REFACTORING_PLAN.md) — поэтапный переход на Kotlin + Compose + Hilt.
+- [UI и навигация](docs/UI.md) — экраны, маршруты, темы, компоненты.
+- [План рефакторинга](docs/REFACTORING_PLAN.md) — история перехода на Kotlin + Compose + Hilt.
+- [ADR](docs/adr/0001-compose-modern-stack.md) — ключевые архитектурные решения.
 
 ## Лицензия и источники данных
 

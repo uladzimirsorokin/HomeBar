@@ -1,18 +1,21 @@
 # База данных (Room)
 
-Локальное хранилище реализовано на **Room 2.6.1**.
-Класс-холдер: `db/CocktailsDatabase.java`.
+Локальное хранилище реализовано на **Room 2.6.1** (Kotlin, KSP).
+Класс-холдер: `db/CocktailsDatabase.kt`.
 
-```java
-@Database(entities = {Drink.class, Ingredient.class, DrinkIngredientJoin.class},
-          version = 1, exportSchema = false)
-public abstract class CocktailsDatabase extends RoomDatabase
+```kotlin
+@Database(
+    entities = [Drink::class, Ingredient::class, DrinkIngredientJoin::class],
+    version = 1,
+    exportSchema = false
+)
+abstract class CocktailsDatabase : RoomDatabase()
 ```
 
 - Имя файла БД: `cocktails_db`
-- Синглтон: `CocktailsDatabase.getInstance()`
-- DAO: `getDrinkDao()`, `getIngredientDao()`, `getCocktailDao()`
-- Флаг инициализации: `MutableLiveData<Boolean> getDatabaseCreated()`
+- Инстанс создаётся в `DatabaseModule` (`@Singleton`, `Room.databaseBuilder`) и раздаётся Hilt.
+- DAO: `getDrinkDao()`, `getIngredientDao()`, `getCocktailDao()`.
+- Чтение — `Flow<...>`, запись — `suspend`-функции; во ViewModel мостится через `asLiveData()`.
 
 ## Схема
 
@@ -29,29 +32,28 @@ Drink 1 ────< DrinkIngredientJoin >──── 1 Ingredient
 
 | Поле | Тип | Описание |
 |------|-----|----------|
-| `id` | `Long` | `@PrimaryKey(autoGenerate = true)` |
-| `name` | `String` | Название |
-| `description` | `String` | Описание |
-| `tastes` | `ArrayList<Taste>` | Вкусы (JSON через `TasteConverter`) |
-| `image` | `String` | Путь/URL к изображению |
-| `glass` | `@Embedded Glass` | Бокал (встроенный объект) |
-| `rating` | `int` | Оценка |
-| `isAlcoholic` | `boolean` | Алкогольный |
-| `isCarbonated` | `boolean` | Газированный |
-| `notes` | `String` | Заметки |
+| `id` | `Long?` | `@PrimaryKey(autoGenerate = true)` |
+| `name` | `String?` | Название |
+| `description` | `String?` | Описание |
+| `tastes` | `ArrayList<Taste>?` | Вкусы (JSON через `TasteConverter`) |
+| `image` | `String?` | Путь/URL к изображению |
+| `glass` | `@Embedded Glass?` | Бокал (встроенный объект) |
+| `rating` | `Int` | Оценка |
+| `isAlcoholic` | `Boolean` | Алкогольный |
+| `isCarbonated` | `Boolean` | Газированный |
+| `notes` | `String?` | Заметки |
 
-Индекс: уникальный по `id`. Аннотация `@TypeConverters(TasteConverter.class)`.
-Реализует `Serializable` (передаётся между экранами через Bundle).
+Индекс: уникальный по `id`. Аннотация `@TypeConverters(TasteConverter::class)`.
 
 ### `Ingredient` — `@Entity`
 
 | Поле | Тип |
 |------|-----|
-| `id` | `Long` (`@PrimaryKey(autoGenerate = true)`) |
-| `name` | `String` |
-| `description` | `String` |
-| `image` | `String` |
-| `notes` | `String` |
+| `id` | `Long?` (`@PrimaryKey(autoGenerate = true)`) |
+| `name` | `String?` |
+| `description` | `String?` |
+| `image` | `String?` |
+| `notes` | `String?` |
 
 Уникальный индекс по `id`. Переопределены `equals`/`hashCode`/`toString`.
 
@@ -59,17 +61,13 @@ Drink 1 ────< DrinkIngredientJoin >──── 1 Ingredient
 
 | Поле | Тип | Примечание |
 |------|-----|-----------|
-| `id` | `Long` | `@PrimaryKey(autoGenerate = true)` |
-| `amount` | `String` | Количество |
-| `unit` | `String` | Единица измерения |
-| `drinkId` | `Long` | `@ColumnInfo("drink_id")` |
-| `ingredientId` | `Long` | `@ColumnInfo("ingredient_id")` |
+| `id` | `Long?` | `@PrimaryKey(autoGenerate = true)` |
+| `amount` | `String?` | Количество |
+| `unit` | `String?` | Единица измерения |
+| `drinkId` | `Long?` | `@ColumnInfo("drink_id")` |
+| `ingredientId` | `Long?` | `@ColumnInfo("ingredient_id")` |
 
-Внешние ключи:
-
-- `drink_id` → `Drink.id`
-- `ingredient_id` → `Ingredient.id`
-
+Внешние ключи: `drink_id → Drink.id`, `ingredient_id → Ingredient.id`.
 Индексы по `drink_id` и `ingredient_id`.
 
 ### `WholeCocktail` — проекция (не таблица)
@@ -87,60 +85,57 @@ Drink 1 ────< DrinkIngredientJoin >──── 1 Ingredient
 
 ### `Taste` — модель (не таблица)
 
-`String id`, `String text`; конструктор `Taste(String text)`.
-Хранится внутри `Drink.tastes` как JSON.
+`String id`, `String text`; конструктор `Taste(String text)`. Аннотирована `@Serializable`,
+хранится внутри `Drink.tastes` как JSON.
 
 ### `Glass` (db) — модель (не таблица)
 
-`int glassId`, `String glassName`; `@Embedded` в `Drink`.
+`Int glassId`, `String glassName`; `@Embedded` в `Drink`.
 
 ### `TasteConverter` (`db/converter`)
 
-Конвертер типа для Room:
+Конвертер типа для Room на **kotlinx.serialization**:
 
-- `@TypeConverter ArrayList<Taste> toList(String)` — из JSON;
-- `@TypeConverter String toString(ArrayList<Taste>)` — в JSON.
-
-Оба используют Gson.
+- `@TypeConverter toList(String?): ArrayList<Taste>?` — из JSON;
+- `@TypeConverter fromList(ArrayList<Taste>?): String?` — в JSON.
 
 ## DAO (`db/dao`)
 
 ### `DrinkDao`
 
-| Метод | Запрос |
-|-------|--------|
-| `LiveData<Drink> loadDrinkById(Long)` | `SELECT * FROM Drink WHERE id = :id` |
-| `LiveData<List<Drink>> loadAllDrinks()` | `SELECT * FROM Drink ORDER BY name ASC` |
-| `LiveData<List<Drink>> searchDrinksByName(String)` | `WHERE name LIKE :query ORDER BY name ASC` |
-| `Long insertDrink(Drink)` | `@Insert(onConflict = REPLACE)` |
-| `void deleteDrinkById(Long)` | `DELETE FROM Drink WHERE id = :drinkId` |
+| Метод | Тип |
+|-------|-----|
+| `loadDrinkById(id: Long?)` | `Flow<Drink?>` |
+| `loadAllDrinks()` | `Flow<List<Drink>>` (`ORDER BY name ASC`) |
+| `searchDrinksByName(query)` | `Flow<List<Drink>>` (`name LIKE :query`) |
+| `insertDrink(drink)` | `suspend`, `@Insert(REPLACE)` |
+| `deleteDrinkById(id)` | `suspend` |
 
 ### `IngredientDao`
 
-| Метод | Запрос |
-|-------|--------|
-| `LiveData<List<Ingredient>> loadIngredients()` | `SELECT * FROM Ingredient` |
-| `LiveData<List<Ingredient>> searchIngredientsByName(String)` | `WHERE name LIKE :query` |
-| `LiveData<List<WholeCocktail>> loadCocktailIngredients(List<Long>)` | `WHERE Ingredient.id IN (:ingredientIds)` |
-| `Ingredient getIngredientByName(String)` | `WHERE name = :name LIMIT 1` |
-| `LiveData<Ingredient> loadIngredient(Long)` | `WHERE id = :id` |
-| `Long insertOrReplaceIngredient(Ingredient)` | `@Insert(onConflict = REPLACE)` |
-| `void deleteIngredientById(Long)` | `DELETE FROM Ingredient WHERE id = :ingredientId` |
+| Метод | Тип |
+|-------|-----|
+| `loadIngredients()` | `Flow<List<Ingredient>>` |
+| `searchIngredientsByName(query)` | `Flow<List<Ingredient>>` |
+| `loadCocktailIngredients(ids)` | `Flow<List<WholeCocktail>>` |
+| `getIngredientByName(name)` | `suspend Ingredient?` |
+| `loadIngredient(id)` | `Flow<Ingredient?>` |
+| `insertOrReplaceIngredient(ingredient)` | `suspend Long` |
+| `deleteIngredientById(id)` | `suspend` |
 
 ### `CocktailDao` (связи)
 
-| Метод | Описание |
-|-------|----------|
-| `void insertDrinkIngredients(List<DrinkIngredientJoin>)` | Вставка связей (`REPLACE`) |
-| `void deleteDrinkIngredientsById(Long)` | Удаление связей напитка |
-| `int countCocktailsWithIngridient(Long)` | Сколько коктейлей используют ингредиент |
-| `LiveData<List<WholeCocktail>> findAllIngredientsByDrinkId(Long)` | `INNER JOIN Ingredient` по `drink_id` |
-| `LiveData<List<Drink>> getDrinksWithIngredient(Long)` | `INNER JOIN` Ingredient и Drink по `ingredient_id` |
+| Метод | Тип |
+|-------|-----|
+| `insertDrinkIngredients(list)` | `suspend` (`REPLACE`) |
+| `deleteDrinkIngredientsById(id)` | `suspend` |
+| `countCocktailsWithIngridient(id)` | `suspend Int` |
+| `findAllIngredientsByDrinkId(id)` | `Flow<List<WholeCocktail>>` (INNER JOIN) |
+| `getDrinksWithIngredient(id)` | `Flow<List<Drink>>` (INNER JOIN) |
 
 ## Мапперы (`db/mapper`)
 
 - `Mapper<T1, T2>` — абстрактный базовый класс (`map`, `reverseMap` и списковые версии).
-  Объявлен в пакете `sorokinuladzimir.com.homebarassistant.db.mapper`.
 - `DrinkEntityToDrinkMapper` — `reverseMap(DrinkEntity) → Drink`: переносит название, вкусы,
   описание, изображение (`ABSOLUT_DRINKS_IMAGE_ROOT + id + ".png"`), оценку, флаги
   алкоголя/газированности и бокал. Синглтон `getInstance()`.

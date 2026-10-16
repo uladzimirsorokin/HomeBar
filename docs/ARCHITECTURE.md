@@ -1,116 +1,90 @@
 # Архитектура
 
-Приложение построено по шаблону **MVVM** с одним Activity-хостом (`MainActivity`) и вложенными
-фрагментами. Слои разделены на **UI → ViewModel → Repository → (Room | Retrofit)**.
-Dependency Injection отсутствует — все зависимости раздаются через статические синглтоны в `BarApp`.
+Приложение построено по шаблону **MVVM** на **Kotlin + Jetpack Compose**. Единственная
+Activity-хост — `MainActivity` с Compose `NavHost`; экраны — `@Composable`-функции.
+Зависимости раздаются через **Hilt**. Слои: **UI → ViewModel → Repository → (Room | Retrofit)**.
 
 ## Слои
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│  UI (Fragments / Adapters)                                  │
-│  observe LiveData, отправляют команды через ViewModel       │
+│  UI (Compose)                                               │
+│  @Composable-экраны, observe LiveData/StateFlow             │
 └───────────────────────────┬─────────────────────────────────┘
-                            │ LiveData / методы
+                            │ LiveData / StateFlow
 ┌───────────────────────────▼─────────────────────────────────┐
 │  ViewModel (viewmodel/)                                     │
-│  AndroidViewModel, готовят LiveData для экранов             │
+│  @HiltViewModel, AndroidViewModel, готовят LiveData         │
 └───────────────────────────┬─────────────────────────────────┘
                             │
 ┌───────────────────────────▼─────────────────────────────────┐
 │  BarDataRepository (implements BarData)                     │
-│  единый источник данных, MediatorLiveData, пагинация        │
+│  единый источник данных, MediatorLiveData, пагинация,       │
+│  Coroutines (Dispatchers.IO)                                 │
 └───────────────┬───────────────────────────┬─────────────────┘
                 │                           │
       ┌─────────▼─────────┐       ┌─────────▼─────────┐
       │  Room (db/)       │       │  Retrofit (net/)  │
       │  CocktailsDatabase│       │  AbsolutDrinksApi │
+      │  Flow / suspend   │       │  suspend          │
       └───────────────────┘       └───────────────────┘
-                │                           │
-      ┌─────────▼───────────────────────────▼─────────┐
-      │  AppExecutors: diskIO / networkIO / mainThread │
-      └───────────────────────────────────────────────┘
 ```
 
-### `BarApp` — точка сборки
+## DI (Hilt)
 
-`BarApp extends Application` создаёт и хранит глобальные объекты:
+`BarApp` (`@HiltAndroidApp`) — точка входа Hilt. Модули в `core/di`:
 
-- `Cicerone<Router>` — навигация (`getNavigatorHolder()`, `getRouter()`);
-- `AppExecutors` — пулы потоков;
-- `Context` приложения и язык системы (`getLang()`).
+| Модуль | Предоставляет |
+|--------|---------------|
+| `DatabaseModule` | `CocktailsDatabase` (`@Singleton`), `DrinkDao`, `IngredientDao`, `CocktailDao` |
+| `NetworkModule` | `AbsolutDrinksApi` (`@Singleton`) — OkHttp с интерцепторами + Retrofit на kotlinx.serialization |
+| `RepositoryModule` | `@Binds BarDataRepository → BarData` (`@Singleton`) |
+| `AppModule` | `ImageHandler` |
 
-Статические аксессоры: `getInstance()`, `getAppContext()`, `getDatabase()`,
-`getBarRepository()`, `getExecutors()`.
+Activity и ViewModel помечены `@AndroidEntryPoint` / `@HiltViewModel`, зависимости
+инжектируются конструктором. Статических синглтонов данных в `BarApp` больше нет.
 
-### `AppExecutors`
-
-| Метод | Реализация |
-|-------|------------|
-| `diskIO()` | `Executors.newSingleThreadExecutor()` |
-| `networkIO()` | `Executors.newFixedThreadPool(3)` |
-| `mainThread()` | `MainThreadExecutor` на `Handler(Looper.getMainLooper())` |
-
-### Репозиторий
+## Репозиторий
 
 `BarData` — интерфейс-контракт (CRUD для напитков и ингредиентов, работа с изображениями,
-запросы к API). `BarDataRepository` — потокобезопасный синглтон (`SingletonHolder`), который:
+запросы к API). `BarDataRepository` (`@Singleton`, инжектируется Hilt):
 
-- держит `MediatorLiveData` для локальных напитков, ингредиентов, удалённых напитков
+- держит `MediatorLiveData` для локальных напитков/ингредиентов, удалённых напитков
   (`List<DrinkEntity>`) и удалённых ингредиентов (`List<WholeCocktail>`);
-- хранит `LiveData<String>` для путей к фото напитка/ингредиента;
-- выполняет работу с БД и сетью через `AppExecutors`;
+- хранит `MediatorLiveData<String?>` для путей к фото напитка/ингредиента;
+- выполняет работу с БД/сетью в `CoroutineScope(SupervisorJob() + Dispatchers.IO)`;
+- DAO возвращают `Flow`, которые мостятся во ViewModel через `asLiveData()`;
 - реализует пагинацию через `enum QueryType { SEARCH_BY_NAME, SEARCH_BY_CONDITIONS, CURRENT }`
-  и поля `mTotalResult`, `mNextLink`, `mCurrentSearchType`.
+  и поля `mTotalResult`, `mNextLink`, `mCurrentSearchType`;
+- сетевые ошибки оборачивает в `ApiResult` (Success/Error).
 
-### ViewModels
+## ViewModels
 
 | ViewModel | Назначение |
 |-----------|------------|
 | `DrinkListViewModel` | Список локальных напитков + поиск по названию |
 | `IngredientListViewModel` | Список локальных ингредиентов + поиск |
-| `DrinkViewModel` | Локальный напиток + его ингредиенты (экран `LocalDrinkFragment`) |
+| `DrinkViewModel` | Локальный напиток + его ингредиенты |
 | `IngredientViewModel` | Локальный ингредиент + связанные напитки |
 | `AddDrinkViewModel` | Создание/редактирование напитка (ингредиенты, вкусы, фото, оценка) |
 | `AddDrinkIngredientsViewModel` | Выбор ингредиентов для напитка (поиск, множественный выбор) |
 | `AddIngredientViewModel` | Создание/редактирование ингредиента |
 | `RemoteDrinkViewModel` | Детали удалённого напитка, сохранение в локальную БД |
 | `FoundDrinksViewModel` | Результаты удалённого поиска + пагинация |
-| `SharedViewModel` | Общий выбор ингредиентов между `AddDrinkFragment` и `AddDrinkIngredientsFragment` |
+| `SharedViewModel` | Общий выбор ингредиентов между экранами формы напитка |
+| `ThemeViewModel` | Тема приложения (DataStore → `StateFlow<Int>`) |
 
-Часть ViewModel предоставляет собственную `Factory` для передачи `id` сущности.
+Аргументы экранов передаются через `SavedStateHandle` (id сущности, JSON удалённого напитка).
 
-## Навигация (Cicerone)
+## Навигация (Navigation Compose)
 
-Навигация двухуровневая:
+Маршруты описаны в `ui/navigation/Routes.kt`, граф — в `homeBarGraph(...)`
+(`HomeBarNavHost.kt`), хост — `HomeBarApp()`:
 
-1. **Глобальный роутер** (`BarApp.getRouter()`) — переключает нижние вкладки через
-   `MainActivity` (`Screens.SEARCH`, `Screens.DRINKS`, `Screens.INGREDIENTS`).
-2. **Локальные роутеры** — по одному на вкладку, хранятся в `LocalCiceroneHolder`
-   (ключ — имя контейнера). Внутри вкладки используется `SupportFragmentNavigator`
-   в `TabContainerFragment` (контейнер `R.id.ftc_container`).
-
-`MainActivity`:
-
-- `initBottomNavigation()` — 3 пункта `AHBottomNavigation` → `router.replaceScreen(...)`;
-- `initContainers()` — создаёт и отсоединяет три `TabContainerFragment`;
-- глобальный `Navigator` обрабатывает `Back` (`finish()`), `SystemMessage` (Toast) и
-  `Replace` (attach/detach вкладок через `commitNow()`);
-- `onBackPressed()` делегирует видимому фрагменту (`BackButtonListener`) либо `router.exit()`.
-
-`TabContainerFragment` выбирает корневой экран вкладки:
-
-| Вкладка | Корневой экран |
-|---------|----------------|
-| `SEARCH` | `FOUND_DRINKS` |
-| `DRINKS` | `DRINKS_LIST` |
-| `INGREDIENTS` | `INGREDIENTS_LIST` |
-
-`ui.subnavigation`:
-
-- `BackButtonListener` — `boolean onBackPressed()`;
-- `RouterProvider` — `Router getRouter()`;
-- `LocalCiceroneHolder` — `HashMap<String, Cicerone<Router>>` по имени контейнера.
+- `Scaffold` с `NavigationBar` (Material 3) для трёх вкладок: Поиск, Коктейли, Ингредиенты;
+- `NavHost` с `startDestination = DRINKS_LIST`;
+- вложенные экраны: детали, формы, выбор ингредиентов, About, Settings;
+- состояние нижней вкладки выводится из текущего route.
 
 Полная карта экранов и ключей — в [UI.md](UI.md).
 
@@ -118,20 +92,19 @@ Dependency Injection отсутствует — все зависимости р
 
 `ImageHandler` (`ui/utils`) инкапсулирует файловые операции:
 
-- `createImageFile()` — `IMG_yyyyMMdd_HHmmss_<random>.jpg`;
+- `createImageFile(Context)` — временный JPEG в app-private
+  `getExternalFilesDir(Pictures)/HomeBar`, возвращает `FileProvider` URI;
 - `getBitmapFromUri(...)` — чтение с масштабированием (`inSampleSize`);
-- `saveImage(Bitmap)` — сохранение PNG в `Pictures/HomeBar`;
-- `createImageFile(Context)` — URI через `FileProvider` (authority `Constants.Strings.AUTHORITY`);
-- `deleteImage(...)`, `isExternalStorageWritable()`, `getAlbumStorageDir()`.
+- `saveImage(context, Bitmap)` — сохранение PNG в app-private директорию;
+- `deleteImage(...)`.
 
-Доступ к камере/галерее реализован через `AddImageDialogFragment` и
-`ActivityResult`/`requestPermissions` в `AddDrinkFragment` и `AddIngredientFragment`.
+Запрос фото из камеры/галереи реализован через **Activity Result API**
+(`rememberImagePicker` → `TakePicture` / `GetContent`). Публичное хранилище и
+`WRITE_EXTERNAL_STORAGE` не используются.
 
-## Особенности и ограничения
+## Тема
 
-- Нет DI (Dagger/Hilt) — вся проводка через синглтоны `BarApp`.
-- Используются легаси-API: `ViewModelProviders.of(...)`, `getFragmentManager()`,
-  `setTargetFragment(...)`, `WRITE_EXTERNAL_STORAGE` (целевой `targetSdk 35`).
-- Базовый класс `Mapper` объявлен в пакете `sorokinuladzimir.com.homebarassistant.db.mapper`,
-  хотя файл лежит в `.../db/mapper/`.
-- `LocalDrinkViewModel` отсутствует — экран локального напитка использует `DrinkViewModel`.
+Тема хранится в **DataStore** (`core/data/ThemePreferences`, ключ `app_theme`).
+`ThemeViewModel` отдаёт `StateFlow<Int>`; `MainActivity`/`ResourcesActivity` собирают его
+через `collectAsStateWithLifecycle()` и переключают `HomeBarTheme` без перезапуска Activity.
+Три схемы (`ThemeVariant`: INDIGO/PURPLE/BLACK) определены в `core/ui/theme`.

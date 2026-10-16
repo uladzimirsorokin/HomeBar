@@ -215,13 +215,13 @@ com.sorokinuladzimir.homebarassistant
 ## Этап 8. Качество и инфраструктура
 
 Задачи:
-- [ ] Unit-тесты: репозитории, мапперы, ViewModel (MockK + Turbine + coroutines-test).
-- [ ] Compose UI-тесты ключевых экранов.
-- [ ] `DataStore` для темы и прочих настроек (вместо SharedPreferences).
-- [ ] Activity Result API для камеры/галереи/разрешений (вместо legacy).
-- [ ] R8/ProGuard: правила, `minifyEnabled true` для release.
-- [ ] CI (GitHub Actions): сборка + тесты + lint на PR.
-- [ ] Обновить `README`/`docs` под новый стек; добавить ADR.
+- [x] Unit-тесты: репозитории, мапперы, ViewModel (MockK + Turbine + coroutines-test).
+- [x] Compose UI-тесты ключевых экранов.
+- [x] `DataStore` для темы и прочих настроек (вместо SharedPreferences).
+- [x] Activity Result API для камеры/галереи/разрешений (вместо legacy).
+- [x] R8/ProGuard: правила, `minifyEnabled true` для release.
+- [x] CI (GitHub Actions): сборка + тесты + lint на PR.
+- [x] Обновить `README`/`docs` под новый стек; добавить ADR.
 
 **Критерий выхода:** зелёные тесты и CI, release собирается с R8.
 
@@ -271,4 +271,4 @@ com.sorokinuladzimir.homebarassistant
 | 5. Поэкранная миграция | ✅ готово | 5.1 Settings; 5.2 списки; 5.3 детали; 5.4 поиск; 5.5 формы; 5.6 диалоги; 5.7 нижняя навигация (`MainActivity` → Kotlin + Material 3 `NavigationBar`). Все экраны на Compose (в оболочках Fragment) |
 | 6. Compose Navigation | ✅ готово | `navigation-compose` + единый `NavHost` (`Routes`/`HomeBarApp`/маршрутные composable на существующих экранах и ViewModel); `MainActivity` — чистый Compose-хост; удалены `ui/fragments`, `ui/subnavigation`, `ui/adapters`, `Screens`, `TabContainerFragment`, `AppExecutors`, Cicerone и его зависимость; `BarApp` минимальный. Общий `SharedViewModel` — через activity-scope в графе |
 | 7. Удаление легаси | ✅ готово | Удалены зависимости Glide/RxJava/Spectrum/MaterialScrollBar/MaterialRangeBar/AHBottomNavigation, Gson + converter-gson; `TasteConverter` → kotlinx.serialization (`@Serializable Taste`); удалены appcompat/MDC/recyclerview/cardview/constraintlayout/swiperefresh/lifecycle-extensions; `ResourcesActivity`/`SplashActivity` → Compose/ComponentActivity; все XML-layouts, menus, неиспользуемые drawables/цвета/строки/dimens; `values/styles.xml` сведён к `AppTheme`/`SplashTheme` на platform-теме; все оставшиеся Java-утилиты → Kotlin (`Constants`, `ThemeUtils`, `ImageHandler`, `TastesHelper`, `DrinksPathManager`, `SpinnerGlassMatcher`); тема приложения унифицирована на `*_preferences`; `enableJetifier`/`nonTransitiveRClass`/`nonFinalResIds` убраны, jitpack-репозиторий удалён. В `src/main` Java-файлов не осталось |
-| 8. Качество | ⬜ не начат | |
+| 8. Качество | ✅ готово | Явный `@SerialName` на всех `@Serializable`-полях + R8 (`minifyEnabled`/`shrinkResources`) с keep-правилами; unit-тесты (mappers, converters, utils, ViewModels) на JUnit/MockK; Compose UI-тесты; тема переведена на DataStore (`ThemePreferences`/`ThemeViewModel`); изображения в app-private storage, `WRITE_EXTERNAL_STORAGE` убран; CI GitHub Actions (build/test/lint); README/docs переписаны, добавлен ADR. Проверено: `assembleDebug`, `assembleRelease` (R8), `testDebugUnitTest`, `connectedDebugAndroidTest`, `lintDebug` |

@@ -4,9 +4,10 @@
 
 | Инструмент | Версия |
 |-----------|--------|
-| JDK | 17 (проект собирается на Java 17) |
-| Gradle | 8.14.3 (через wrapper, скачивается автоматически) |
+| JDK | 17 |
+| Gradle | 8.14.3 (через wrapper) |
 | Android Gradle Plugin | 8.13.2 |
+| Kotlin | 2.2.0 |
 | Android SDK Platform | 35 |
 | Android Build-Tools | 35.0.0 |
 | minSdk | 21 |
@@ -16,6 +17,9 @@
 
 ```properties
 sdk.dir=/path/to/Android/sdk
+# опционально — переопределение API Absolut Drinks
+ABSOLUT_API_KEY=...
+ABSOLUT_DRINKS_ROOT=http://addb.absolutdrinks.com
 ```
 
 ## Команды
@@ -24,8 +28,17 @@ sdk.dir=/path/to/Android/sdk
 # сборка debug-APK → app/build/outputs/apk/debug/app-debug.apk
 ./gradlew :app:assembleDebug
 
-# сборка release-APK
+# сборка release-APK (R8: minify + shrinkResources)
 ./gradlew :app:assembleRelease
+
+# unit-тесты (JVM)
+./gradlew :app:testDebugUnitTest
+
+# instrumented / Compose UI-тесты (нужен эмулятор или устройство)
+./gradlew :app:connectedDebugAndroidTest
+
+# lint
+./gradlew :app:lintDebug
 
 # установка debug на устройство/эмулятор
 ./gradlew :app:installDebug
@@ -39,103 +52,107 @@ adb shell am start -n com.sorokinuladzimir.homebarassistant/.SplashActivity
 
 ## Конфигурация Gradle
 
-**`settings.gradle`** — репозитории и модули. Используется
-`dependencyResolutionManagement` с `RepositoriesMode.PREFER_SETTINGS`:
+**`settings.gradle`** — репозитории и модули (`PREFER_SETTINGS`):
 
 ```groovy
 repositories {
     google()
     mavenCentral()
-    maven { url 'https://jitpack.io' }                                  // Cicerone, MaterialScrollBar
-    maven { url 'https://maven.aliyun.com/repository/public' }          // зеркало jcenter (MaterialRangeBar)
 }
 ```
 
-**`gradle.properties`** — флаги AndroidX и Jetifier:
+**`gradle.properties`**:
 
 ```properties
 org.gradle.jvmargs=-Xmx2048m -Dfile.encoding=UTF-8
+kotlin.code.style=official
 android.useAndroidX=true
-android.enableJetifier=true
-android.nonTransitiveRClass=false
-android.nonFinalResIds=false
+ksp.useKSP2=false
 ```
 
-- `android.enableJetifier=true` — конвертирует сторонние библиотеки на `android.support.*`
-  в AndroidX во время сборки.
-- `android.nonFinalResIds=false` — сохраняет `R.id.*` константами (в коде есть `switch` по `R.id`).
+- Jetifier выключен — все зависимости AndroidX-нативные.
+- `nonTransitiveRClass` / `nonFinalResIds` не переопределяются (значения по умолчанию).
+- `ksp.useKSP2=false` — совместимость с Room 2.6.1.
+
+Версии зависимостей централизованы в `gradle/libs.versions.toml` (version catalog).
 
 ## Зависимости
 
-### AndroidX / Google
+### Compose
 
-| Артефакт | Версия | Назначение |
-|----------|--------|-----------|
-| `androidx.appcompat:appcompat` | 1.7.0 | Базовые Activity/Fragment/темы |
-| `com.google.android.material:material` | 1.12.0 | Material Components (FAB, AppBar и т.д.) |
-| `androidx.recyclerview:recyclerview` | 1.3.2 | Списки |
-| `androidx.cardview:cardview` | 1.0.0 | Карточки |
-| `androidx.constraintlayout:constraintlayout` | 2.1.4 | Разметка |
-| `androidx.swiperefreshlayout:swiperefreshlayout` | 1.1.0 | Pull-to-refresh |
-| `androidx.lifecycle:lifecycle-extensions` | 2.2.0 | `ViewModelProviders`, `LiveData`, `MediatorLiveData` |
-| `androidx.room:room-runtime` + `room-compiler` | 2.6.1 | Локальная БД |
+| Артефакт | Назначение |
+|----------|-----------|
+| `androidx.compose:compose-bom` | BOM версий Compose |
+| `androidx.compose.material3:material3` | Material 3 |
+| `androidx.activity:activity-compose` | `setContent`, Activity Result |
+| `androidx.navigation:navigation-compose` | Навигация |
+| `androidx.hilt:hilt-navigation-compose` | `hiltViewModel()` |
+| `androidx.lifecycle:lifecycle-viewmodel-compose` / `-runtime-compose` | ViewModel / `collectAsStateWithLifecycle` |
+| `io.coil-kt:coil-compose` | Загрузка изображений |
 
-### Сторонние
+### DI / Data / Network
 
-| Артефакт | Версия | Назначение |
-|----------|--------|-----------|
-| `com.github.terrakok:Cicerone` | 2.1.0 | Навигация |
-| `com.github.bumptech.glide:glide` + `compiler` | 4.16.0 | Загрузка изображений |
-| `com.google.code.gson:gson` | 2.10.1 | JSON |
-| `com.squareup.retrofit2:retrofit` + `converter-gson` | 2.9.0 | HTTP-клиент |
-| `com.aurelhubert:ahbottomnavigation` | 2.2.0 | Нижняя навигация |
-| `com.github.turing-tech:MaterialScrollBar` | 12.5.1 | Алфавитный скроллбар |
-| `com.appyvet:materialrangebar` | 1.4.6 | Выбор оценки (RangeBar) |
-| `com.thebluealliance:spectrum` | 0.7.1 | Выбор цвета |
-| `io.reactivex.rxjava2:rxjava` | 2.2.21 | RxJava (транзитивно) |
+| Артефакт | Назначение |
+|----------|-----------|
+| `com.google.dagger:hilt-android` + `hilt-compiler` (KSP) | DI |
+| `androidx.room:room-runtime` / `room-ktx` / `room-compiler` (KSP) | Локальная БД (Flow) |
+| `androidx.datastore:datastore-preferences` | Настройки (тема) |
+| `com.squareup.retrofit2:retrofit` + `retrofit2-kotlinx-serialization-converter` | HTTP |
+| `com.squareup.okhttp3:okhttp` | HTTP-клиент |
+| `org.jetbrains.kotlinx:kotlinx-serialization-json` | JSON |
+| `org.jetbrains.kotlinx:kotlinx-coroutines-android` | Корутины |
 
-## История модернизации
+### Тесты
 
-Проект изначально был написан в 2018 году (Gradle 4.6, AGP 3.2.0-alpha16, `jcenter`,
-Fabric/Crashlytics, support-библиотеки) и был неработоспособен на современном окружении.
-Выполненные изменения:
+| Артефакт | Назначение |
+|----------|-----------|
+| `junit:junit` | unit-тесты |
+| `io.mockk:mockk` | mock-объекты |
+| `app.cash.turbine:turbine` | тестирование Flow |
+| `org.jetbrains.kotlinx:kotlinx-coroutines-test` | `runTest`, `Dispatchers.setMain` |
+| `androidx.arch.core:core-testing` | `InstantTaskExecutorRule` (LiveData) |
+| `androidx.compose.ui:ui-test-junit4` / `ui-test-manifest` | Compose UI-тесты |
+| `androidx.test.ext:junit` | instrumented runner |
 
-1. **Toolchain** — Gradle wrapper → 8.14.3, AGP → 8.13.2, Java 17, добавлен `namespace`,
-   `compileSdk`/`targetSdk` 35, `buildFeatures.buildConfig true`.
-2. **AndroidX** — миграция всех импортов `android.support.*` и `android.arch.*` в `androidx.*`
-   в Java-коде, разметке и меню; включены `android.useAndroidX` и `android.enableJetifier`.
-3. **Зависимости** — обновлены до актуальных; Room 1.1.0 → 2.6.1, Glide 4.5 → 4.16 и т.д.
-4. **Удалено** — Fabric/Crashlytics, Firebase, плагин OSS-licenses (инфраструктура jcenter/Bintray
-   более недоступна).
-5. **Проблемные артефакты:**
-   - `com.tbruyelle.rxpermissions2:rxpermissions` удалён — его AAR содержал `lint.jar`,
-     собранный под JDK 26, что ломало Jetifier. Разрешения переведены на
-     `ContextCompat` / `ActivityCompat` / `Fragment.requestPermissions`.
-   - `com.appyvet:materialrangebar` взят версии 1.4.6 через зеркало jcenter (Aliyun):
-     версия 1.3 в Maven Central содержит другой пакет (`com.appyvet.rangebar`) и несовместимые атрибуты.
+## R8 / ProGuard
+
+Release-сборка включает `minifyEnabled true` и `shrinkResources true`.
+Правила — в `app/proguard-rules.pro`:
+
+- keep-правила для `kotlinx.serialization` (сериализаторы и `Companion`);
+- keep-правила для Retrofit (аннотированные HTTP-методы) и OkHttp;
+- keep `RoomDatabase`-подклассов.
+
+Все `@Serializable`-поля имеют явный `@SerialName`, поэтому обфускация не влияет на формат
+данных.
+
+Команды для проверки release-сборки:
+
+```bash
+./gradlew :app:assembleRelease
+```
+
+Mapping лежит в `app/build/outputs/mapping/release/`.
+
+## CI
+
+`.github/workflows/ci.yml` (на push/PR): JDK 17 + Android SDK + Gradle, затем
+`assembleDebug`, `testDebugUnitTest`, `lintDebug`. Отчёты тестов и lint выгружаются артефактом.
 
 ## Troubleshooting
-
-**`Unsupported class file major version 70` в Jetifier**
-Какой-то AAR содержит `lint.jar`, собранный новым JDK. Проверить артефакты можно скриптом,
-сканирующим `.class`-версии внутри `.aar`/`.jar` в `~/.gradle/caches`. Решение — исключить
-или заменить такой артефакт (как сделано с `rxpermissions`).
-
-**`attribute mrb_* not found` при линковке ресурсов**
-Установлена несовместимая версия MaterialRangeBar. Нужна 1.4.x (с префиксом `mrb_`),
-а не 1.3.
 
 **`cannot find symbol BuildConfig`**
 Для AGP 8 генерация `BuildConfig` отключена по умолчанию. В `app/build.gradle` должно быть
 `buildFeatures { buildConfig true }`.
 
-**`constant expression required` в `switch (R.id...)`**
-Включить `android.nonFinalResIds=false` в `gradle.properties`.
+**Hilt: `[Hilt] Processing did not complete`**
+Проверьте, что применяются плагины `ksp` и `hilt`, и что все `@HiltViewModel`/`@AndroidEntryPoint`
+корректно аннотированы.
 
-**Не резолвятся зависимости из jcenter**
-jcenter/Bintray закрыты. Все артефакты перенесены на `mavenCentral`/`google`/JitPack;
-для MaterialRangeBar используется зеркало `https://maven.aliyun.com/repository/public`.
+**Ошибки R8 по kotlinx.serialization**
+Убедитесь, что на всех `@Serializable`-классах стоит `@SerialName` для полей, а в
+`proguard-rules.pro` присутствуют keep-правила для `$$serializer`/`Companion`.
 
-**Запуск на Android 13+ и разрешения**
-`WRITE_EXTERNAL_STORAGE` на API 33+ не выдаётся и не запрашивается; выбор фото из галереи
-может не работать, приложение при этом запускается и функционирует.
+**Не запускаются instrumented-тесты**
+Нужен подключённый эмулятор/устройство (`adb devices`). Compose UI-тесты требуют
+`debugImplementation ui-test-manifest`.

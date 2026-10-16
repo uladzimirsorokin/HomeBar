@@ -5,87 +5,94 @@
 
 ## Базовая конфигурация
 
-Константы в `Constants.java`:
+URL и ключ задаются в `app/build.gradle` через `BuildConfig` (значения по умолчанию,
+переопределяются в `local.properties`) и доступны через `Constants.kt`:
 
-| Константа | Значение |
-|-----------|----------|
-| `Constants.Uri.ABSOLUT_DRINKS_ROOT` | `http://addb.absolutdrinks.com` |
-| `Constants.Uri.ABSOLUT_DRINKS_IMAGE_ROOT` | `http://assets.absolutdrinks.com/drinks/600x800/` |
-| `Constants.Uri.ABSOLUT_INGREDIENTS_IMAGE_ROOT` | `http://assets.absolutdrinks.com/` |
-| `Constants.Keys.ABSOLUT_API_KEY` | API-ключ (query-параметр `apiKey`) |
-| `Constants.Values.DEFAULT_ITEM_AMOUNT` | `5` (размер страницы) |
-| `Constants.Values.DEFAULT_IMAGE_SIZE` | `750` |
+| Константа | BuildConfig | Значение по умолчанию |
+|-----------|-------------|-----------------------|
+| `Constants.Uri.ABSOLUT_DRINKS_ROOT` | `ABSOLUT_DRINKS_ROOT` | `http://addb.absolutdrinks.com` |
+| `Constants.Uri.ABSOLUT_DRINKS_IMAGE_ROOT` | `ABSOLUT_DRINKS_IMAGE_ROOT` | `http://assets.absolutdrinks.com/drinks/600x800/` |
+| `Constants.Uri.ABSOLUT_INGREDIENTS_IMAGE_ROOT` | `ABSOLUT_INGREDIENTS_IMAGE_ROOT` | `http://assets.absolutdrinks.com/` |
+| `Constants.Keys.ABSOLUT_API_KEY` | `ABSOLUT_API_KEY` | API-ключ (query-параметр `apiKey`) |
+| `Constants.Values.DEFAULT_ITEM_AMOUNT` | — | `5` (размер страницы) |
 
 ## `AbsolutDrinksApi` (Retrofit-интерфейс)
 
-```java
+```kotlin
 @GET("/drinks/{conditions}")
-Call<AbsolutDrinksResult> getAllMatchedDrinks(
-        @Path("conditions") String conditions,
-        @Query("start") int start,
-        @Query("pageSize") int pageSize);
+suspend fun getAllMatchedDrinks(
+    @Path("conditions") conditions: String,
+    @Query("start") start: Int,
+    @Query("pageSize") pageSize: Int
+): AbsolutDrinksResult
 
 @GET("quickSearch/drinks/{searchString}")
-Call<AbsolutDrinksResult> searchDrinks(
-        @Path("searchString") String searchString,
-        @Query("start") int start,
-        @Query("pageSize") int pageSize);
+suspend fun searchDrinks(
+    @Path("searchString") searchString: String,
+    @Query("start") start: Int,
+    @Query("pageSize") pageSize: Int
+): AbsolutDrinksResult
 
 @GET("/drinks/{drinkId}/howtomix")
-Call<Preparation> getPreparationSteps(@Path("drinkId") String drinkId);
+suspend fun getPreparationSteps(@Path("drinkId") drinkId: String): Preparation
 ```
 
-- `getAllMatchedDrinks` — поиск по условиям (`conditions` — путь, собирается `DrinksPathManager`);
-- `searchDrinks` — быстрый поиск по строке;
-- `getPreparationSteps` — шаги приготовления и ингредиенты напитка.
+Все методы — `suspend` (Retrofit поддерживает корутины).
 
-## `ServiceGenerator`
+## `NetworkModule`
 
-Синглтон, создающий `OkHttpClient` и Retrofit-сервис.
+`OkHttpClient` и Retrofit создаются в `core/di/NetworkModule` (`@Singleton`).
 
 **Интерцепторы:**
 
 - `ConnectivityInterceptor` — проверяет `NetworkUtil.isOnline(context)` и бросает
-  `NoConnectivityException` (наследник `IOException`, сообщение `"No internet connection"`)
-  при отсутствии сети.
+  `NoConnectivityException` (наследник `IOException`) при отсутствии сети.
 - `DrinksRequestInterceptor(lang)` — добавляет к каждому запросу `apiKey` и `lang`
   (`"ru"` для русского языка системы, иначе `"en"`).
 
-Конвертер — `GsonConverterFactory.create()`.
+**Конвертер** — `retrofit2-kotlinx-serialization-converter`
+(`Json { ignoreUnknownKeys = true; coerceInputValues = true }`).
 
-`NetworkUtil.isOnline(Context)` использует `ConnectivityManager.getActiveNetworkInfo()`.
+`NetworkUtil.isOnline(Context)` использует `ConnectivityManager` + `NetworkCapabilities`.
 
 ## Модели (`net/entity`)
+
+Все `@Serializable`-поля имеют явный `@SerialName`, чтобы R8-обфускация не влияла на
+формат данных.
 
 ### `AbsolutDrinksResult`
 
 | Поле | Тип |
 |------|-----|
-| `result` | `List<DrinkEntity>` |
-| `totalResult` | `int` |
-| `next` | `String` (ссылка для пагинации) |
+| `result` | `List<DrinkEntity>?` |
+| `totalResult` | `Int` |
+| `next` | `String?` (ссылка для пагинации) |
 
 ### `DrinkEntity` (удалённый напиток)
 
-| Поле | JSON | Тип |
-|------|------|-----|
-| `id` | | `String` |
-| `name` | | `String` |
-| `description` | `descriptionPlain` | `String` |
-| `color` | | `String` |
-| `rating` | | `int` |
-| `isAlcoholic` | | `boolean` |
-| `isCarbonated` | | `boolean` |
-| `servedIn` | `servedIn` | `Glass` |
-| `tastes` | | `ArrayList<Taste>` |
+| Поле | JSON |
+|------|------|
+| `id` | `id` |
+| `name` | `name` |
+| `description` | `descriptionPlain` |
+| `color` | `color` |
+| `rating` | `rating` |
+| `isAlcoholic` | `isAlcoholic` |
+| `isCarbonated` | `isCarbonated` |
+| `servedIn` | `servedIn` |
+| `tastes` | `tastes` |
 
 ### `Glass` (net)
 
-`String text`, `String name`, `int image`.
+`text`, `name`, `image`.
+
+### `TasteDto`
+
+`id`, `text`.
 
 ### `Preparation`
 
-`@SerializedName("steps") ArrayList<PreparationStep> preparationSteps`.
+`@SerialName("steps") preparationSteps: List<PreparationStep>?`.
 
 ### `PreparationStep`
 
@@ -106,7 +113,7 @@ Call<Preparation> getPreparationSteps(@Path("drinkId") String drinkId);
 
 - `SEARCH_BY_NAME` → `AbsolutDrinksApi.searchDrinks`;
 - `SEARCH_BY_CONDITIONS` → `AbsolutDrinksApi.getAllMatchedDrinks`;
-- `CURRENT` → повтор текущего запроса (например, pull-to-refresh).
+- `CURRENT` → повтор текущего запроса (например, load-more).
 
 Состояние пагинации: `mTotalResult`, `mNextLink`, `mCurrentSearchType`.
 Следующая страница запрашивается с `start += pageSize` (`pageSize = DEFAULT_ITEM_AMOUNT = 5`).
@@ -126,21 +133,21 @@ Call<Preparation> getPreparationSteps(@Path("drinkId") String drinkId);
 | `setCarbonated(...)` | `carbonated` / `not/carbonated` |
 | `setAlcoholic(...)` | `alcoholic` / `not/alcoholic` |
 
-`build()` собирает финальный путь, `getPath()` возвращает его. Результат передаётся в
-`FoundDrinksFragment` через `Constants.Extra.REQUEST_CONDITIONS`.
+`build().path` собирает финальный путь. Результат передаётся в маршрут
+`found_drinks?conditions=...`.
 
 ## Разбор ингредиентов
 
 Ответ `Preparation` преобразуется в `List<WholeCocktail>` в
 `BarDataRepository.handlePreparation(Preparation)` и `matchAmountAndUnit(...)`,
-после чего доступен `RemoteDrinkViewModel.mDrinkIngredients`.
+после чего доступен через `RemoteDrinkViewModel`.
 
 ## Сохранение удалённого напитка
 
 `RemoteDrinkViewModel.saveDrink()` → `BarDataRepository.saveRemoteDrink(DrinkEntity, Bitmap)`:
 
 1. `DrinkEntityToDrinkMapper.reverseMap(...)` → `Drink`;
-2. сохранение изображения через `ImageHandler.saveImage(...)`;
+2. сохранение изображения через `ImageHandler.saveImage(context, ...)`;
 3. `DrinkDao.insertDrink(...)`;
 4. построение `DrinkIngredientJoin` (сопоставление ингредиентов по имени через
    `getIngredientByName` / `insertOrReplaceIngredient`);
@@ -148,7 +155,7 @@ Call<Preparation> getPreparationSteps(@Path("drinkId") String drinkId);
 
 ## Ограничения
 
-- API-ключ захардкожен в `Constants.Keys.ABSOLUT_API_KEY`.
+- API-ключ по умолчанию захардкожен в `build.gradle` (можно переопределить в `local.properties`).
 - Используется `http://` (не HTTPS).
 - Доступность внешнего API зависит от сервиса Absolut Drinks; локальные функции
   (коллекция, свои рецепты) работают без сети.

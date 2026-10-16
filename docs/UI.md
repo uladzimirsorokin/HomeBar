@@ -1,148 +1,113 @@
 # UI и навигация
 
+UI полностью на **Jetpack Compose (Material 3)**. Навигация — **Navigation Compose**,
+единственный хост — `MainActivity` (`HomeBarApp()` → `NavHost`).
+
 ## Точки входа
 
 | Компонент | Роль |
 |-----------|------|
-| `SplashActivity` | Launcher, показывает заставку и сразу открывает `MainActivity` |
-| `MainActivity` | Хост нижней навигации и трёх вкладок |
+| `SplashActivity` | Launcher, сразу открывает `MainActivity` |
+| `MainActivity` | `@AndroidEntryPoint`, Compose-хост: тема + `NavHost` + нижняя навигация |
 | `ResourcesActivity` | Экран «Ресурсы» (ссылки на Freepik и Absolut Drinks) |
 
-## Карта экранов
+## Маршруты
 
-Ключи экранов заданы в `ui/fragments/Screens.java`. Три корневых ключа обрабатываются
-на уровне `MainActivity`, остальные — вложенными `SupportFragmentNavigator` внутри вкладок.
+Определены в `ui/navigation/Routes.kt`; граф — `homeBarGraph(...)` в `HomeBarNavHost.kt`.
 
-### Корневые вкладки (уровень Activity)
+| Route | Экран (`@Composable`) | ViewModel |
+|-------|-----------------------|-----------|
+| `found_drinks?conditions={conditions}` | `FoundDrinksScreen` | `FoundDrinksViewModel` |
+| `search_filter` | `SearchDrinksScreen` | — (собирает `DrinksPathManager`) |
+| `drinks_list` | `DrinksListScreen` | `DrinkListViewModel` |
+| `ingredients_list` | `IngredientsListScreen` | `IngredientListViewModel` |
+| `remote_drink?entity={entity}` | `DrinkDetailScreen` | `RemoteDrinkViewModel` |
+| `local_drink/{extra_id}?editable={editable}` | `DrinkDetailScreen` | `DrinkViewModel` |
+| `add_drink/{extra_id}` | `AddDrinkScreen` | `AddDrinkViewModel` |
+| `add_drink_ingredients` | `SelectIngredientsScreen` | `AddDrinkIngredientsViewModel` |
+| `local_ingredient/{extra_id}?editable={editable}` | `IngredientDetailScreen` | `IngredientViewModel` |
+| `add_ingredient/{extra_id}` | `AddIngredientScreen` | `AddIngredientViewModel` |
+| `about` | `AboutScreen` | — |
+| `settings` | `SettingsScreen` | `ThemeViewModel` (activity-scope) |
 
-| Ключ | Значение | Экран |
-|------|----------|-------|
-| `SEARCH` | `"search screen"` | `TabContainerFragment` (поиск) |
-| `DRINKS` | `"drinks screen"` | `TabContainerFragment` (мои коктейли) |
-| `INGREDIENTS` | `"ingredients screen"` | `TabContainerFragment` (ингредиенты) |
+Стартовый маршрут — `drinks_list`.
 
-### Экраны внутри вкладок
+## Нижняя навигация
 
-| Ключ | Значение | Фрагмент |
-|------|----------|----------|
-| `FOUND_DRINKS` | `"found drinks screen"` | `FoundDrinksFragment` |
-| `SEARCH_DRINKS` | `"search drinks screen"` | `SearchDrinksFragment` |
-| `DRINKS_LIST` | `"drinks list screen"` | `DrinksListFragment` |
-| `INGREDIENTS_LIST` | `"ingredients list screen"` | `IngredientsListFragment` |
-| `SINGLE_DRINK` | `"single drink screen"` | `RemoteDrinkFragment` |
-| `LOCAL_DRINK` | `"local drink screen"` | `LocalDrinkFragment` |
-| `LOCAL_INGREDIENT` | `"local ingredient screen"` | `IngredientFragment` |
-| `ADD_DRINK` | `"add drink screen"` | `AddDrinkFragment` |
-| `ADD_INGREDIENT` | `"add ingredient screen"` | `AddIngredientFragment` |
-| `ADD_DRINK_INGREDIENTS` | `"add drink ingredients screen"` | `AddDrinkIngredientsFragment` |
-| `ABOUT` | `"about screen"` | `AboutFragment` |
-| `SETTINGS` | `"settings screen"` | `SettingsFragment` |
+`HomeBarBottomBar` (Material 3 `NavigationBar`) с тремя вкладками:
 
-### Схема потоков
+| Индекс | Вкладка | Корневой маршрут | Иконка |
+|--------|---------|------------------|--------|
+| 0 | Поиск | `found_drinks` | `Icons.Filled.Search` |
+| 1 | Коктейли | `drinks_list` | `R.drawable.cocktail` |
+| 2 | Ингредиенты | `ingredients_list` | `R.drawable.bottles` |
 
-```
-MainActivity
-├── [Поиск]   TabContainerFragment
-│              └── FoundDrinksFragment ──► SearchDrinksFragment ──► (FOUND_DRINKS)
-│                     └── RemoteDrinkFragment ──(Add)──► локальная БД
-│                     └── AboutFragment / SettingsFragment
-├── [Коктейли] TabContainerFragment
-│              └── DrinksListFragment ──► LocalDrinkFragment ──(Edit)──► AddDrinkFragment
-│                     └── AddDrinkIngredientsFragment
-│                     └── AboutFragment / SettingsFragment
-└── [Ингредиенты] TabContainerFragment
-               └── IngredientsListFragment ──► IngredientFragment ──(Edit)──► AddIngredientFragment
-                      └── AboutFragment / SettingsFragment
-```
+Активная вкладка выводится из текущего route (`tabForRoute`). Переключение —
+`navigateToTab` с `popUpTo(startDestination) { saveState = true }`.
 
-## Фрагменты (`ui/fragments`)
+## Экраны
 
 ### Списки и поиск
 
-- **`FoundDrinksFragment`** — стартовый экран вкладки «Поиск». Показывает найденные из API
-  коктейли (`DrinkCardItemAdapter`), поддерживает `SwipeRefreshLayout`, поиск по названию,
-  пагинацию (load-more), переход к деталям и к расширенному поиску (FAB).
-  Меню: «О приложении», «Настройки».
-- **`SearchDrinksFragment`** — расширенный фильтр: бокал, вкус, ингредиент (spinner),
-  газированность/алкогольность (switch), цвет (Spectrum), навык (`SeekBar`).
-  Собирает путь через `DrinksPathManager` и открывает `FOUND_DRINKS` с условиями.
-- **`DrinksListFragment`** — список локальных коктейлей (`LocalDrinksListAdapter`) с
-  алфавитным скроллбаром (`MaterialScrollBar`), поиском и FAB создания.
-- **`IngredientsListFragment`** — список локальных ингредиентов (`IngredientsItemAdapter`)
-  с алфавитным скроллбаром, поиском и FAB создания.
+- **`FoundDrinksScreen`** — результаты удалённого поиска (`LazyColumn`), pull-to-refresh
+  (пагинация через `onLoadMore`), переход к деталям и к расширенному поиску (FAB `Search`).
+- **`SearchDrinksScreen`** — фильтр: бокал, вкус, ингредиент (dropdown), газированность/
+  алкогольность (switch), цвет (Material 3 `Slider`/чипы), навык (`Slider`). Собирает путь
+  через `DrinksPathManager` и переходит к `found_drinks`.
+- **`DrinksListScreen`** — список локальных коктейлей с поиском и FAB создания.
+- **`IngredientsListScreen`** — список локальных ингредиентов с поиском и FAB создания.
 
 ### Детали
 
-- **`RemoteDrinkFragment`** — детали коктейля из API (CollapsingToolbar). Загрузка фото через
-  Glide, список ингредиентов (`RemoteDrinkIngredientItemAdapter`), кнопка «Добавить»
-  сохраняет рецепт в локальную БД.
-- **`LocalDrinkFragment`** — детали локального коктейля (`LocalDrinkIngredientItemAdapter`).
-  При `EDITABLE` доступно редактирование; клик по ингредиенту открывает `LOCAL_INGREDIENT`.
-- **`IngredientFragment`** — деталь локального ингредиента: описание, заметки и список
-  связанных коктейлей (`DrinkSimpleItemAdapter`). При `EDITABLE` — редактирование.
+- **`DrinkDetailScreen`** — детали коктейля. Используется и для удалённого
+  (`showNotes = false`, кнопка «Добавить» сохраняет рецепт), и для локального
+  (`showNotes = true`, кнопка «Редактировать»). Изображение показывается только при наличии.
+- **`IngredientDetailScreen`** — деталь ингредиента: фото, описание, заметки и список
+  связанных коктейлей.
 
 ### Редактирование
 
-- **`AddDrinkFragment`** — форма коктейля: название, описание, фото, ингредиенты
-  (с количеством и единицей), оценка (`RangeBar`), газированность/алкогольность, бокал,
-  заметки. Реализует `AddImageDialogFragmentCallback`, `AddTastesDialogFragmentCallback`,
-  `BackButtonListener`.
-- **`AddDrinkIngredientsFragment`** — выбор ингредиентов с поиском и множественным выбором;
-  синхронизируется с `AddDrinkFragment` через `SharedViewModel`.
-- **`AddIngredientFragment`** — форма ингредиента: название, описание, заметки, фото.
-  Удаление запрещено, если ингредиент используется в коктейлях.
+- **`AddDrinkScreen`** — форма коктейля: название, описание, фото, ингредиенты (количество,
+  единица), вкусы, оценка (`Slider`), газированность/алкогольность, бокал, заметки.
+- **`SelectIngredientsScreen`** — выбор ингредиентов с поиском и множественным выбором;
+  синхронизируется с формой напитка через `SharedViewModel`.
+- **`AddIngredientScreen`** — форма ингредиента: название, описание, заметки, фото.
 
 ### Диалоги
 
-- **`AddImageDialogFragment`** — выбор источника фото (камера / галерея / удалить).
-- **`AddTastesDialogFragment`** — множественный выбор вкусов (`R.array.taste_name`).
+- **`AddImageDialog`** — выбор источника фото (камера / галерея / удалить).
+- **`AddTastesDialog`** — множественный выбор вкусов (`R.array.taste_name`).
 
 ### Прочее
 
-- **`AboutFragment`** — экран «О приложении» (ссылка на `ResourcesActivity`).
-- **`SettingsFragment`** — выбор темы (`ThemeItemAdapter`).
-- **`TabContainerFragment`** — контейнер вложенной навигации вкладки.
+- **`AboutScreen`** — «О приложении» (текст из `R.string.about_app_text`, ссылка на
+  `ResourcesActivity`).
+- **`SettingsScreen`** — выбор темы.
+- **`ResourcesScreen`** — ссылки на источники данных.
 
-## Адаптеры (`ui/adapters`)
+## Общие компоненты (`core/ui/components`)
 
-| Адаптер | Модель | Layout | Особенности |
-|---------|--------|--------|-------------|
-| `DrinkCardItemAdapter` | `ArrayList<DrinkEntity>` | `item_card_view_cocktail` | Карточки, Glide, `LoadMoreListener` (пагинация) |
-| `LocalDrinksListAdapter` | `List<Drink>` | `item_simple_drink` | `INameableAdapter`, `DiffUtil` |
-| `DrinkSimpleItemAdapter` | `List<Drink>` | `item_simple_drink` | Простые строки с кружком |
-| `IngredientsItemAdapter` | `List<Ingredient>` | `item_simple_drink` | `INameableAdapter`, `DiffUtil` |
-| `IngredientsListItemAdapter` | `List<Ingredient>` | `item_selectable_ingredient` | `Filterable`, множественный выбор |
-| `AddDrinkIngredientItemAdapter` | `List<WholeCocktail>` | `add_drink_ingredient_item` | Поля количества + spinner единиц |
-| `LocalDrinkIngredientItemAdapter` | `List<WholeCocktail>` | `item_single_drink_ingredient` | Ингредиенты локального напитка |
-| `RemoteDrinkIngredientItemAdapter` | `List<WholeCocktail>` | `item_single_drink_ingredient` | Ингредиенты удалённого напитка |
-| `ThemeItemAdapter` | `ArrayList<ThemeItem>` | `item_theme` | Цвет, галочка выбора, название |
+| Компонент | Назначение |
+|-----------|------------|
+| `EmptyState` | Заглушка «список пуст» (иконка + текст) |
+| `DetailCard` | Карточка с заголовком и контентом |
+| `SimpleListItem` | Строка списка: круглая картинка + название |
+| `AddImageDialog` | Диалог выбора источника изображения |
+| `AddTastesDialog` | Диалог выбора вкусов |
+| `rememberImagePicker` | Обёртка над Activity Result API (камера/галерея) |
+| `imageModel(String?)` | Построение модели для Coil (`http` URL или `File`) |
+| `HomeBarTopBar` | Верхняя панель (в `ui/navigation`) |
 
 ## Темы
 
-`ui/utils/ThemeUtils`:
+Три схемы в `core/ui/theme` (`ThemeVariant`): **Indigo (0)**, **Purple (1)**, **Black (2)**.
 
-| Константа | Значение | Стиль |
-|-----------|----------|-------|
-| `INDIGO` | 0 | `R.style.AppTheme_Indigo` |
-| `PINK` | 1 | `R.style.AppTheme_Purple` |
-| `BLACK` | 2 | `R.style.AppTheme_Black` |
-
-- `onActivityCreateSetTheme(Activity)` — применяет тему при старте;
-- `changeToTheme(Activity, int)` — сохраняет выбор в `getPreferences(MODE_PRIVATE)`
-  (ключ `Constants.Extra.APP_THEME`) и перезапускает Activity с анимацией.
-
-Базовый стиль — `AppTheme` (`Theme.AppCompat.Light.NoActionBar`), определён в
-`res/values/styles.xml`.
+- выбор темы хранится в DataStore (`core/data/ThemePreferences`, ключ `app_theme`);
+- `ThemeViewModel` отдаёт `StateFlow<Int>`;
+- `MainActivity`/`ResourcesActivity` применяют тему через `HomeBarTheme(variant = ...)`.
 
 ## Ресурсы и локализация
 
 - Строки и массивы — `res/values/` (русский) и `res/values-en/` (английский).
-- Иконки/изображения — `res/drawable-*` (mdpi…xxxhdpi).
-- Меню — `res/menu/` (`list_with_search_menu`, `add_drink_ingredient_menu`,
-  `add_edit_item_menu`, `searchfragment_menu`).
-
-## Нижняя навигация
-
-`MainActivity` использует `AHBottomNavigation` (библиотека `com.aurelhubert`) с тремя
-пунктами: «Поиск», «Коктейли», «Ингредиенты». Первый показ открывает вкладку «Коктейли»
-(`setCurrentItem(1)`).
+- Иконки/изображения — `res/drawable*` (png + vector), логотип — `res/mipmap-*`.
+- Векторные иконки Material — из `material-icons-core`.
