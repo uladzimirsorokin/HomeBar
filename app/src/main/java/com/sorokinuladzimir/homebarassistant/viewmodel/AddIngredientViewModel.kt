@@ -2,7 +2,6 @@ package com.sorokinuladzimir.homebarassistant.viewmodel
 
 import android.app.Application
 import android.net.Uri
-import android.text.TextUtils
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
@@ -85,11 +84,11 @@ class AddIngredientViewModel @Inject constructor(
     private fun removeImageFile(dbPath: String?, currentPath: String?, savingIngredient: Boolean) {
         var deletePath: String? = null
         if (savingIngredient) {
-            if (dbPath != null && !TextUtils.equals(currentPath, dbPath)) {
+            if (dbPath != null && currentPath != dbPath) {
                 deletePath = dbPath
             }
         } else {
-            if (currentPath != null && !TextUtils.equals(currentPath, dbPath)) {
+            if (currentPath != null && currentPath != dbPath) {
                 deletePath = currentPath
             }
         }

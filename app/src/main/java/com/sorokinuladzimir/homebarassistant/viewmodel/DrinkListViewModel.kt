@@ -1,7 +1,6 @@
 package com.sorokinuladzimir.homebarassistant.viewmodel
 
 import android.app.Application
-import android.text.TextUtils
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
@@ -29,7 +28,7 @@ class DrinkListViewModel @Inject constructor(
 
     fun searchDrinks(query: String) {
         removeAllSources()
-        if (!TextUtils.isEmpty(query)) {
+        if (!query.isNullOrEmpty()) {
             addSearchResultSource(query)
         } else {
             restoreInitialSource()
