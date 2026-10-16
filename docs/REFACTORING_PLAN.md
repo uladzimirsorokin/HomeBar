@@ -268,7 +268,7 @@ com.sorokinuladzimir.homebarassistant
 | 2. Hilt | ✅ готово | `@HiltAndroidApp`, модули `DatabaseModule`/`NetworkModule`/`AppModule`/`RepositoryModule`; `BarData`/`CocktailsDatabase`/`AbsolutDrinksApi`/`ImageHandler` через DI; 10 ViewModel → Kotlin `@HiltViewModel` (+`SavedStateHandle` для аргументов); фрагменты/`MainActivity` `@AndroidEntryPoint`. Убраны `BarApp.getDatabase()/getBarRepository()` и `ServiceGenerator`. `AppExecutors` оставлен статически для адаптеров (до этапа 5) |
 | 3. Сеть | ✅ готово | DTO на Kotlin `@Serializable` (kotlinx.serialization) + `TasteDto`; Retrofit API → `suspend`; `NetworkModule` на kotlinx-конвертере; OkHttp 4.12; `NetworkUtil` → `NetworkCapabilities`; `ApiResult` + тосты в main-поток; ключ/URL → `BuildConfig`/`local.properties`. Gson оставлен только для Room-конвертера `TasteConverter` |
 | 4. Compose-фундамент | ✅ готово | Тема `core/ui/theme` (+ `homeBarThemeVariant()` из prefs); общий компонент `EmptyState`; Coil подключён; интероп-стратегия: `ComposeView` в контентной области фрагмента (XML-toolbar сохраняется). Пилот — `AboutFragment`/`AboutScreen` на Compose |
-| 5. Поэкранная миграция | 🔄 в работе | 5.1 ✅ Settings; 5.2 ✅ списки; 5.3 ✅ детали; 5.4 ✅ поиск; 5.5 🔄 формы: `AddIngredientFragment` ✅, `AddDrinkFragment` ✅ (5.5a/5.5b). Осталось: `AddDrinkIngredientsFragment` (5.5c). Далее 5.6 диалоги, 5.7 нижняя навигация |
+| 5. Поэкранная миграция | 🔄 в работе | 5.1 ✅ Settings; 5.2 ✅ списки; 5.3 ✅ детали; 5.4 ✅ поиск; 5.5 ✅ формы (`AddIngredient`, `AddDrink`, `AddDrinkIngredients`). Осталось: 5.6 диалоги, 5.7 нижняя навигация |
 | 6. Compose Navigation | ⬜ не начат | |
 | 7. Удаление легаси | ⬜ не начат | |
 | 8. Качество | ⬜ не начат | |
