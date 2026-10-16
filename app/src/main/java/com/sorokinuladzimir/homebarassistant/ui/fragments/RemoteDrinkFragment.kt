@@ -103,11 +103,11 @@ class RemoteDrinkFragment : Fragment(), BackButtonListener {
         private const val EXTRA_BUNDLE = "extra_bundle"
 
         @JvmStatic
-        fun getNewInstance(name: String?, bundle: Bundle): RemoteDrinkFragment {
+        fun getNewInstance(name: String?, bundle: Bundle?): RemoteDrinkFragment {
             val fragment = RemoteDrinkFragment()
             val arguments = Bundle()
             arguments.putString(EXTRA_NAME, name)
-            arguments.putBundle(EXTRA_BUNDLE, bundle)
+            if (bundle != null) arguments.putBundle(EXTRA_BUNDLE, bundle)
             fragment.arguments = arguments
             return fragment
         }

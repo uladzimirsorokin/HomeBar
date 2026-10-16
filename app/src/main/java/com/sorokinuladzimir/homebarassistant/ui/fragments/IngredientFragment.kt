@@ -119,12 +119,12 @@ class IngredientFragment : Fragment(), BackButtonListener {
         private const val EXTRA_EDITABLE = "extra_editable"
 
         @JvmStatic
-        fun getNewInstance(name: String?, bundle: Bundle): IngredientFragment {
+        fun getNewInstance(name: String?, bundle: Bundle?): IngredientFragment {
             val fragment = IngredientFragment()
             val arguments = Bundle()
             arguments.putString(EXTRA_NAME, name)
-            arguments.putLong(EXTRA_ID, bundle.getLong(Constants.Extra.EXTRA_ID))
-            arguments.putBoolean(EXTRA_EDITABLE, bundle.getBoolean(Constants.Extra.EDITABLE))
+            arguments.putLong(EXTRA_ID, bundle?.getLong(Constants.Extra.EXTRA_ID) ?: -1L)
+            arguments.putBoolean(EXTRA_EDITABLE, bundle?.getBoolean(Constants.Extra.EDITABLE) ?: false)
             fragment.arguments = arguments
             return fragment
         }
