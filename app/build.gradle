@@ -114,7 +114,6 @@ dependencies {
     implementation libs.gson
 
     // --- Third-party (legacy, будут удалены на этапах 5-7) ---
-    implementation libs.cicerone
     implementation libs.ahbottomnavigation
     implementation libs.glide
     annotationProcessor libs.glide.compiler

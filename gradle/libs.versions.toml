@@ -40,7 +40,6 @@ gson = "2.10.1"
 
 # Third-party (legacy, будут удалены на этапах 5-7)
 glide = "4.16.0"
-cicerone = "2.1.0"
 ahbottomnavigation = "2.2.0"
 materialscrollbar = "12.5.1"
 materialrangebar = "1.4.6"
@@ -94,7 +93,6 @@ gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson" }
 # --- Third-party (legacy) ---
 glide = { group = "com.github.bumptech.glide", name = "glide", version.ref = "glide" }
 glide-compiler = { group = "com.github.bumptech.glide", name = "compiler", version.ref = "glide" }
-cicerone = { group = "com.github.terrakok", name = "Cicerone", version.ref = "cicerone" }
 ahbottomnavigation = { group = "com.aurelhubert", name = "ahbottomnavigation", version.ref = "ahbottomnavigation" }
 materialscrollbar = { group = "com.github.turing-tech", name = "MaterialScrollBar", version.ref = "materialscrollbar" }
 materialrangebar = { group = "com.appyvet", name = "materialrangebar", version.ref = "materialrangebar" }
