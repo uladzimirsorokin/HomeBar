@@ -20,6 +20,8 @@ import com.sorokinuladzimir.homebarassistant.ui.fragments.TabContainerFragment;
 import com.sorokinuladzimir.homebarassistant.ui.subnavigation.BackButtonListener;
 import com.sorokinuladzimir.homebarassistant.ui.utils.ThemeUtils;
 
+import dagger.hilt.android.AndroidEntryPoint;
+
 import ru.terrakok.cicerone.Navigator;
 import ru.terrakok.cicerone.commands.Back;
 import ru.terrakok.cicerone.commands.Command;
@@ -29,6 +31,7 @@ import ru.terrakok.cicerone.commands.SystemMessage;
 import static com.sorokinuladzimir.homebarassistant.BarApp.getInstance;
 
 
+@AndroidEntryPoint
 public class MainActivity extends AppCompatActivity {
 
     private AHBottomNavigation bottomNavigation;

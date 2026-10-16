@@ -1,6 +1,7 @@
 package com.sorokinuladzimir.homebarassistant.ui.fragments;
 
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
+import dagger.hilt.android.AndroidEntryPoint;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -35,6 +36,7 @@ import com.sorokinuladzimir.homebarassistant.ui.subnavigation.RouterProvider;
 import com.sorokinuladzimir.homebarassistant.viewmodel.DrinkListViewModel;
 
 
+@AndroidEntryPoint
 public class DrinksListFragment extends Fragment {
 
     private static final String EXTRA_NAME = "dlf_extra_name";
@@ -62,7 +64,7 @@ public class DrinksListFragment extends Fragment {
         initFAB(rootView);
         initRecyclerView(rootView);
         initToolbar(rootView);
-        mViewModel = ViewModelProviders.of(Objects.requireNonNull(getActivity())).get(DrinkListViewModel.class);
+        mViewModel = new ViewModelProvider(requireActivity()).get(DrinkListViewModel.class);
         mViewModel.restoreSources();
         
         return rootView;

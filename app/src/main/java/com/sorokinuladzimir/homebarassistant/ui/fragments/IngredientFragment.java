@@ -1,6 +1,6 @@
 package com.sorokinuladzimir.homebarassistant.ui.fragments;
 
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -32,9 +32,12 @@ import com.sorokinuladzimir.homebarassistant.ui.subnavigation.BackButtonListener
 import com.sorokinuladzimir.homebarassistant.ui.subnavigation.RouterProvider;
 import com.sorokinuladzimir.homebarassistant.viewmodel.IngredientViewModel;
 
+import dagger.hilt.android.AndroidEntryPoint;
+
 import java.util.Objects;
 
 
+@AndroidEntryPoint
 public class IngredientFragment extends Fragment implements BackButtonListener {
 
     private static final String MENU_ITEM_EDIT = "Edit";
@@ -92,9 +95,7 @@ public class IngredientFragment extends Fragment implements BackButtonListener {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        IngredientViewModel.Factory factory = new IngredientViewModel.Factory(
-                Objects.requireNonNull(getActivity()).getApplication(), mIngredientId);
-        IngredientViewModel mViewModel = ViewModelProviders.of(this, factory).get(IngredientViewModel.class);
+        IngredientViewModel mViewModel = new ViewModelProvider(this).get(IngredientViewModel.class);
         subscribeUi(mViewModel);
     }
 

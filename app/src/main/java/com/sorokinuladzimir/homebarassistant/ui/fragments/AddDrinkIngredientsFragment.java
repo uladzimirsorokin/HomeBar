@@ -1,6 +1,7 @@
 package com.sorokinuladzimir.homebarassistant.ui.fragments;
 
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
+import dagger.hilt.android.AndroidEntryPoint;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -34,6 +35,7 @@ import com.sorokinuladzimir.homebarassistant.viewmodel.SharedViewModel;
 import java.util.Objects;
 
 
+@AndroidEntryPoint
 public class AddDrinkIngredientsFragment extends Fragment implements BackButtonListener {
 
     private static final String EXTRA_NAME = "adif_extra_name";
@@ -60,8 +62,8 @@ public class AddDrinkIngredientsFragment extends Fragment implements BackButtonL
         initFAB(rootView);
         initRecyclerView(rootView);
         initToolbar(rootView);
-        mSharedIngredientsViewModel = ViewModelProviders.of(Objects.requireNonNull(getActivity())).get(SharedViewModel.class);
-        mViewModel = ViewModelProviders.of(this).get(AddDrinkIngredientsViewModel.class);
+        mSharedIngredientsViewModel = new ViewModelProvider(requireActivity()).get(SharedViewModel.class);
+        mViewModel = new ViewModelProvider(this).get(AddDrinkIngredientsViewModel.class);
         subscribeUi(mViewModel, mSharedIngredientsViewModel);
 
         return rootView;

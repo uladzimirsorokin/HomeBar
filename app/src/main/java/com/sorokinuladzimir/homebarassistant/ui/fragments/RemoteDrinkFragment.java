@@ -1,7 +1,7 @@
 package com.sorokinuladzimir.homebarassistant.ui.fragments;
 
 
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -33,6 +33,8 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.transition.Transition;
 
+import dagger.hilt.android.AndroidEntryPoint;
+
 import java.util.Objects;
 
 import com.sorokinuladzimir.homebarassistant.Constants;
@@ -45,6 +47,7 @@ import com.sorokinuladzimir.homebarassistant.ui.subnavigation.RouterProvider;
 import com.sorokinuladzimir.homebarassistant.ui.utils.TastesHelper;
 import com.sorokinuladzimir.homebarassistant.viewmodel.RemoteDrinkViewModel;
 
+@AndroidEntryPoint
 public class RemoteDrinkFragment extends Fragment implements BackButtonListener {
 
     private static final String EXTRA_NAME = "extra_name";
@@ -81,10 +84,7 @@ public class RemoteDrinkFragment extends Fragment implements BackButtonListener 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fr_single_drink, container, false);
-        RemoteDrinkViewModel.Factory factory = new RemoteDrinkViewModel.Factory(Objects.requireNonNull(getActivity()).getApplication(),
-                (DrinkEntity) Objects.requireNonNull(Objects.requireNonNull(getArguments())
-                        .getBundle(EXTRA_BUNDLE)).getSerializable(Constants.Extra.COCKTAIL));
-        mViewModel = ViewModelProviders.of(this, factory).get(RemoteDrinkViewModel.class);
+        mViewModel = new ViewModelProvider(this).get(RemoteDrinkViewModel.class);
         initToolbar(rootView);
         initViews(rootView);
         initFAB(rootView);

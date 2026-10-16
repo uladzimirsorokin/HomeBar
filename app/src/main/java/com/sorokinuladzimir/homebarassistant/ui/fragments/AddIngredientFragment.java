@@ -4,7 +4,8 @@ package com.sorokinuladzimir.homebarassistant.ui.fragments;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.pm.PackageManager;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
+import dagger.hilt.android.AndroidEntryPoint;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -43,6 +44,7 @@ import java.util.Objects;
 import static android.app.Activity.RESULT_OK;
 import static com.sorokinuladzimir.homebarassistant.Constants.Values.DEFAULT_IMAGE_SIZE;
 
+@AndroidEntryPoint
 public class AddIngredientFragment extends Fragment implements BackButtonListener, AddImageDialogFragment.AddImageDialogFragmentCallback {
 
     private static final int REQUEST_IMAGE_CAPTURE = 1;
@@ -76,9 +78,7 @@ public class AddIngredientFragment extends Fragment implements BackButtonListene
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fr_add_ingredient, container, false);
-        AddIngredientViewModel.Factory factory = new AddIngredientViewModel.Factory(Objects.requireNonNull(getActivity()).getApplication(),
-                Objects.requireNonNull(getArguments()).getLong(EXTRA_ID));
-        mViewModel = ViewModelProviders.of(this, factory).get(AddIngredientViewModel.class);
+        mViewModel = new ViewModelProvider(this).get(AddIngredientViewModel.class);
         initToolbar(rootView);
         initViews(rootView);
 

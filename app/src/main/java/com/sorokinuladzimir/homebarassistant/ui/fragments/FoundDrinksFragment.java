@@ -1,6 +1,7 @@
 package com.sorokinuladzimir.homebarassistant.ui.fragments;
 
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
+import dagger.hilt.android.AndroidEntryPoint;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -33,6 +34,7 @@ import com.sorokinuladzimir.homebarassistant.ui.adapters.DrinkCardItemAdapter;
 import com.sorokinuladzimir.homebarassistant.ui.subnavigation.RouterProvider;
 import com.sorokinuladzimir.homebarassistant.viewmodel.FoundDrinksViewModel;
 
+@AndroidEntryPoint
 public class FoundDrinksFragment extends Fragment {
 
     private static final String EXTRA_NAME = "extra_name";
@@ -61,7 +63,7 @@ public class FoundDrinksFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fr_items_list, container, false);
-        mViewModel = ViewModelProviders.of(this).get(FoundDrinksViewModel.class);
+        mViewModel = new ViewModelProvider(this).get(FoundDrinksViewModel.class);
         if (savedInstanceState != null) {
             mRequestConditions = savedInstanceState.getString(Constants.Extra.CONDITIONS);
         }

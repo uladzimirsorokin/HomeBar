@@ -1,5 +1,6 @@
 package com.sorokinuladzimir.homebarassistant
 
+import android.content.Context
 import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Process
@@ -17,11 +18,11 @@ import com.sorokinuladzimir.homebarassistant.db.mapper.DrinkEntityToDrinkMapper
 import com.sorokinuladzimir.homebarassistant.net.AbsolutDrinksApi
 import com.sorokinuladzimir.homebarassistant.net.AbsolutDrinksResult
 import com.sorokinuladzimir.homebarassistant.net.NoConnectivityException
-import com.sorokinuladzimir.homebarassistant.net.ServiceGenerator
 import com.sorokinuladzimir.homebarassistant.net.entity.DrinkEntity
 import com.sorokinuladzimir.homebarassistant.net.entity.Preparation
 import com.sorokinuladzimir.homebarassistant.net.entity.PreparationStep
 import com.sorokinuladzimir.homebarassistant.ui.utils.ImageHandler
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -35,12 +36,18 @@ import java.io.IOException
 import java.text.NumberFormat
 import java.util.ArrayList
 import java.util.HashMap
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class BarDataRepository private constructor() : BarData {
+@Singleton
+class BarDataRepository @Inject constructor(
+    private val mDatabase: CocktailsDatabase,
+    private val mApi: AbsolutDrinksApi,
+    @ApplicationContext private val context: Context,
+    private val imageHandler: ImageHandler
+) : BarData {
 
-    private val mDatabase: CocktailsDatabase = BarApp.getDatabase()
     private val mScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
-    private val imageHandler = ImageHandler()
 
     private val mObservableRemoteDrinks = MediatorLiveData<List<DrinkEntity>>()
     private val mRemoteDrinkIngredients = MediatorLiveData<List<WholeCocktail>>()
@@ -123,8 +130,8 @@ class BarDataRepository private constructor() : BarData {
         mScope.launch {
             Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND)
             try {
-                val bitmap = imageHandler.getBitmapFromUri(BarApp.getAppContext(), imageUri, sizeForScale)
-                if (deleteSource) imageHandler.deleteImage(BarApp.getAppContext(), imageUri)
+                val bitmap = imageHandler.getBitmapFromUri(context, imageUri, sizeForScale)
+                if (deleteSource) imageHandler.deleteImage(context, imageUri)
                 if (ingredientImage) {
                     mObservableIngredientImagePath.postValue(imageHandler.saveImage(bitmap))
                 } else {
@@ -136,7 +143,7 @@ class BarDataRepository private constructor() : BarData {
         }
     }
 
-    override fun createImageFile(): Uri = imageHandler.createImageFile(BarApp.getAppContext())
+    override fun createImageFile(): Uri = imageHandler.createImageFile(context)
 
     override fun deleteImage(imagePath: String?) {
         mScope.launch {
@@ -145,11 +152,11 @@ class BarDataRepository private constructor() : BarData {
                 val imageFile = File(imagePath)
                 if (imageFile.exists()) {
                     val photoUri = FileProvider.getUriForFile(
-                        BarApp.getAppContext(),
+                        context,
                         Constants.Strings.AUTHORITY,
                         imageFile
                     )
-                    imageHandler.deleteImage(BarApp.getAppContext(), photoUri)
+                    imageHandler.deleteImage(context, photoUri)
                 }
             }
         }
@@ -175,14 +182,14 @@ class BarDataRepository private constructor() : BarData {
         mScope.launch {
             if (clearList) clearRemoteDrinks()
             val start = mObservableRemoteDrinks.value?.size ?: 0
-            val client = ServiceGenerator.getInstance().absolutDrinksService
+            val client = mApi
             val call = getDrinksCall(requestConditions, queryType, client, start)
             if (call != null) {
                 if (!(queryType == QueryType.CURRENT && start >= mTotalResult)) {
                     loadDrinks(call)
                 }
             } else {
-                Toast.makeText(BarApp.getAppContext(), "something went wrong :(", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "something went wrong :(", Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -270,22 +277,22 @@ class BarDataRepository private constructor() : BarData {
         mScope.launch {
             (mRemoteDrinkIngredients.value as? MutableList<WholeCocktail>)?.clear()
             mRemoteIngredients.clear()
-            val client = ServiceGenerator.getInstance().absolutDrinksService
+            val client = mApi
             val call = client.getPreparationSteps(drinkId)
             call.enqueue(object : Callback<Preparation> {
                 override fun onResponse(call: Call<Preparation>, response: Response<Preparation>) {
                     if (response.isSuccessful) {
                         handlePreparation(response.body())
                     } else {
-                        Toast.makeText(BarApp.getAppContext(), "server returned error", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, "server returned error", Toast.LENGTH_SHORT).show()
                     }
                 }
 
                 override fun onFailure(call: Call<Preparation>, t: Throwable) {
                     if (t is NoConnectivityException) {
-                        Toast.makeText(BarApp.getAppContext(), "no internet", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, "no internet", Toast.LENGTH_SHORT).show()
                     } else {
-                        Toast.makeText(BarApp.getAppContext(), "server error, try again later", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, "server error, try again later", Toast.LENGTH_SHORT).show()
                     }
                 }
             })
@@ -341,8 +348,8 @@ class BarDataRepository private constructor() : BarData {
     ): Map<String, String> {
         val result = HashMap<String, String>()
         if (amount != 0.0f && unit != null) {
-            val unitPatterns = BarApp.getAppContext().resources.getStringArray(R.array.ingredient_unit_ru)
-            val unitMatches = BarApp.getAppContext().resources.getStringArray(R.array.ingredient_unit_ru_matches)
+            val unitPatterns = context.resources.getStringArray(R.array.ingredient_unit_ru)
+            val unitMatches = context.resources.getStringArray(R.array.ingredient_unit_ru_matches)
             for (unitPattern in unitPatterns) {
                 if (unit.lowercase().contains(unitPattern)) {
                     result[Constants.Extra.AMOUNT] = formatFloatNumber(amount)
@@ -370,15 +377,15 @@ class BarDataRepository private constructor() : BarData {
                 if (response.isSuccessful) {
                     setDrinksResult(response)
                 } else {
-                    Toast.makeText(BarApp.getAppContext(), "server returned error", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "server returned error", Toast.LENGTH_SHORT).show()
                 }
             }
 
             override fun onFailure(call: Call<AbsolutDrinksResult>, t: Throwable) {
                 if (t is NoConnectivityException) {
-                    Toast.makeText(BarApp.getAppContext(), "no internet", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "no internet", Toast.LENGTH_SHORT).show()
                 } else {
-                    Toast.makeText(BarApp.getAppContext(), "server error, try again later", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "server error, try again later", Toast.LENGTH_SHORT).show()
                 }
             }
         })
@@ -399,13 +406,5 @@ class BarDataRepository private constructor() : BarData {
 
     enum class QueryType {
         SEARCH_BY_NAME, SEARCH_BY_CONDITIONS, CURRENT
-    }
-
-    companion object {
-
-        private val INSTANCE = BarDataRepository()
-
-        @JvmStatic
-        fun getInstance(): BarDataRepository = INSTANCE
     }
 }

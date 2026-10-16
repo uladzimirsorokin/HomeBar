@@ -3,7 +3,8 @@ package com.sorokinuladzimir.homebarassistant.ui.fragments;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.pm.PackageManager;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
+import dagger.hilt.android.AndroidEntryPoint;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -54,6 +55,7 @@ import java.util.Objects;
 import static android.app.Activity.RESULT_OK;
 import static com.sorokinuladzimir.homebarassistant.Constants.Values.DEFAULT_IMAGE_SIZE;
 
+@AndroidEntryPoint
 public class AddDrinkFragment extends Fragment implements BackButtonListener,
         AddImageDialogFragment.AddImageDialogFragmentCallback,
         AddTastesDialogFragment.AddTastesDialogFragmentCallback {
@@ -99,9 +101,8 @@ public class AddDrinkFragment extends Fragment implements BackButtonListener,
         Long mDrinkId = -1L;
         if (getArguments() != null)
             mDrinkId = getArguments().getLong(EXTRA_ID);
-        AddDrinkViewModel.Factory factory = new AddDrinkViewModel.Factory(Objects.requireNonNull(getActivity()).getApplication(), mDrinkId);
-        mViewModel = ViewModelProviders.of(this, factory).get(AddDrinkViewModel.class);
-        mSharedIngredientsViewModel = ViewModelProviders.of(getActivity()).get(SharedViewModel.class);
+        mViewModel = new ViewModelProvider(this).get(AddDrinkViewModel.class);
+        mSharedIngredientsViewModel = new ViewModelProvider(requireActivity()).get(SharedViewModel.class);
         initToolbar(rootView);
         initViews(rootView);
         return rootView;

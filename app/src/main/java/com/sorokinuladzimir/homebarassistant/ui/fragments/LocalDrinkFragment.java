@@ -1,6 +1,6 @@
 package com.sorokinuladzimir.homebarassistant.ui.fragments;
 
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -25,6 +25,8 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 
+import dagger.hilt.android.AndroidEntryPoint;
+
 import java.util.Objects;
 
 import com.sorokinuladzimir.homebarassistant.Constants;
@@ -37,6 +39,7 @@ import com.sorokinuladzimir.homebarassistant.ui.utils.TastesHelper;
 import com.sorokinuladzimir.homebarassistant.viewmodel.DrinkViewModel;
 
 
+@AndroidEntryPoint
 public class LocalDrinkFragment extends Fragment implements BackButtonListener {
 
     private static final String EXTRA_NAME = "extra_name";
@@ -93,9 +96,7 @@ public class LocalDrinkFragment extends Fragment implements BackButtonListener {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        DrinkViewModel.Factory factory = new DrinkViewModel.Factory(
-                Objects.requireNonNull(getActivity()).getApplication(), mDrinkId);
-        DrinkViewModel mViewModel = ViewModelProviders.of(this, factory).get(DrinkViewModel.class);
+        DrinkViewModel mViewModel = new ViewModelProvider(this).get(DrinkViewModel.class);
         subscribeUi(mViewModel);
     }
 
