@@ -185,8 +185,8 @@ private fun buildPath(
     val taste = context.resources.getStringArray(R.array.taste_id)[tasteId]
     val ingredient =
         if (ingredientId == 0) null else context.resources.getStringArray(R.array.ingridient_type)[ingredientId]
-    val tastes = if (tasteId == 0) null else arrayOf(taste)
-    val ingredients = if (ingredientId == 0) null else arrayOf(ingredient)
+    val tastes: Array<String>? = if (tasteId == 0) null else arrayOf(taste!!)
+    val ingredients: Array<String>? = if (ingredientId == 0) null else arrayOf(ingredient!!)
     val skills = Array(skill + 1) { (it + 1).toString() }
     val colors = context.resources.getIntArray(R.array.colors)
     val colorId = colors.indexOf(color)

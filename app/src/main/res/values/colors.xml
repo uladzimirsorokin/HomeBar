@@ -1,38 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
-    <color name="bg_circle_default">#666666</color>
-    <color name="row_activated">#e0e0e0</color>
-    <color name="bg_close_circle">#be3f51b5</color>
-    <color name="subheader_text">#8c000000</color>
-    <color name="singleline_edittext">#f3000000</color>
-    <color name="add_ingredients">#84313335</color>
-
-    <color name="transparent">#00ffffff</color>
-    <color name="black_trans80">#33000000</color>
-
     <color name="white">#FFFFFF</color>
-    <color name="green">#50fe00</color>
-    <color name="red">#ff0000</color>
-    <color name="dark_gray">#a9a9a9</color>
-
-    <color name="about_separator_color">#e1e1e1</color>
-
-    <!-- Text -->
-    <color name="about_description_text_color">#595959</color>
-    <color name="about_item_text_color">#7c7c7c</color>
-    <color name="about_text_color">#595959</color>
-
-    <color name="indigo">#3F51B5</color>
-    <color name="indigoDark">#303F9F</color>
-    <color name="indigoAccent">#FF4081</color>
-
-    <color name="purple">#311b92</color>
-    <color name="purpleDark">#000063</color>
-    <color name="purpleAccent">#6746c3</color>
-
-    <color name="black">#212121</color>
-    <color name="blackDark">#000000</color>
-    <color name="blackAccent">#00e676</color>
 </resources>
-

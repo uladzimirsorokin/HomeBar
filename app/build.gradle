@@ -87,15 +87,6 @@ dependencies {
     implementation libs.hilt.android
     ksp libs.hilt.compiler
 
-    // --- AndroidX / Google (legacy UI, до этапов 5-7) ---
-    implementation libs.androidx.appcompat
-    implementation libs.material
-    implementation libs.androidx.recyclerview
-    implementation libs.androidx.cardview
-    implementation libs.androidx.constraintlayout
-    implementation libs.androidx.swiperefreshlayout
-    implementation libs.androidx.lifecycle.extensions
-
     // --- Room ---
     implementation libs.androidx.room.runtime
     implementation libs.androidx.room.ktx
@@ -111,18 +102,4 @@ dependencies {
     implementation libs.okhttp
     implementation libs.retrofit.kotlinx.serialization
     implementation libs.kotlinx.serialization.json
-    implementation libs.gson
-
-    // --- Third-party (legacy, будут удалены на этапах 5-7) ---
-    implementation libs.ahbottomnavigation
-    implementation libs.glide
-    annotationProcessor libs.glide.compiler
-    implementation(libs.spectrum) {
-        exclude module: 'preference-v7'
-    }
-    implementation libs.rxjava
-    implementation libs.materialscrollbar
-    implementation(libs.materialrangebar) {
-        exclude module: 'support-compat'
-    }
 }

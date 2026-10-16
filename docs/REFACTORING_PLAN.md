@@ -200,13 +200,13 @@ com.sorokinuladzimir.homebarassistant
 ## Этап 7. Удаление легаси
 
 Задачи:
-- [ ] Удалить Java-фрагменты, адаптеры, XML-разметки, `values/styles.xml` (View-темы).
-- [ ] Удалить старые библиотеки: AHBottomNavigation, MaterialScrollBar, MaterialRangeBar,
+- [x] Удалить Java-фрагменты, адаптеры, XML-разметки, `values/styles.xml` (View-темы).
+- [x] Удалить старые библиотеки: AHBottomNavigation, MaterialScrollBar, MaterialRangeBar,
       Spectrum, Cicerone, Glide, Gson, RxJava.
-- [ ] Выключить `android.enableJetifier=false`; убедиться, что все зависимости AndroidX-нативные.
-- [ ] Убрать `android.nonTransitiveRClass=false` и `android.nonFinalResIds=false`
+- [x] Выключить `android.enableJetifier=false`; убедиться, что все зависимости AndroidX-нативные.
+- [x] Убрать `android.nonTransitiveRClass=false` и `android.nonFinalResIds=false`
       (после отказа от `switch (R.id...)`).
-- [ ] Убрать `local.properties`-зависимые хаки, если появятся.
+- [x] Убрать `local.properties`-зависимые хаки, если появятся.
 
 **Критерий выхода:** сборка без Jetifier, минимальный набор зависимостей.
 
@@ -270,5 +270,5 @@ com.sorokinuladzimir.homebarassistant
 | 4. Compose-фундамент | ✅ готово | Тема `core/ui/theme` (+ `homeBarThemeVariant()` из prefs); общий компонент `EmptyState`; Coil подключён; интероп-стратегия: `ComposeView` в контентной области фрагмента (XML-toolbar сохраняется). Пилот — `AboutFragment`/`AboutScreen` на Compose |
 | 5. Поэкранная миграция | ✅ готово | 5.1 Settings; 5.2 списки; 5.3 детали; 5.4 поиск; 5.5 формы; 5.6 диалоги; 5.7 нижняя навигация (`MainActivity` → Kotlin + Material 3 `NavigationBar`). Все экраны на Compose (в оболочках Fragment) |
 | 6. Compose Navigation | ✅ готово | `navigation-compose` + единый `NavHost` (`Routes`/`HomeBarApp`/маршрутные composable на существующих экранах и ViewModel); `MainActivity` — чистый Compose-хост; удалены `ui/fragments`, `ui/subnavigation`, `ui/adapters`, `Screens`, `TabContainerFragment`, `AppExecutors`, Cicerone и его зависимость; `BarApp` минимальный. Общий `SharedViewModel` — через activity-scope в графе |
-| 7. Удаление легаси | ⬜ не начат | |
+| 7. Удаление легаси | ✅ готово | Удалены зависимости Glide/RxJava/Spectrum/MaterialScrollBar/MaterialRangeBar/AHBottomNavigation, Gson + converter-gson; `TasteConverter` → kotlinx.serialization (`@Serializable Taste`); удалены appcompat/MDC/recyclerview/cardview/constraintlayout/swiperefresh/lifecycle-extensions; `ResourcesActivity`/`SplashActivity` → Compose/ComponentActivity; все XML-layouts, menus, неиспользуемые drawables/цвета/строки/dimens; `values/styles.xml` сведён к `AppTheme`/`SplashTheme` на platform-теме; все оставшиеся Java-утилиты → Kotlin (`Constants`, `ThemeUtils`, `ImageHandler`, `TastesHelper`, `DrinksPathManager`, `SpinnerGlassMatcher`); тема приложения унифицирована на `*_preferences`; `enableJetifier`/`nonTransitiveRClass`/`nonFinalResIds` убраны, jitpack-репозиторий удалён. В `src/main` Java-файлов не осталось |
 | 8. Качество | ⬜ не начат | |

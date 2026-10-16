@@ -1,8 +1,9 @@
 package com.sorokinuladzimir.homebarassistant.db.entity
 
-import java.io.Serializable
+import kotlinx.serialization.Serializable
 
-class Taste(var text: String? = null) : Serializable {
+@Serializable
+class Taste(var text: String? = null) {
 
     var id: String? = null
 }

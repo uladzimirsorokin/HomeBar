@@ -22,7 +22,6 @@ import com.sorokinuladzimir.homebarassistant.R
 
 @Composable
 fun AboutScreen(
-    aboutText: String,
     onResources: () -> Unit,
 ) {
     Column(
@@ -48,7 +47,7 @@ fun AboutScreen(
             style = MaterialTheme.typography.bodySmall
         )
         Text(
-            text = aboutText,
+            text = stringResource(R.string.about_app_text),
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(vertical = 12.dp),

@@ -1,98 +1,11 @@
 <resources>
 
-    <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
-        <!-- Customize your theme here. -->
-        <item name="colorPrimary">?themePrimary</item>
-        <item name="colorPrimaryDark">?themePrimaryDark</item>
-        <item name="colorAccent">?themeAccent</item>
-    </style>
+    <!-- Base application theme. All UI is Compose; the XML theme only provides
+         the window background/insets before Compose draws. -->
+    <style name="AppTheme" parent="android:Theme.Material.Light.NoActionBar" />
 
-    <style name="AppTheme.Indigo">
-        <item name="themePrimary">@color/indigo</item>
-        <item name="themePrimaryDark">@color/indigoDark</item>
-        <item name="themeAccent">@color/indigoAccent</item>
-    </style>
-
-    <style name="AppTheme.Purple">
-        <item name="themePrimary">@color/purple</item>
-        <item name="themePrimaryDark">@color/purpleDark</item>
-        <item name="themeAccent">@color/purpleAccent</item>
-    </style>
-
-    <style name="AppTheme.Black">
-        <item name="colorPrimary">@color/black</item>
-        <item name="colorPrimaryDark">@color/blackDark</item>
-        <item name="colorAccent">@color/blackAccent</item>
-    </style>
-
-    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
-
-    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
-
-    <style name="SplashTheme" parent="Theme.AppCompat.Light.NoActionBar">
+    <style name="SplashTheme" parent="android:Theme.Material.Light.NoActionBar">
         <item name="android:windowBackground">@drawable/background_splash</item>
     </style>
-
-    <style name="CollapsedAppBar" parent="@android:style/TextAppearance.Medium">
-        <item name="android:textSize">24sp</item>
-        <item name="android:textColor">@color/white</item>
-        <item name="android:textStyle">normal</item>
-    </style>
-
-    <style name="ToolBarStyle" parent="Theme.AppCompat">
-        <item name="android:textColorPrimary">@android:color/white</item>
-        <item name="android:textColorSecondary">@android:color/white</item>
-        <item name="actionMenuTextColor">@android:color/white</item>
-    </style>
-
-    <style name="SubheaderTextStyle" parent="@android:style/TextAppearance.Large">
-        <item name="android:textSize">18sp</item>
-        <item name="android:textColor">@color/subheader_text</item>
-        <item name="android:fontFamily">sans-serif-medium</item>
-        <item name="android:gravity">center_vertical</item>
-        <item name="android:paddingLeft">@dimen/standard_spacing</item>
-        <item name="android:paddingRight">@dimen/large_spacing</item>
-        <item name="android:textIsSelectable">false</item>
-    </style>
-
-    <style name="SinglelineEditTextStyle" parent="@android:style/TextAppearance.Large">
-        <item name="android:fontFamily">sans-serif</item>
-        <item name="android:textSize">18sp</item>
-        <item name="android:ems">15</item>
-    </style>
-
-    <style name="MultilineEditTextStyle" parent="@android:style/TextAppearance.Large">
-        <item name="android:textSize">18sp</item>
-        <item name="android:ems">15</item>
-        <item name="android:inputType">textMultiLine</item>
-        <item name="android:lines">7</item>
-        <item name="android:minLines">1</item>
-        <item name="android:maxLines">10</item>
-        <item name="android:gravity">top|left</item>
-    </style>
-
-    <style name="TextStyle" parent="TextAppearance.AppCompat.Medium">
-        <item name="android:textColor">@color/add_ingredients</item>
-    </style>
-
-    <style name="TextIngredientItemName">
-        <item name="android:paddingTop">@dimen/standard_spacing</item>
-        <item name="android:singleLine">true</item>
-        <item name="android:ellipsize">end</item>
-        <item name="android:textIsSelectable">false</item>
-        <item name="android:textSize">18sp</item>
-        <item name="android:fontFamily">sans-serif</item>
-    </style>
-
-    <style name="EditTextAmout">
-        <item name="android:singleLine">true</item>
-        <item name="android:inputType">numberDecimal</item>
-        <item name="android:hint">10</item>
-        <item name="android:maxLength">4</item>
-        <item name="android:ems">3</item>
-        <item name="android:maxEms">3</item>
-    </style>
-
 
 </resources>

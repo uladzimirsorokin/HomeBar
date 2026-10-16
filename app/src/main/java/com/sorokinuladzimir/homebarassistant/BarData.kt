@@ -54,7 +54,7 @@ interface BarData {
         ingredientImage: Boolean
     )
 
-    fun createImageFile(): Uri
+    fun createImageFile(): Uri?
 
     fun deleteImage(imagePath: String?)
 

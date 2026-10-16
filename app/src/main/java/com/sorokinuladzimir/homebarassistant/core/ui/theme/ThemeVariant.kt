@@ -4,8 +4,8 @@ import android.content.Context
 import com.sorokinuladzimir.homebarassistant.Constants
 
 /**
- * Возвращает текущую тему приложения из SharedPreferences (та же, что использует
- * legacy ThemeUtils), чтобы Compose-экраны совпадали с View-экранами.
+ * Возвращает текущую тему приложения из SharedPreferences (то же хранилище, что
+ * использует [com.sorokinuladzimir.homebarassistant.ui.utils.ThemeUtils]).
  */
 fun Context.homeBarThemeVariant(): ThemeVariant {
     val prefs = getSharedPreferences("${packageName}_preferences", Context.MODE_PRIVATE)

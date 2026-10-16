@@ -41,7 +41,6 @@ import androidx.navigation.navArgument
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.sorokinuladzimir.homebarassistant.BarDataRepository.QueryType
-import com.sorokinuladzimir.homebarassistant.Constants
 import com.sorokinuladzimir.homebarassistant.R
 import com.sorokinuladzimir.homebarassistant.ResourcesActivity
 import com.sorokinuladzimir.homebarassistant.core.ui.components.AddImageDialog
@@ -137,14 +136,7 @@ fun NavGraphBuilder.homeBarGraph(navController: NavController) {
         arguments = listOf(navArgument(Routes.ARG_ID) { type = NavType.LongType; defaultValue = -1L })
     ) { AddIngredientRoute(navController) }
 
-    composable(
-        Routes.ABOUT,
-        arguments = listOf(
-            navArgument(Routes.ARG_TEXT) {
-                type = NavType.StringType; defaultValue = ""; nullable = true
-            }
-        )
-    ) { AboutRoute(navController, it) }
+    composable(Routes.ABOUT) { AboutRoute(navController) }
 
     composable(Routes.SETTINGS) { SettingsRoute(navController) }
 }
@@ -712,8 +704,7 @@ private fun AddDrinkIngredientsRoute(navController: NavController) {
 }
 
 @Composable
-private fun AboutRoute(navController: NavController, entry: NavBackStackEntry) {
-    val text = entry.arguments?.getString(Routes.ARG_TEXT).orEmpty()
+private fun AboutRoute(navController: NavController) {
     Scaffold(
         topBar = {
             HomeBarTopBar(
@@ -724,7 +715,6 @@ private fun AboutRoute(navController: NavController, entry: NavBackStackEntry) {
     ) { padding ->
         Box(Modifier.padding(padding)) {
             AboutScreen(
-                aboutText = text,
                 onResources = {
                     navController.context.startActivity(
                         Intent(navController.context, ResourcesActivity::class.java)
@@ -738,8 +728,7 @@ private fun AboutRoute(navController: NavController, entry: NavBackStackEntry) {
 @Composable
 private fun SettingsRoute(navController: NavController) {
     val activity = LocalContext.current.findActivity()
-    val currentTheme = activity?.getPreferences(Context.MODE_PRIVATE)
-        ?.getInt(Constants.Extra.APP_THEME, 0) ?: 0
+    val currentTheme = activity?.let { ThemeUtils.currentThemeId(it) } ?: 0
     Scaffold(
         topBar = {
             HomeBarTopBar(

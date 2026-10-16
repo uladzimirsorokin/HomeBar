@@ -7,7 +7,6 @@ import androidx.activity.enableEdgeToEdge
 import com.sorokinuladzimir.homebarassistant.core.ui.theme.HomeBarTheme
 import com.sorokinuladzimir.homebarassistant.core.ui.theme.homeBarThemeVariant
 import com.sorokinuladzimir.homebarassistant.ui.navigation.HomeBarApp
-import com.sorokinuladzimir.homebarassistant.ui.utils.ThemeUtils
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -16,7 +15,6 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        ThemeUtils.onActivityCreateSetTheme(this)
         setContent {
             HomeBarTheme(variant = homeBarThemeVariant()) {
                 HomeBarApp()

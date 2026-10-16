@@ -6,7 +6,7 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 
 /**
- * Цветовые схемы приложения. Соответствуют трём темам из legacy ThemeUtils:
+ * Цветовые схемы приложения. Соответствуют трём темам приложения:
  * INDIGO = 0, PURPLE = 1, BLACK = 2.
  */
 enum class ThemeVariant(val id: Int) {

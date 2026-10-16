@@ -112,7 +112,7 @@ fun AboutSettingsMenu(navController: NavController) {
                 text = { Text(stringResource(R.string.menu_about)) },
                 onClick = {
                     expanded = false
-                    navController.navigate(Routes.about(""))
+                    navController.navigate(Routes.ABOUT)
                 }
             )
             DropdownMenuItem(

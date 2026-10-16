@@ -30,9 +30,7 @@
         <activity
             android:name=".MainActivity"
             android:windowSoftInputMode="adjustPan|stateHidden" />
-        <activity
-            android:name=".ResourcesActivity"
-            android:theme="@style/Theme.AppCompat.Light.DarkActionBar" />
+        <activity android:name=".ResourcesActivity" />
 
         <provider
             android:name="androidx.core.content.FileProvider"

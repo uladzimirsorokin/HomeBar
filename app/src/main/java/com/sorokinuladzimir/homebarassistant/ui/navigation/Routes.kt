@@ -14,14 +14,13 @@ object Routes {
     const val ADD_DRINK_INGREDIENTS = "add_drink_ingredients"
     const val LOCAL_INGREDIENT = "local_ingredient/{extra_id}?editable={editable}"
     const val ADD_INGREDIENT = "add_ingredient/{extra_id}"
-    const val ABOUT = "about?text={text}"
+    const val ABOUT = "about"
     const val SETTINGS = "settings"
 
     const val ARG_CONDITIONS = "conditions"
     const val ARG_ENTITY = "entity"
     const val ARG_ID = "extra_id"
     const val ARG_EDITABLE = "editable"
-    const val ARG_TEXT = "text"
 
     const val START = DRINKS_LIST
 
@@ -40,6 +39,4 @@ object Routes {
         "local_ingredient/$id?$ARG_EDITABLE=$editable"
 
     fun addIngredient(id: Long): String = "add_ingredient/$id"
-
-    fun about(text: String): String = "about?$ARG_TEXT=${Uri.encode(text)}"
 }

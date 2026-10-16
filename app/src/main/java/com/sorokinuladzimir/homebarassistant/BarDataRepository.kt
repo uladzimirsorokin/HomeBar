@@ -144,7 +144,7 @@ class BarDataRepository @Inject constructor(
         }
     }
 
-    override fun createImageFile(): Uri = imageHandler.createImageFile(context)
+    override fun createImageFile(): Uri? = imageHandler.createImageFile(context)
 
     override fun deleteImage(imagePath: String?) {
         mScope.launch {
