@@ -51,7 +51,7 @@ fun SimpleListItem(
     }
 }
 
-private fun imageModel(image: String?): Any? = when {
+fun imageModel(image: String?): Any? = when {
     image.isNullOrBlank() -> null
     image.startsWith("http") -> image
     else -> File(image)
