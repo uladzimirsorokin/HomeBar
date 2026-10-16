@@ -13,7 +13,7 @@ class SharedViewModel @Inject constructor() : ViewModel() {
 
     fun getSelectedIds(): LiveData<List<Long>> = selectedIds
 
-    fun selectIds(ingredients: List<Long>) {
+    fun selectIds(ingredients: List<Long>?) {
         selectedIds.value = ingredients
     }
 }
