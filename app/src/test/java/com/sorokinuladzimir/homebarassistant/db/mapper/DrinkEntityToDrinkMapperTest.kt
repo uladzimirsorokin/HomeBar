@@ -1,6 +1,5 @@
 package com.sorokinuladzimir.homebarassistant.db.mapper
 
-import com.sorokinuladzimir.homebarassistant.Constants
 import com.sorokinuladzimir.homebarassistant.net.entity.DrinkEntity
 import com.sorokinuladzimir.homebarassistant.net.entity.Glass
 import com.sorokinuladzimir.homebarassistant.net.entity.TasteDto
@@ -33,10 +32,10 @@ class DrinkEntityToDrinkMapperTest {
     }
 
     @Test
-    fun `reverseMap builds image url from id`() {
-        val drink = mapper.reverseMap(DrinkEntity(id = "42"))
+    fun `reverseMap copies image url`() {
+        val drink = mapper.reverseMap(DrinkEntity(id = "42", imageUrl = "https://example.com/42.png"))
 
-        assertEquals(Constants.Uri.ABSOLUT_DRINKS_IMAGE_ROOT + "42.png", drink.image)
+        assertEquals("https://example.com/42.png", drink.image)
     }
 
     @Test

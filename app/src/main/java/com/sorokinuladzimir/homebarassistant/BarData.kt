@@ -13,11 +13,7 @@ interface BarData {
 
     fun getLocalDrinks(): LiveData<List<Drink>>
 
-    fun getRemoteDrinks(
-        requestConditions: String?,
-        queryType: BarDataRepository.QueryType,
-        clearList: Boolean
-    )
+    fun getRemoteDrinks(conditionsJson: String?)
 
     fun getDrink(drinkId: Long?): LiveData<Drink?>
 
@@ -40,8 +36,6 @@ interface BarData {
     fun deleteIngredient(ingredientId: Long?): Int
 
     fun getDrinkIngredients(drinkId: Long?): LiveData<List<WholeCocktail>>
-
-    fun getRemoteDrinkIngredients(drinkId: String)
 
     fun addIngredient(ingredient: Ingredient)
 

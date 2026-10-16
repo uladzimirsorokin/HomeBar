@@ -28,7 +28,7 @@ class ResourcesActivity : ComponentActivity() {
             HomeBarTheme(variant = ThemeVariant.fromId(themeId)) {
                 ResourcesScreen(
                     onBack = { finish() },
-                    onOpenAbsolut = { openWebsite(LINK_ABSOLUT_DRINKS) },
+                    onOpenCocktailDb = { openWebsite(LINK_COCKTAILDB) },
                     onOpenFreepik = { openWebsite(LINK_FREEPIC) }
                 )
             }
@@ -40,7 +40,7 @@ class ResourcesActivity : ComponentActivity() {
     }
 
     private companion object {
-        const val LINK_ABSOLUT_DRINKS = "https://www.absolutdrinks.com"
+        const val LINK_COCKTAILDB = "https://www.thecocktaildb.com"
         const val LINK_FREEPIC = "https://www.freepik.com/"
     }
 }

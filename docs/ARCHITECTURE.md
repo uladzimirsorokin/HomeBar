@@ -25,7 +25,7 @@ Activity-хост — `MainActivity` с Compose `NavHost`; экраны — `@Co
                 │                           │
       ┌─────────▼─────────┐       ┌─────────▼─────────┐
       │  Room (db/)       │       │  Retrofit (net/)  │
-      │  CocktailsDatabase│       │  AbsolutDrinksApi │
+      │  CocktailsDatabase│       │  CocktailDbApi    │
       │  Flow / suspend   │       │  suspend          │
       └───────────────────┘       └───────────────────┘
 ```
@@ -37,7 +37,7 @@ Activity-хост — `MainActivity` с Compose `NavHost`; экраны — `@Co
 | Модуль | Предоставляет |
 |--------|---------------|
 | `DatabaseModule` | `CocktailsDatabase` (`@Singleton`), `DrinkDao`, `IngredientDao`, `CocktailDao` |
-| `NetworkModule` | `AbsolutDrinksApi` (`@Singleton`) — OkHttp с интерцепторами + Retrofit на kotlinx.serialization |
+| `NetworkModule` | `CocktailDbApi` (`@Singleton`) — OkHttp + Retrofit на kotlinx.serialization |
 | `RepositoryModule` | `@Binds BarDataRepository → BarData` (`@Singleton`) |
 | `AppModule` | `ImageHandler` |
 
@@ -49,13 +49,14 @@ Activity и ViewModel помечены `@AndroidEntryPoint` / `@HiltViewModel`, 
 `BarData` — интерфейс-контракт (CRUD для напитков и ингредиентов, работа с изображениями,
 запросы к API). `BarDataRepository` (`@Singleton`, инжектируется Hilt):
 
-- держит `MediatorLiveData` для локальных напитков/ингредиентов, удалённых напитков
-  (`List<DrinkEntity>`) и удалённых ингредиентов (`List<WholeCocktail>`);
+- держит `MediatorLiveData`/`MutableLiveData` для локальных напитков/ингредиентов, результатов
+  удалённого поиска (`List<DrinkEntity>`) и загруженного напитка по id;
 - хранит `MediatorLiveData<String?>` для путей к фото напитка/ингредиента;
 - выполняет работу с БД/сетью в `CoroutineScope(SupervisorJob() + Dispatchers.IO)`;
 - DAO возвращают `Flow`, которые мостятся во ViewModel через `asLiveData()`;
-- реализует пагинацию через `enum QueryType { SEARCH_BY_NAME, SEARCH_BY_CONDITIONS, CURRENT }`
-  и поля `mTotalResult`, `mNextLink`, `mCurrentSearchType`;
+- удалённый поиск принимает `SearchConditions` (JSON) и вызывает TheCocktailDB
+  (`search.php`/`filter.php`); детали подгружаются по id через `lookup.php`
+  (пагинации нет — источник отдаёт весь результат сразу);
 - сетевые ошибки оборачивает в `ApiResult` (Success/Error).
 
 ## ViewModels
@@ -69,12 +70,12 @@ Activity и ViewModel помечены `@AndroidEntryPoint` / `@HiltViewModel`, 
 | `AddDrinkViewModel` | Создание/редактирование напитка (ингредиенты, вкусы, фото, оценка) |
 | `AddDrinkIngredientsViewModel` | Выбор ингредиентов для напитка (поиск, множественный выбор) |
 | `AddIngredientViewModel` | Создание/редактирование ингредиента |
-| `RemoteDrinkViewModel` | Детали удалённого напитка, сохранение в локальную БД |
+| `RemoteDrinkViewModel` | Детали удалённого напитка (lookup по id), сохранение в локальную БД |
 | `FoundDrinksViewModel` | Результаты удалённого поиска + пагинация |
 | `SharedViewModel` | Общий выбор ингредиентов между экранами формы напитка |
 | `ThemeViewModel` | Тема приложения (DataStore → `StateFlow<Int>`) |
 
-Аргументы экранов передаются через `SavedStateHandle` (id сущности, JSON удалённого напитка).
+Аргументы экранов передаются через `SavedStateHandle` (id сущности, id удалённого напитка).
 
 ## Навигация (Navigation Compose)
 

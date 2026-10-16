@@ -1,12 +1,10 @@
 package com.sorokinuladzimir.homebarassistant.core.di
 
 import android.content.Context
-import android.os.Build
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
-import com.sorokinuladzimir.homebarassistant.Constants
-import com.sorokinuladzimir.homebarassistant.net.AbsolutDrinksApi
+import com.sorokinuladzimir.homebarassistant.BuildConfig
+import com.sorokinuladzimir.homebarassistant.net.CocktailDbApi
 import com.sorokinuladzimir.homebarassistant.net.ConnectivityInterceptor
-import com.sorokinuladzimir.homebarassistant.net.DrinksRequestInterceptor
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -29,27 +27,16 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideAbsolutDrinksApi(@ApplicationContext context: Context): AbsolutDrinksApi {
+    fun provideCocktailDbApi(@ApplicationContext context: Context): CocktailDbApi {
         val client = OkHttpClient.Builder()
             .addInterceptor(ConnectivityInterceptor(context))
-            .addInterceptor(DrinksRequestInterceptor(systemLanguage(context)))
             .build()
 
         return Retrofit.Builder()
-            .baseUrl(Constants.Uri.ABSOLUT_DRINKS_ROOT)
+            .baseUrl("${BuildConfig.COCKTAILDB_ROOT}${BuildConfig.COCKTAILDB_API_KEY}/")
             .client(client)
             .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
             .build()
-            .create(AbsolutDrinksApi::class.java)
-    }
-
-    private fun systemLanguage(context: Context): String {
-        val language = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            context.resources.configuration.locales[0].language
-        } else {
-            @Suppress("DEPRECATION")
-            context.resources.configuration.locale.language
-        }
-        return if (language == "ru") language else "en"
+            .create(CocktailDbApi::class.java)
     }
 }

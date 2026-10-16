@@ -71,7 +71,9 @@ fun DrinkDetailScreen(
                 InfoRow(R.drawable.ic_drink_name, drink?.glass?.glassName.orEmpty())
                 InfoRow(R.drawable.taste, drink?.tastes?.joinToString(", ") { it.text.orEmpty() }.orEmpty())
                 InfoRow(R.drawable.ic_drink_type, drinkType(drink))
-                InfoRow(R.drawable.ic_drink_rating, drink?.rating?.toString().orEmpty())
+                if ((drink?.rating ?: 0) > 0) {
+                    InfoRow(R.drawable.ic_drink_rating, drink?.rating?.toString().orEmpty())
+                }
             }
         }
 

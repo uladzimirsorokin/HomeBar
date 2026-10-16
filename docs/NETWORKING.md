@@ -1,57 +1,49 @@
-# Сеть (Absolut Drinks API)
+# Сеть (TheCocktailDB API)
 
-Внешние данные о коктейлях берутся из **Absolut Drinks Database (ADDB)** через Retrofit.
-Код сосредоточен в пакете `net/`.
+Внешние данные о коктейлях берутся из **TheCocktailDB**
+(<https://www.thecocktaildb.com/documentation>) через Retrofit. Код — в пакете `net/`.
+
+Источник заменён с Absolut Drinks (сервис прекратил работу) на TheCocktailDB.
 
 ## Базовая конфигурация
 
-URL и ключ задаются в `app/build.gradle` через `BuildConfig` (значения по умолчанию,
-переопределяются в `local.properties`) и доступны через `Constants.kt`:
+| Параметр | BuildConfig | Значение по умолчанию |
+|----------|-------------|-----------------------|
+| Base URL | `COCKTAILDB_ROOT` | `https://www.thecocktaildb.com/api/json/v1/` |
+| API-ключ | `COCKTAILDB_API_KEY` | `1` (бесплатный тестовый ключ) |
 
-| Константа | BuildConfig | Значение по умолчанию |
-|-----------|-------------|-----------------------|
-| `Constants.Uri.ABSOLUT_DRINKS_ROOT` | `ABSOLUT_DRINKS_ROOT` | `http://addb.absolutdrinks.com` |
-| `Constants.Uri.ABSOLUT_DRINKS_IMAGE_ROOT` | `ABSOLUT_DRINKS_IMAGE_ROOT` | `http://assets.absolutdrinks.com/drinks/600x800/` |
-| `Constants.Uri.ABSOLUT_INGREDIENTS_IMAGE_ROOT` | `ABSOLUT_INGREDIENTS_IMAGE_ROOT` | `http://assets.absolutdrinks.com/` |
-| `Constants.Keys.ABSOLUT_API_KEY` | `ABSOLUT_API_KEY` | API-ключ (query-параметр `apiKey`) |
-| `Constants.Values.DEFAULT_ITEM_AMOUNT` | — | `5` (размер страницы) |
+Итоговый базовый URL: `{COCKTAILDB_ROOT}{COCKTAILDB_API_KEY}/`, например
+`https://www.thecocktaildb.com/api/json/v1/1/`. Ключ можно переопределить в `local.properties`:
 
-## `AbsolutDrinksApi` (Retrofit-интерфейс)
-
-```kotlin
-@GET("/drinks/{conditions}")
-suspend fun getAllMatchedDrinks(
-    @Path("conditions") conditions: String,
-    @Query("start") start: Int,
-    @Query("pageSize") pageSize: Int
-): AbsolutDrinksResult
-
-@GET("quickSearch/drinks/{searchString}")
-suspend fun searchDrinks(
-    @Path("searchString") searchString: String,
-    @Query("start") start: Int,
-    @Query("pageSize") pageSize: Int
-): AbsolutDrinksResult
-
-@GET("/drinks/{drinkId}/howtomix")
-suspend fun getPreparationSteps(@Path("drinkId") drinkId: String): Preparation
+```properties
+COCKTAILDB_API_KEY=1
 ```
 
-Все методы — `suspend` (Retrofit поддерживает корутины).
+## `CocktailDbApi` (Retrofit-интерфейс)
+
+```kotlin
+@GET("search.php")     suspend fun searchByName(@Query("s") name: String): CocktailDbResponse
+@GET("search.php")     suspend fun searchByFirstLetter(@Query("f") letter: String): CocktailDbResponse
+@GET("lookup.php")     suspend fun lookup(@Query("i") id: String): CocktailDbResponse
+@GET("filter.php")     suspend fun filterByIngredient(@Query("i") ingredient: String): CocktailDbResponse
+@GET("filter.php")     suspend fun filterByGlass(@Query("g") glass: String): CocktailDbResponse
+@GET("filter.php")     suspend fun filterByCategory(@Query("c") category: String): CocktailDbResponse
+@GET("filter.php")     suspend fun filterByAlcoholic(@Query("a") alcoholic: String): CocktailDbResponse
+```
+
+Все методы — `suspend`.
+
+- `search.php?s=` и `lookup.php?i=` возвращают **полные** записи (с ингредиентами и инструкцией);
+- `filter.php` возвращает **краткие** записи (`idDrink`, `strDrink`, `strDrinkThumb`).
 
 ## `NetworkModule`
 
 `OkHttpClient` и Retrofit создаются в `core/di/NetworkModule` (`@Singleton`).
 
-**Интерцепторы:**
-
 - `ConnectivityInterceptor` — проверяет `NetworkUtil.isOnline(context)` и бросает
   `NoConnectivityException` (наследник `IOException`) при отсутствии сети.
-- `DrinksRequestInterceptor(lang)` — добавляет к каждому запросу `apiKey` и `lang`
-  (`"ru"` для русского языка системы, иначе `"en"`).
-
-**Конвертер** — `retrofit2-kotlinx-serialization-converter`
-(`Json { ignoreUnknownKeys = true; coerceInputValues = true }`).
+- Конвертер — `retrofit2-kotlinx-serialization-converter`
+  (`Json { ignoreUnknownKeys = true; coerceInputValues = true }`).
 
 `NetworkUtil.isOnline(Context)` использует `ConnectivityManager` + `NetworkCapabilities`.
 
@@ -60,102 +52,101 @@ suspend fun getPreparationSteps(@Path("drinkId") drinkId: String): Preparation
 Все `@Serializable`-поля имеют явный `@SerialName`, чтобы R8-обфускация не влияла на
 формат данных.
 
-### `AbsolutDrinksResult`
+### `CocktailDbResponse`
 
-| Поле | Тип |
-|------|-----|
-| `result` | `List<DrinkEntity>?` |
-| `totalResult` | `Int` |
-| `next` | `String?` (ссылка для пагинации) |
+`@SerialName("drinks") drinks: List<CocktailDbDrink>?` (при отсутствии результатов `null`).
 
-### `DrinkEntity` (удалённый напиток)
+### `CocktailDbDrink` (сырая запись TheCocktailDB)
 
-| Поле | JSON |
-|------|------|
-| `id` | `id` |
-| `name` | `name` |
-| `description` | `descriptionPlain` |
-| `color` | `color` |
-| `rating` | `rating` |
-| `isAlcoholic` | `isAlcoholic` |
-| `isCarbonated` | `isCarbonated` |
-| `servedIn` | `servedIn` |
-| `tastes` | `tastes` |
+| Поле (Kotlin) | JSON | Примечание |
+|---------------|------|-----------|
+| `id` | `idDrink` | |
+| `name` | `strDrink` | |
+| `category` | `strCategory` | |
+| `alcoholic` | `strAlcoholic` | `Alcoholic` / `Non_Alcoholic` / `Optional alcohol` |
+| `glass` | `strGlass` | |
+| `instructions` | `strInstructions` | |
+| `tags` | `strTags` | через запятую |
+| `imageUrl` | `strDrinkThumb` | |
+| `ingredient1..15` | `strIngredient1..15` | |
+| `measure1..15` | `strMeasure1..15` | |
+| `ingredientLines()` | — | собирает пары имя/мера, пропуская `null` |
 
-### `Glass` (net)
+Остальные поля ответа игнорируются (`ignoreUnknownKeys = true`).
 
-`text`, `name`, `image`.
+### `IngredientDto`
 
-### `TasteDto`
+`name`, `measure` — строка ингредиента для быстрого отображения и сохранения.
 
-`id`, `text`.
+### `DrinkEntity` (модель приложения)
 
-### `Preparation`
+`id`, `name`, `description`, `color`, `rating`, `isAlcoholic`, `isCarbonated`, `servedIn`,
+`tastes`, `imageUrl`, `ingredients`.
 
-`@SerialName("steps") preparationSteps: List<PreparationStep>?`.
+### `Glass` / `TasteDto`
 
-### `PreparationStep`
+`Glass(text, name, image)`, `TasteDto(id, text)`.
 
-| Поле | JSON |
-|------|------|
-| `ingredientDescription` | `description` |
-| `imagePath` | `imagePath` |
-| `imageName` | `imageName` |
-| `amount` | `quantity` |
-| `centilitresAmount` | `centilitres` |
-| `unit` | `measurement` |
-| `ingredientName` | `ingredient` |
-| `preparationStepText` | `textPlain` |
+### `CocktailDbDrinkMapper`
 
-## Пагинация и типы запросов
+`CocktailDbDrink → DrinkEntity`:
 
-`BarDataRepository` использует `enum QueryType`:
+- `description = strInstructions`;
+- `isAlcoholic = strAlcoholic == "Alcoholic"`;
+- `servedIn = Glass(text = strGlass)`;
+- `tastes = strTags` (разбитые по запятой);
+- `imageUrl = strDrinkThumb`;
+- `ingredients = ingredientLines()`;
+- `color = null`, `rating = 0`, `isCarbonated = false` (нет в источнике).
 
-- `SEARCH_BY_NAME` → `AbsolutDrinksApi.searchDrinks`;
-- `SEARCH_BY_CONDITIONS` → `AbsolutDrinksApi.getAllMatchedDrinks`;
-- `CURRENT` → повтор текущего запроса (например, load-more).
+## Условия поиска (`SearchConditions`)
 
-Состояние пагинации: `mTotalResult`, `mNextLink`, `mCurrentSearchType`.
-Следующая страница запрашивается с `start += pageSize` (`pageSize = DEFAULT_ITEM_AMOUNT = 5`).
+Экран фильтров (`ui/search/SearchDrinksScreen`) собирает `SearchConditions` и передаёт его
+сериализованным в JSON через маршрут `found_drinks?conditions=...`. Репозиторий применяет
+**первое подходящее** условие (API поддерживает только один фильтр за запрос):
 
-## Построение условий поиска
+| Приоритет | Поле | Запрос |
+|-----------|------|--------|
+| 1 | `name` | `search.php?s=` |
+| 2 | `ingredient` | `filter.php?i=` |
+| 3 | `glass` | `filter.php?g=` |
+| 4 | `category` | `filter.php?c=` |
+| 5 | `alcoholic` | `filter.php?a=Alcoholic` / `Non_Alcoholic` |
 
-`ui/utils/DrinksPathManager` — immutable-builder для параметра `conditions`:
+### Игнорируемые параметры
 
-| Метод Builder | Фрагмент пути |
-|---------------|---------------|
-| `setGlassType(...)` | `servedin/...` |
-| `setTaste(...)` | `tasting/.../and/...` |
-| `setRating(min, max)` | `rating/gteX/and/lteY` |
-| `setColor(...)` | `colored/...` |
-| `setIngredient(...)` | `withtype/.../and/...` |
-| `setSkill(...)` | `skill/.../or/...` |
-| `setCarbonated(...)` | `carbonated` / `not/carbonated` |
-| `setAlcoholic(...)` | `alcoholic` / `not/alcoholic` |
+Следующие поля UI сохраняются в `SearchConditions`, но **пока игнорируются**, так как их нет
+в TheCocktailDB: `taste`, `carbonated`, `color`, `skill`. Они зарезервированы под будущую
+пост-обработку результатов (например, с помощью AI-анализа) и уже передаются в репозиторий.
 
-`build().path` собирает финальный путь. Результат передаётся в маршрут
-`found_drinks?conditions=...`.
+## Поток данных
 
-## Разбор ингредиентов
+1. **Поиск** (`FoundDrinksScreen` → `FoundDrinksViewModel.searchDrinks` →
+   `BarDataRepository.getRemoteDrinks`): выбор эндпоинта по `SearchConditions`, результат —
+   `List<DrinkEntity>` (для `filter.php` — краткие записи).
+2. **Детали** (клик по элементу → маршрут `remote_drink/{drinkId}` →
+   `RemoteDrinkViewModel` → `BarDataRepository.getRemoteDrink(id)`): `lookup.php?i=` даёт
+   полную запись (ингредиенты + инструкция).
+3. **Сохранение** (`RemoteDrinkViewModel.saveDrink` →
+   `BarDataRepository.saveRemoteDrink(DrinkEntity, Bitmap)`):
+   1. `DrinkEntityToDrinkMapper.reverseMap(...)` → `Drink`;
+   2. изображение: если получен `Bitmap` — сохраняется в app-private файл, иначе используется
+      `imageUrl`;
+   3. `DrinkDao.insertDrink(...)`;
+   4. ингредиенты → `DrinkIngredientJoin` (поиск/создание ингредиента по имени,
+      `amount = measure`) → `CocktailDao.insertDrinkIngredients(...)`.
 
-Ответ `Preparation` преобразуется в `List<WholeCocktail>` в
-`BarDataRepository.handlePreparation(Preparation)` и `matchAmountAndUnit(...)`,
-после чего доступен через `RemoteDrinkViewModel`.
+## Изображения
 
-## Сохранение удалённого напитка
-
-`RemoteDrinkViewModel.saveDrink()` → `BarDataRepository.saveRemoteDrink(DrinkEntity, Bitmap)`:
-
-1. `DrinkEntityToDrinkMapper.reverseMap(...)` → `Drink`;
-2. сохранение изображения через `ImageHandler.saveImage(context, ...)`;
-3. `DrinkDao.insertDrink(...)`;
-4. построение `DrinkIngredientJoin` (сопоставление ингредиентов по имени через
-   `getIngredientByName` / `insertOrReplaceIngredient`);
-5. `CocktailDao.insertDrinkIngredients(...)`.
+- Коктейли: `strDrinkThumb` (можно добавить `/small`, `/medium`, `/large`).
+- Ингредиенты: `https://www.thecocktaildb.com/images/ingredients/{Name}.png`.
 
 ## Ограничения
 
-- API-ключ по умолчанию захардкожен в `build.gradle` (можно переопределить в `local.properties`).
-- Используется `http://` (не HTTPS).
-- Доступность внешнего API зависит от сервиса Absolut Drinks; локальные функции
-  (коллекция, свои рецепты) работают без сети.
+- Бесплатный доступ ограничен одним фильтром за запрос (нет мульти-ингредиентов и фильтров
+  «популярное/последние» — это Premium).
+- Нет рейтинга, вкуса, цвета, крепости, признака газированности и пагинации — соответствующие
+  фильтры UI пока игнорируются.
+- Поле `rating` в карточках локальных напитков остаётся (собственная оценка пользователя).
+- Доступность API зависит от TheCocktailDB; локальные функции (коллекция, свои рецепты)
+  работают без сети.

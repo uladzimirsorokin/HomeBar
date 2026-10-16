@@ -21,6 +21,7 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
@@ -38,17 +39,19 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.sorokinuladzimir.homebarassistant.R
-import com.sorokinuladzimir.homebarassistant.ui.utils.DrinksPathManager
+import com.sorokinuladzimir.homebarassistant.net.SearchConditions
 import kotlin.math.roundToInt
 
 @Composable
 fun SearchDrinksScreen(onSearch: (String) -> Unit) {
     val context = LocalContext.current
+    val glassIds = context.resources.getStringArray(R.array.glass_id).toList()
     val glassNames = context.resources.getStringArray(R.array.glass_name).toList()
     val tasteNames = context.resources.getStringArray(R.array.taste_name).toList()
     val ingredientNames = context.resources.getStringArray(R.array.ingridient_name).toList()
     val colors = context.resources.getIntArray(R.array.colors)
 
+    var name by rememberSaveable { mutableStateOf("") }
     var glassId by rememberSaveable { mutableIntStateOf(0) }
     var tasteId by rememberSaveable { mutableIntStateOf(0) }
     var ingredientId by rememberSaveable { mutableIntStateOf(0) }
@@ -64,6 +67,14 @@ fun SearchDrinksScreen(onSearch: (String) -> Unit) {
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
+        OutlinedTextField(
+            value = name,
+            onValueChange = { name = it },
+            label = { Text(stringResource(R.string.cocktail_name)) },
+            singleLine = true,
+            modifier = Modifier.fillMaxWidth()
+        )
+
         DropdownField(stringResource(R.string.glass_type), glassNames, glassId) { glassId = it }
         DropdownField(stringResource(R.string.taste_type), tasteNames, tasteId) { tasteId = it }
         DropdownField(stringResource(R.string.ingridient_type), ingredientNames, ingredientId) {
@@ -107,8 +118,10 @@ fun SearchDrinksScreen(onSearch: (String) -> Unit) {
         Button(
             onClick = {
                 onSearch(
-                    buildPath(
+                    buildConditions(
                         context = context,
+                        name = name,
+                        glassIds = glassIds,
                         glassId = glassId,
                         tasteId = tasteId,
                         ingredientId = ingredientId,
@@ -116,7 +129,7 @@ fun SearchDrinksScreen(onSearch: (String) -> Unit) {
                         alcoholic = alcoholic,
                         color = color,
                         skill = skill
-                    )
+                    ).toJson()
                 )
             },
             modifier = Modifier.fillMaxWidth()
@@ -171,8 +184,17 @@ private fun skillLabel(skill: Int): String = when (skill) {
     else -> stringResource(R.string.skill_novice)
 }
 
-private fun buildPath(
+/**
+ * Builds the search conditions passed to the repository.
+ *
+ * Only [SearchConditions.name], [SearchConditions.glass], [SearchConditions.ingredient] and
+ * [SearchConditions.alcoholic] are currently honoured by TheCocktailDB; the remaining values
+ * are carried along for future post-processing (e.g. AI) and ignored for now.
+ */
+private fun buildConditions(
     context: android.content.Context,
+    name: String,
+    glassIds: List<String>,
     glassId: Int,
     tasteId: Int,
     ingredientId: Int,
@@ -180,28 +202,25 @@ private fun buildPath(
     alcoholic: Boolean,
     color: Int,
     skill: Int,
-): String {
-    val glass = if (glassId == 0) null else context.resources.getStringArray(R.array.glass_id)[glassId]
-    val taste = context.resources.getStringArray(R.array.taste_id)[tasteId]
+): SearchConditions {
+    val glass = if (glassId == 0) null else glassIds.getOrNull(glassId)
+    val taste = context.resources.getStringArray(R.array.taste_id).getOrNull(tasteId)
     val ingredient =
-        if (ingredientId == 0) null else context.resources.getStringArray(R.array.ingridient_type)[ingredientId]
-    val tastes: Array<String>? = if (tasteId == 0) null else arrayOf(taste!!)
-    val ingredients: Array<String>? = if (ingredientId == 0) null else arrayOf(ingredient!!)
-    val skills = Array(skill + 1) { (it + 1).toString() }
+        if (ingredientId == 0) null
+        else context.resources.getStringArray(R.array.ingridient_type)[ingredientId]
     val colors = context.resources.getIntArray(R.array.colors)
     val colorId = colors.indexOf(color)
-    val colorResult =
+    val colorName =
         if (colorId > 0) context.resources.getStringArray(R.array.colors_name)[colorId] else null
 
-    return DrinksPathManager.Builder()
-        .setGlassType(glass)
-        .setIngredient(ingredients)
-        .setTaste(tastes)
-        .setRating(0, 100)
-        .setSkill(skills)
-        .setCarbonated(carbonated)
-        .setAlcoholic(alcoholic)
-        .setColor(colorResult)
-        .build()
-        .path
+    return SearchConditions(
+        name = name.trim().takeIf { it.isNotEmpty() },
+        ingredient = ingredient,
+        glass = glass,
+        alcoholic = alcoholic,
+        taste = if (tasteId == 0) null else taste,
+        carbonated = carbonated,
+        color = colorName,
+        skill = skill
+    )
 }

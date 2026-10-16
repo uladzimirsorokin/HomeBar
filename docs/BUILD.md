@@ -17,9 +17,9 @@
 
 ```properties
 sdk.dir=/path/to/Android/sdk
-# опционально — переопределение API Absolut Drinks
-ABSOLUT_API_KEY=...
-ABSOLUT_DRINKS_ROOT=http://addb.absolutdrinks.com
+# опционально — переопределение доступа к TheCocktailDB
+COCKTAILDB_API_KEY=1
+COCKTAILDB_ROOT=https://www.thecocktaildb.com/api/json/v1/
 ```
 
 ## Команды

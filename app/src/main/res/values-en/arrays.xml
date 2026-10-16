@@ -2,12 +2,12 @@
 <resources>
     <string-array name="glass_id">
         <item>any</item>
-        <item>champagne-glass</item>
-        <item>cocktail-glass</item>
-        <item>highball-glass</item>
-        <item>rocks-glass</item>
-        <item>shot-glass</item>
-        <item>wine-glass</item>
+        <item>Champagne_flute</item>
+        <item>Cocktail_glass</item>
+        <item>Highball_glass</item>
+        <item>Old-fashioned_glass</item>
+        <item>Shot_glass</item>
+        <item>Wine_Glass</item>
     </string-array>
 
     <string-array name="glass_name">
@@ -89,12 +89,12 @@
 
     <string-array name="ingridient_type">
         <item>any</item>
-        <item>brandy</item>
-        <item>gin</item>
-        <item>rum</item>
-        <item>tequila</item>
-        <item>vodka</item>
-        <item>whisky</item>
+        <item>Brandy</item>
+        <item>Gin</item>
+        <item>Rum</item>
+        <item>Tequila</item>
+        <item>Vodka</item>
+        <item>Whiskey</item>
     </string-array>
 
     <string-array name="ingridient_name">

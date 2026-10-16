@@ -270,5 +270,24 @@ com.sorokinuladzimir.homebarassistant
 | 4. Compose-фундамент | ✅ готово | Тема `core/ui/theme` (+ `homeBarThemeVariant()` из prefs); общий компонент `EmptyState`; Coil подключён; интероп-стратегия: `ComposeView` в контентной области фрагмента (XML-toolbar сохраняется). Пилот — `AboutFragment`/`AboutScreen` на Compose |
 | 5. Поэкранная миграция | ✅ готово | 5.1 Settings; 5.2 списки; 5.3 детали; 5.4 поиск; 5.5 формы; 5.6 диалоги; 5.7 нижняя навигация (`MainActivity` → Kotlin + Material 3 `NavigationBar`). Все экраны на Compose (в оболочках Fragment) |
 | 6. Compose Navigation | ✅ готово | `navigation-compose` + единый `NavHost` (`Routes`/`HomeBarApp`/маршрутные composable на существующих экранах и ViewModel); `MainActivity` — чистый Compose-хост; удалены `ui/fragments`, `ui/subnavigation`, `ui/adapters`, `Screens`, `TabContainerFragment`, `AppExecutors`, Cicerone и его зависимость; `BarApp` минимальный. Общий `SharedViewModel` — через activity-scope в графе |
-| 7. Удаление легаси | ✅ готово | Удалены зависимости Glide/RxJava/Spectrum/MaterialScrollBar/MaterialRangeBar/AHBottomNavigation, Gson + converter-gson; `TasteConverter` → kotlinx.serialization (`@Serializable Taste`); удалены appcompat/MDC/recyclerview/cardview/constraintlayout/swiperefresh/lifecycle-extensions; `ResourcesActivity`/`SplashActivity` → Compose/ComponentActivity; все XML-layouts, menus, неиспользуемые drawables/цвета/строки/dimens; `values/styles.xml` сведён к `AppTheme`/`SplashTheme` на platform-теме; все оставшиеся Java-утилиты → Kotlin (`Constants`, `ThemeUtils`, `ImageHandler`, `TastesHelper`, `DrinksPathManager`, `SpinnerGlassMatcher`); тема приложения унифицирована на `*_preferences`; `enableJetifier`/`nonTransitiveRClass`/`nonFinalResIds` убраны, jitpack-репозиторий удалён. В `src/main` Java-файлов не осталось |
+| 7. Удаление легаси | ✅ готово | Удалены зависимости Glide/RxJava/Spectrum/MaterialScrollBar/MaterialRangeBar/AHBottomNavigation, Gson + converter-gson; `TasteConverter` → kotlinx.serialization (`@Serializable Taste`); удалены appcompat/MDC/recyclerview/cardview/constraintlayout/swiperefresh/lifecycle-extensions; `ResourcesActivity`/`SplashActivity` → Compose/ComponentActivity; все XML-layouts, menus, неиспользуемые drawables/цвета/строки/dimens; `values/styles.xml` сведён к `AppTheme`/`SplashTheme` на platform-теме; все оставшиеся Java-утилиты → Kotlin (`Constants`, `ThemeUtils`, `ImageHandler`, `TastesHelper`, `SpinnerGlassMatcher`); тема приложения унифицирована на prefs; `enableJetifier`/`nonTransitiveRClass`/`nonFinalResIds` убраны, jitpack-репозиторий удалён. В `src/main` Java-файлов не осталось |
 | 8. Качество | ✅ готово | Явный `@SerialName` на всех `@Serializable`-полях + R8 (`minifyEnabled`/`shrinkResources`) с keep-правилами; unit-тесты (mappers, converters, utils, ViewModels) на JUnit/MockK; Compose UI-тесты; тема переведена на DataStore (`ThemePreferences`/`ThemeViewModel`); изображения в app-private storage, `WRITE_EXTERNAL_STORAGE` убран; CI GitHub Actions (build/test/lint); README/docs переписаны, добавлен ADR. Проверено: `assembleDebug`, `assembleRelease` (R8), `testDebugUnitTest`, `connectedDebugAndroidTest`, `lintDebug` |
+
+---
+
+## Дополнение. Смена источника данных (TheCocktailDB)
+
+Сервис **Absolut Drinks** прекратил работу, поэтому сетевой слой переведён на
+**TheCocktailDB** (см. [ADR 0002](adr/0002-cocktaildb-provider.md)):
+
+- `AbsolutDrinksApi`/`AbsolutDrinksResult`/`Preparation*`/`DrinksRequestInterceptor` заменены на
+  `CocktailDbApi` + `CocktailDbResponse`/`CocktailDbDrink`/`IngredientDto` + `CocktailDbDrinkMapper`;
+- ключ/URL → `BuildConfig.COCKTAILDB_API_KEY`/`COCKTAILDB_ROOT` (тестовый ключ `1`);
+- удалены пагинация (`start`/`pageSize`) и эндпоинт шагов приготовления — ингредиенты приходят
+  в самой записи коктейля;
+- детали удалённого напитка грузятся по id (`lookup.php`), маршрут `remote_drink/{drinkId}`;
+- условия поиска вынесены в `SearchConditions`; UI фильтров сохранён, неподдерживаемые
+  источником параметры (`taste`, `carbonated`, `color`, `skill`) сохраняются в запросе и
+  игнорируются (задел под AI-пост-обработку);
+- `DrinksPathManager` удалён; тесты обновлены (добавлены `CocktailDbDrinkMapperTest`,
+  `SearchConditionsTest`).

@@ -9,7 +9,7 @@ UI полностью на **Jetpack Compose (Material 3)**. Навигация 
 |-----------|------|
 | `SplashActivity` | Launcher, сразу открывает `MainActivity` |
 | `MainActivity` | `@AndroidEntryPoint`, Compose-хост: тема + `NavHost` + нижняя навигация |
-| `ResourcesActivity` | Экран «Ресурсы» (ссылки на Freepik и Absolut Drinks) |
+| `ResourcesActivity` | Экран «Ресурсы» (ссылки на Freepik и TheCocktailDB) |
 
 ## Маршруты
 
@@ -18,10 +18,10 @@ UI полностью на **Jetpack Compose (Material 3)**. Навигация 
 | Route | Экран (`@Composable`) | ViewModel |
 |-------|-----------------------|-----------|
 | `found_drinks?conditions={conditions}` | `FoundDrinksScreen` | `FoundDrinksViewModel` |
-| `search_filter` | `SearchDrinksScreen` | — (собирает `DrinksPathManager`) |
+| `search_filter` | `SearchDrinksScreen` | — (собирает `SearchConditions`) |
 | `drinks_list` | `DrinksListScreen` | `DrinkListViewModel` |
 | `ingredients_list` | `IngredientsListScreen` | `IngredientListViewModel` |
-| `remote_drink?entity={entity}` | `DrinkDetailScreen` | `RemoteDrinkViewModel` |
+| `remote_drink/{drinkId}` | `DrinkDetailScreen` | `RemoteDrinkViewModel` |
 | `local_drink/{extra_id}?editable={editable}` | `DrinkDetailScreen` | `DrinkViewModel` |
 | `add_drink/{extra_id}` | `AddDrinkScreen` | `AddDrinkViewModel` |
 | `add_drink_ingredients` | `SelectIngredientsScreen` | `AddDrinkIngredientsViewModel` |
@@ -49,11 +49,13 @@ UI полностью на **Jetpack Compose (Material 3)**. Навигация 
 
 ### Списки и поиск
 
-- **`FoundDrinksScreen`** — результаты удалённого поиска (`LazyColumn`), pull-to-refresh
-  (пагинация через `onLoadMore`), переход к деталям и к расширенному поиску (FAB `Search`).
-- **`SearchDrinksScreen`** — фильтр: бокал, вкус, ингредиент (dropdown), газированность/
-  алкогольность (switch), цвет (Material 3 `Slider`/чипы), навык (`Slider`). Собирает путь
-  через `DrinksPathManager` и переходит к `found_drinks`.
+- **`FoundDrinksScreen`** — результаты удалённого поиска (`LazyColumn`), переход к деталям и к
+  расширенному поиску (FAB `Search`). Пагинации нет — TheCocktailDB отдаёт весь результат сразу.
+- **`SearchDrinksScreen`** — фильтр: название коктейля (текст), бокал, вкус, ингредиент
+  (dropdown), газированность/алкогольность (switch), цвет (кружки), навык (`Slider`). Собирает
+  `SearchConditions` и переходит к `found_drinks`. **TheCocktailDB поддерживает только имя,
+  ингредиент, бокал и алкогольность** — параметры «вкус/цвет/навык/газированность» пока
+  игнорируются (см. [NETWORKING.md](NETWORKING.md)).
 - **`DrinksListScreen`** — список локальных коктейлей с поиском и FAB создания.
 - **`IngredientsListScreen`** — список локальных ингредиентов с поиском и FAB создания.
 
@@ -61,8 +63,7 @@ UI полностью на **Jetpack Compose (Material 3)**. Навигация 
 
 - **`DrinkDetailScreen`** — детали коктейля. Используется и для удалённого
   (`showNotes = false`, кнопка «Добавить» сохраняет рецепт), и для локального
-  (`showNotes = true`, кнопка «Редактировать»). Изображение показывается только при наличии.
-- **`IngredientDetailScreen`** — деталь ингредиента: фото, описание, заметки и список
+  (`showNotes = true`, кнопка «Редактировать»). Изображение показывается только при наличии.- **`IngredientDetailScreen`** — деталь ингредиента: фото, описание, заметки и список
   связанных коктейлей.
 
 ### Редактирование

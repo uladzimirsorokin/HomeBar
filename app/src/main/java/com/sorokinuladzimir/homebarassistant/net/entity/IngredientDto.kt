@@ -4,6 +4,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-class Preparation(
-    @SerialName("steps") val preparationSteps: List<PreparationStep>? = null
+class IngredientDto(
+    @SerialName("name") val name: String? = null,
+    @SerialName("measure") val measure: String? = null
 )

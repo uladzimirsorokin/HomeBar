@@ -13,10 +13,8 @@ if (localPropertiesFile.exists()) {
     localPropertiesFile.withReader('UTF-8') { reader -> localProperties.load(reader) }
 }
 
-def absolutApiKey = localProperties.getProperty('ABSOLUT_API_KEY', 'e94231991e5d42c58fbd02e0d60fe11b')
-def absolutDrinksRoot = localProperties.getProperty('ABSOLUT_DRINKS_ROOT', 'http://addb.absolutdrinks.com')
-def absolutDrinksImageRoot = localProperties.getProperty('ABSOLUT_DRINKS_IMAGE_ROOT', 'http://assets.absolutdrinks.com/drinks/600x800/')
-def absolutIngredientsImageRoot = localProperties.getProperty('ABSOLUT_INGREDIENTS_IMAGE_ROOT', 'http://assets.absolutdrinks.com/')
+def cocktailDbApiKey = localProperties.getProperty('COCKTAILDB_API_KEY', '1')
+def cocktailDbRoot = localProperties.getProperty('COCKTAILDB_ROOT', 'https://www.thecocktaildb.com/api/json/v1/')
 
 android {
     namespace 'com.sorokinuladzimir.homebarassistant'
@@ -30,10 +28,8 @@ android {
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
-        buildConfigField "String", "ABSOLUT_API_KEY", "\"${absolutApiKey}\""
-        buildConfigField "String", "ABSOLUT_DRINKS_ROOT", "\"${absolutDrinksRoot}\""
-        buildConfigField "String", "ABSOLUT_DRINKS_IMAGE_ROOT", "\"${absolutDrinksImageRoot}\""
-        buildConfigField "String", "ABSOLUT_INGREDIENTS_IMAGE_ROOT", "\"${absolutIngredientsImageRoot}\""
+        buildConfigField "String", "COCKTAILDB_API_KEY", "\"${cocktailDbApiKey}\""
+        buildConfigField "String", "COCKTAILDB_ROOT", "\"${cocktailDbRoot}\""
     }
 
     buildTypes {

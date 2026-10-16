@@ -30,7 +30,7 @@ import com.sorokinuladzimir.homebarassistant.R
 @Composable
 fun ResourcesScreen(
     onBack: () -> Unit,
-    onOpenAbsolut: () -> Unit,
+    onOpenCocktailDb: () -> Unit,
     onOpenFreepik: () -> Unit,
 ) {
     Scaffold(
@@ -52,9 +52,9 @@ fun ResourcesScreen(
                 .padding(8.dp)
         ) {
             ResourceCard(
-                iconRes = R.drawable.ic_absolut_logo,
-                text = stringResource(R.string.absolut_credits),
-                onClick = onOpenAbsolut
+                iconRes = R.drawable.cocktail,
+                text = stringResource(R.string.cocktaildb_credits),
+                onClick = onOpenCocktailDb
             )
             ResourceCard(
                 iconRes = R.drawable.ic_freepik_logo,

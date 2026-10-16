@@ -1,6 +1,5 @@
 package com.sorokinuladzimir.homebarassistant.db.mapper
 
-import com.sorokinuladzimir.homebarassistant.Constants
 import com.sorokinuladzimir.homebarassistant.db.entity.Drink
 import com.sorokinuladzimir.homebarassistant.db.entity.Glass
 import com.sorokinuladzimir.homebarassistant.db.entity.Taste
@@ -17,7 +16,7 @@ class DrinkEntityToDrinkMapper private constructor() : Mapper<Drink, DrinkEntity
             value.tastes?.map { dto -> Taste(dto.text).apply { id = dto.id } } ?: emptyList()
         )
         drink.description = value.description
-        drink.image = Constants.Uri.ABSOLUT_DRINKS_IMAGE_ROOT + value.id + ".png"
+        drink.image = value.imageUrl
         drink.rating = value.rating
         drink.isAlcoholic = value.isAlcoholic
         drink.isCarbonated = value.isCarbonated

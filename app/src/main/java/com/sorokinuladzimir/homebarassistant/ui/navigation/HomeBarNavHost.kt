@@ -41,14 +41,12 @@ import androidx.navigation.navArgument
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.sorokinuladzimir.homebarassistant.BarDataRepository.QueryType
 import com.sorokinuladzimir.homebarassistant.R
 import com.sorokinuladzimir.homebarassistant.ResourcesActivity
 import com.sorokinuladzimir.homebarassistant.core.ui.components.AddImageDialog
 import com.sorokinuladzimir.homebarassistant.core.ui.components.AddTastesDialog
 import com.sorokinuladzimir.homebarassistant.core.ui.components.rememberImagePicker
 import com.sorokinuladzimir.homebarassistant.db.entity.WholeCocktail
-import com.sorokinuladzimir.homebarassistant.net.entity.DrinkEntity
 import com.sorokinuladzimir.homebarassistant.ui.about.AboutScreen
 import com.sorokinuladzimir.homebarassistant.ui.adddrink.AddDrinkScreen
 import com.sorokinuladzimir.homebarassistant.ui.addingredient.AddIngredientScreen
@@ -72,10 +70,6 @@ import com.sorokinuladzimir.homebarassistant.viewmodel.IngredientViewModel
 import com.sorokinuladzimir.homebarassistant.viewmodel.RemoteDrinkViewModel
 import com.sorokinuladzimir.homebarassistant.viewmodel.SharedViewModel
 import com.sorokinuladzimir.homebarassistant.viewmodel.ThemeViewModel
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
-
-private val json = Json { ignoreUnknownKeys = true; coerceInputValues = true }
 
 private fun Context.findActivity(): ComponentActivity? {
     var ctx = this
@@ -102,11 +96,7 @@ fun NavGraphBuilder.homeBarGraph(navController: NavController) {
 
     composable(
         Routes.REMOTE_DRINK,
-        arguments = listOf(
-            navArgument(Routes.ARG_ENTITY) {
-                type = NavType.StringType; defaultValue = ""; nullable = true
-            }
-        )
+        arguments = listOf(navArgument(Routes.ARG_REMOTE_ID) { type = NavType.StringType })
     ) { RemoteDrinkRoute(navController) }
 
     composable(
@@ -162,7 +152,7 @@ private fun FoundDrinksRoute(navController: NavController, entry: NavBackStackEn
     val drinks by viewModel.getDrinks().observeAsState()
 
     LaunchedEffect(conditions) {
-        viewModel.searchDrinks(conditions, QueryType.SEARCH_BY_CONDITIONS, true)
+        viewModel.searchDrinks(conditions)
     }
 
     Scaffold(
@@ -182,8 +172,9 @@ private fun FoundDrinksRoute(navController: NavController, entry: NavBackStackEn
             FoundDrinksScreen(
                 drinks = drinks.orEmpty(),
                 emptyMessage = stringResource(R.string.no_items_found),
-                onItemClick = { navController.navigate(Routes.remoteDrink(json.encodeToString(it))) },
-                onLoadMore = { viewModel.searchDrinks(conditions, QueryType.CURRENT, false) }
+                onItemClick = { drink ->
+                    drink.id?.let { navController.navigate(Routes.remoteDrink(it)) }
+                }
             )
         }
     }

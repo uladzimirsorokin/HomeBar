@@ -51,4 +51,5 @@ support-библиотеки, старый AGP).
 - ViewModel-слой по-прежнему отдаёт `LiveData` (мост `Flow → asLiveData()`), что сохранено
   для постепенности; при желании можно перевести на `StateFlow`.
 - Схема Room (`version = 1`, `exportSchema = false`) не менялась; при изменениях нужны миграции.
-- Данные о коктейлях по-прежнему берутся по `http://` из Absolut Drinks.
+- Данные о коктейлях изначально брались по `http://` из Absolut Drinks; сервис прекратил
+  работу, источник заменён на TheCocktailDB (см. [ADR 0002](0002-cocktaildb-provider.md)).

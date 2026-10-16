@@ -137,7 +137,7 @@ Drink 1 ────< DrinkIngredientJoin >──── 1 Ingredient
 
 - `Mapper<T1, T2>` — абстрактный базовый класс (`map`, `reverseMap` и списковые версии).
 - `DrinkEntityToDrinkMapper` — `reverseMap(DrinkEntity) → Drink`: переносит название, вкусы,
-  описание, изображение (`ABSOLUT_DRINKS_IMAGE_ROOT + id + ".png"`), оценку, флаги
+  описание, изображение (`imageUrl` из TheCocktailDB), оценку, флаги
   алкоголя/газированности и бокал. Синглтон `getInstance()`.
 - `WholeCocktailToDrinkIngredientJoinMapper` — `reverseMap(WholeCocktail) → DrinkIngredientJoin`.
 

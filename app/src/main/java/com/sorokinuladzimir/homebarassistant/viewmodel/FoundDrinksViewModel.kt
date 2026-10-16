@@ -26,7 +26,7 @@ class FoundDrinksViewModel @Inject constructor(
 
     fun getDrinks(): LiveData<List<DrinkEntity>> = mObservableRemoteDrinks
 
-    fun searchDrinks(query: String, searchType: BarDataRepository.QueryType, clearList: Boolean) {
-        repository.getRemoteDrinks(query, searchType, clearList)
+    fun searchDrinks(conditionsJson: String?) {
+        repository.getRemoteDrinks(conditionsJson)
     }
 }

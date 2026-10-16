@@ -11,7 +11,6 @@ import com.sorokinuladzimir.homebarassistant.db.entity.WholeCocktail
 import com.sorokinuladzimir.homebarassistant.db.mapper.DrinkEntityToDrinkMapper
 import com.sorokinuladzimir.homebarassistant.net.entity.DrinkEntity
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.serialization.json.Json
 import javax.inject.Inject
 
 @HiltViewModel
@@ -21,23 +20,29 @@ class RemoteDrinkViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle
 ) : AndroidViewModel(application) {
 
-    private val mDrinkEntity: DrinkEntity? =
-        savedStateHandle.get<String>(ARG_ENTITY)
-            ?.takeIf { it.isNotBlank() }
-            ?.let { json.decodeFromString<DrinkEntity>(it) }
-
     private val mObservableDrink = MediatorLiveData<Drink?>()
     private val mDrinkIngredients = MediatorLiveData<List<WholeCocktail>>()
+    private var mEntity: DrinkEntity? = null
     private var mBitmap: Bitmap? = null
 
     init {
-        mDrinkEntity?.id?.let { repository.getRemoteDrinkIngredients(it) }
-        mObservableDrink.value = mDrinkEntity?.let {
-            DrinkEntityToDrinkMapper.getInstance().reverseMap(it)
-        }
+        val drinkId = savedStateHandle.get<String>(ARG_ID)?.takeIf { it.isNotBlank() }
         mDrinkIngredients.value = null
-        mDrinkIngredients.addSource(repository.getRemoteDrinkIngredients()) {
-            mDrinkIngredients.value = it
+        if (drinkId != null) {
+            mObservableDrink.addSource(repository.getRemoteDrink(drinkId)) { entity ->
+                mEntity = entity
+                mObservableDrink.value =
+                    entity?.let { DrinkEntityToDrinkMapper.getInstance().reverseMap(it) }
+                mDrinkIngredients.value = entity?.ingredients.orEmpty().map { ingredient ->
+                    WholeCocktail().apply {
+                        ingredientName = ingredient.name
+                        amount = ingredient.measure
+                        image = ingredient.name?.let {
+                            INGREDIENT_IMAGE_ROOT + it.replace(" ", "%20") + ".png"
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -50,11 +55,12 @@ class RemoteDrinkViewModel @Inject constructor(
     }
 
     fun saveDrink() {
-        mDrinkEntity?.let { repository.saveRemoteDrink(it, mBitmap) }
+        mEntity?.let { repository.saveRemoteDrink(it, mBitmap) }
     }
 
     companion object {
-        const val ARG_ENTITY = "entity"
-        private val json = Json { ignoreUnknownKeys = true }
+        const val ARG_ID = "drinkId"
+        private const val INGREDIENT_IMAGE_ROOT =
+            "https://www.thecocktaildb.com/images/ingredients/"
     }
 }

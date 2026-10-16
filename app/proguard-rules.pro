@@ -15,12 +15,10 @@
     public static ** Companion;
     kotlinx.serialization.KSerializer serializer(...);
 }
--keep,includedescriptorclasses class com.sorokinuladzimir.homebarassistant.net.entity.**$$serializer { *; }
--keep,includedescriptorclasses class com.sorokinuladzimir.homebarassistant.net.entity.**$Companion { *; }
--keep,includedescriptorclasses class com.sorokinuladzimir.homebarassistant.net.AbsolutDrinksResult$$serializer { *; }
--keep,includedescriptorclasses class com.sorokinuladzimir.homebarassistant.net.AbsolutDrinksResult$Companion { *; }
--keep,includedescriptorclasses class com.sorokinuladzimir.homebarassistant.db.entity.Taste$$serializer { *; }
--keep,includedescriptorclasses class com.sorokinuladzimir.homebarassistant.db.entity.Taste$Companion { *; }
+-keep,includedescriptorclasses class com.sorokinuladzimir.homebarassistant.net.**$$serializer { *; }
+-keep,includedescriptorclasses class com.sorokinuladzimir.homebarassistant.net.**$Companion { *; }
+-keep,includedescriptorclasses class com.sorokinuladzimir.homebarassistant.db.entity.**$$serializer { *; }
+-keep,includedescriptorclasses class com.sorokinuladzimir.homebarassistant.db.entity.**$Companion { *; }
 
 # --- Retrofit ---
 -keepattributes Signature, InnerClasses, EnclosingMethod
