@@ -269,6 +269,6 @@ com.sorokinuladzimir.homebarassistant
 | 3. Сеть | ✅ готово | DTO на Kotlin `@Serializable` (kotlinx.serialization) + `TasteDto`; Retrofit API → `suspend`; `NetworkModule` на kotlinx-конвертере; OkHttp 4.12; `NetworkUtil` → `NetworkCapabilities`; `ApiResult` + тосты в main-поток; ключ/URL → `BuildConfig`/`local.properties`. Gson оставлен только для Room-конвертера `TasteConverter` |
 | 4. Compose-фундамент | ✅ готово | Тема `core/ui/theme` (+ `homeBarThemeVariant()` из prefs); общий компонент `EmptyState`; Coil подключён; интероп-стратегия: `ComposeView` в контентной области фрагмента (XML-toolbar сохраняется). Пилот — `AboutFragment`/`AboutScreen` на Compose |
 | 5. Поэкранная миграция | ✅ готово | 5.1 Settings; 5.2 списки; 5.3 детали; 5.4 поиск; 5.5 формы; 5.6 диалоги; 5.7 нижняя навигация (`MainActivity` → Kotlin + Material 3 `NavigationBar`). Все экраны на Compose (в оболочках Fragment) |
-| 6. Compose Navigation | ⬜ не начат | |
+| 6. Compose Navigation | 🔄 в работе | 6a ✅: добавлены `navigation-compose`/`hilt-navigation-compose`/`runtime-livedata`; `Routes`, `HomeBarApp` (Scaffold + `NavigationBar` + `NavHost`), маршрутные composable на существующих экранах/ViewModel; `MainActivity` → чистый Compose-хост (`enableEdgeToEdge`); `RemoteDrinkViewModel` читает JSON-аргумент. Осталось (6b): удалить старые фрагменты/`Screens`/`TabContainerFragment`/`subnavigation` и Cicerone |
 | 7. Удаление легаси | ⬜ не начат | |
 | 8. Качество | ⬜ не начат | |

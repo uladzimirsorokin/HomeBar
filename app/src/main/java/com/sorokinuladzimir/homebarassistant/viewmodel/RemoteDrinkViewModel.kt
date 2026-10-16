@@ -2,17 +2,16 @@ package com.sorokinuladzimir.homebarassistant.viewmodel
 
 import android.app.Application
 import android.graphics.Bitmap
-import android.os.Bundle
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.sorokinuladzimir.homebarassistant.BarDataRepository
-import com.sorokinuladzimir.homebarassistant.Constants
 import com.sorokinuladzimir.homebarassistant.db.entity.Drink
 import com.sorokinuladzimir.homebarassistant.db.entity.WholeCocktail
 import com.sorokinuladzimir.homebarassistant.db.mapper.DrinkEntityToDrinkMapper
 import com.sorokinuladzimir.homebarassistant.net.entity.DrinkEntity
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.serialization.json.Json
 import javax.inject.Inject
 
 @HiltViewModel
@@ -23,8 +22,9 @@ class RemoteDrinkViewModel @Inject constructor(
 ) : AndroidViewModel(application) {
 
     private val mDrinkEntity: DrinkEntity? =
-        savedStateHandle.get<Bundle>(ARG_BUNDLE)
-            ?.getSerializable(Constants.Extra.COCKTAIL) as? DrinkEntity
+        savedStateHandle.get<String>(ARG_ENTITY)
+            ?.takeIf { it.isNotBlank() }
+            ?.let { Json { ignoreUnknownKeys = true }.decodeFromString<DrinkEntity>(it) }
 
     private val mObservableDrink = MediatorLiveData<Drink?>()
     private val mDrinkIngredients = MediatorLiveData<List<WholeCocktail>>()
@@ -54,6 +54,6 @@ class RemoteDrinkViewModel @Inject constructor(
     }
 
     companion object {
-        const val ARG_BUNDLE = "extra_bundle"
+        const val ARG_ENTITY = "entity"
     }
 }
