@@ -81,6 +81,7 @@ HomeBar/
 - [База данных](docs/DATABASE.md) — схема Room, сущности, DAO, связи.
 - [Сеть](docs/NETWORKING.md) — Absolut Drinks API, эндпоинты, модели, пагинация.
 - [UI и навигация](docs/UI.md) — экраны, карта навигации, адаптеры, темы.
+- [План рефакторинга](docs/REFACTORING_PLAN.md) — поэтапный переход на Kotlin + Compose + Hilt.
 
 ## Лицензия и источники данных
 
