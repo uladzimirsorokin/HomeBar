@@ -3,6 +3,8 @@ package com.sorokinuladzimir.homebarassistant
 import android.content.Context
 import android.graphics.Bitmap
 import android.net.Uri
+import android.os.Handler
+import android.os.Looper
 import android.os.Process
 import android.widget.Toast
 import androidx.core.content.FileProvider
@@ -17,6 +19,7 @@ import com.sorokinuladzimir.homebarassistant.db.entity.WholeCocktail
 import com.sorokinuladzimir.homebarassistant.db.mapper.DrinkEntityToDrinkMapper
 import com.sorokinuladzimir.homebarassistant.net.AbsolutDrinksApi
 import com.sorokinuladzimir.homebarassistant.net.AbsolutDrinksResult
+import com.sorokinuladzimir.homebarassistant.net.ApiResult
 import com.sorokinuladzimir.homebarassistant.net.NoConnectivityException
 import com.sorokinuladzimir.homebarassistant.net.entity.DrinkEntity
 import com.sorokinuladzimir.homebarassistant.net.entity.Preparation
@@ -28,9 +31,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import retrofit2.HttpException
 import java.io.File
 import java.io.IOException
 import java.text.NumberFormat
@@ -181,38 +182,60 @@ class BarDataRepository @Inject constructor(
     ) {
         mScope.launch {
             if (clearList) clearRemoteDrinks()
+            if (mCurrentSearchType == null && queryType != QueryType.CURRENT) {
+                mCurrentSearchType = queryType
+            }
+            if (mCurrentSearchType != queryType && queryType != QueryType.CURRENT) {
+                mCurrentSearchType = queryType
+            }
+            val currentType = mCurrentSearchType
+            if (currentType == null) {
+                showToast("something went wrong :(")
+                return@launch
+            }
             val start = mObservableRemoteDrinks.value?.size ?: 0
-            val client = mApi
-            val call = getDrinksCall(requestConditions, queryType, client, start)
-            if (call != null) {
-                if (!(queryType == QueryType.CURRENT && start >= mTotalResult)) {
-                    loadDrinks(call)
-                }
-            } else {
-                Toast.makeText(context, "something went wrong :(", Toast.LENGTH_SHORT).show()
+            if (queryType == QueryType.CURRENT && start >= mTotalResult) {
+                return@launch
+            }
+            when (val result = safeApiCall { requestDrinks(currentType, requestConditions, start) }) {
+                is ApiResult.Success -> setDrinksResult(result.data)
+                is ApiResult.Error -> showToast(result.message)
             }
         }
     }
 
-    private fun getDrinksCall(
+    private suspend fun requestDrinks(
+        type: QueryType,
         requestConditions: String?,
-        queryType: QueryType,
-        client: AbsolutDrinksApi,
         start: Int
-    ): Call<AbsolutDrinksResult>? {
-        if (mCurrentSearchType == null && queryType != QueryType.CURRENT) {
-            mCurrentSearchType = queryType
+    ): AbsolutDrinksResult = when (type) {
+        QueryType.SEARCH_BY_CONDITIONS -> mApi.getAllMatchedDrinks(
+            requestConditions ?: "",
+            start,
+            Constants.Values.DEFAULT_ITEM_AMOUNT
+        )
+        QueryType.SEARCH_BY_NAME -> mApi.searchDrinks(
+            requestConditions ?: "",
+            start,
+            Constants.Values.DEFAULT_ITEM_AMOUNT
+        )
+        QueryType.CURRENT -> throw IllegalStateException("CURRENT is not a request type")
+    }
+
+    private suspend fun <T> safeApiCall(block: suspend () -> T): ApiResult<T> =
+        try {
+            ApiResult.Success(block())
+        } catch (e: NoConnectivityException) {
+            ApiResult.Error("no internet", e)
+        } catch (e: HttpException) {
+            ApiResult.Error("server returned error", e)
+        } catch (e: IOException) {
+            ApiResult.Error("server error, try again later", e)
         }
-        mCurrentSearchType ?: return null
-        if (mCurrentSearchType != queryType && queryType != QueryType.CURRENT) {
-            mCurrentSearchType = queryType
-        }
-        return when (mCurrentSearchType) {
-            QueryType.SEARCH_BY_CONDITIONS ->
-                client.getAllMatchedDrinks(requestConditions, start, Constants.Values.DEFAULT_ITEM_AMOUNT)
-            QueryType.SEARCH_BY_NAME ->
-                client.searchDrinks(requestConditions, start, Constants.Values.DEFAULT_ITEM_AMOUNT)
-            else -> null
+
+    private fun showToast(message: String) {
+        Handler(Looper.getMainLooper()).post {
+            Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -277,25 +300,10 @@ class BarDataRepository @Inject constructor(
         mScope.launch {
             (mRemoteDrinkIngredients.value as? MutableList<WholeCocktail>)?.clear()
             mRemoteIngredients.clear()
-            val client = mApi
-            val call = client.getPreparationSteps(drinkId)
-            call.enqueue(object : Callback<Preparation> {
-                override fun onResponse(call: Call<Preparation>, response: Response<Preparation>) {
-                    if (response.isSuccessful) {
-                        handlePreparation(response.body())
-                    } else {
-                        Toast.makeText(context, "server returned error", Toast.LENGTH_SHORT).show()
-                    }
-                }
-
-                override fun onFailure(call: Call<Preparation>, t: Throwable) {
-                    if (t is NoConnectivityException) {
-                        Toast.makeText(context, "no internet", Toast.LENGTH_SHORT).show()
-                    } else {
-                        Toast.makeText(context, "server error, try again later", Toast.LENGTH_SHORT).show()
-                    }
-                }
-            })
+            when (val result = safeApiCall { mApi.getPreparationSteps(drinkId) }) {
+                is ApiResult.Success -> handlePreparation(result.data)
+                is ApiResult.Error -> showToast(result.message)
+            }
         }
     }
 
@@ -303,7 +311,7 @@ class BarDataRepository @Inject constructor(
         if (preparation != null) {
             val drinkIngredients = ArrayList<WholeCocktail>()
             mRemoteIngredients = ArrayList()
-            for (step: PreparationStep in preparation.preparationSteps) {
+            for (step: PreparationStep in preparation.preparationSteps.orEmpty()) {
                 val wholeCocktail = WholeCocktail()
                 val ingredient = Ingredient()
                 if (step.amount != 0.0f || step.centilitresAmount != 0.0f) {
@@ -368,38 +376,15 @@ class BarDataRepository @Inject constructor(
         return result
     }
 
-    private fun loadDrinks(call: Call<AbsolutDrinksResult>) {
-        call.enqueue(object : Callback<AbsolutDrinksResult> {
-            override fun onResponse(
-                call: Call<AbsolutDrinksResult>,
-                response: Response<AbsolutDrinksResult>
-            ) {
-                if (response.isSuccessful) {
-                    setDrinksResult(response)
-                } else {
-                    Toast.makeText(context, "server returned error", Toast.LENGTH_SHORT).show()
-                }
-            }
-
-            override fun onFailure(call: Call<AbsolutDrinksResult>, t: Throwable) {
-                if (t is NoConnectivityException) {
-                    Toast.makeText(context, "no internet", Toast.LENGTH_SHORT).show()
-                } else {
-                    Toast.makeText(context, "server error, try again later", Toast.LENGTH_SHORT).show()
-                }
-            }
-        })
-    }
-
-    private fun setDrinksResult(response: Response<AbsolutDrinksResult>) {
-        val result = response.body() ?: return
+    private fun setDrinksResult(result: AbsolutDrinksResult) {
         mTotalResult = result.totalResult
+        val drinks = result.result ?: emptyList()
         val currentDrinksList = mObservableRemoteDrinks.value
         if (currentDrinksList != null && mNextLink != null && mNextLink != result.next) {
-            (currentDrinksList as? MutableList<DrinkEntity>)?.addAll(result.result)
+            (currentDrinksList as? MutableList<DrinkEntity>)?.addAll(drinks)
             mObservableRemoteDrinks.postValue(currentDrinksList)
         } else {
-            mObservableRemoteDrinks.postValue(result.result)
+            mObservableRemoteDrinks.postValue(drinks)
         }
         mNextLink = result.next
     }

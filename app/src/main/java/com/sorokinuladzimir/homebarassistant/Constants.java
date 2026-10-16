@@ -7,16 +7,16 @@ public class Constants {
     }
 
     public static class Uri {
-        public static final String ABSOLUT_DRINKS_ROOT = "http://addb.absolutdrinks.com";
-        public static final String ABSOLUT_DRINKS_IMAGE_ROOT = "http://assets.absolutdrinks.com/drinks/600x800/";
-        public static final String ABSOLUT_INGREDIENTS_IMAGE_ROOT = "http://assets.absolutdrinks.com/";
+        public static final String ABSOLUT_DRINKS_ROOT = BuildConfig.ABSOLUT_DRINKS_ROOT;
+        public static final String ABSOLUT_DRINKS_IMAGE_ROOT = BuildConfig.ABSOLUT_DRINKS_IMAGE_ROOT;
+        public static final String ABSOLUT_INGREDIENTS_IMAGE_ROOT = BuildConfig.ABSOLUT_INGREDIENTS_IMAGE_ROOT;
 
         private Uri() {
         }
     }
 
     public static class Keys {
-        public static final String ABSOLUT_API_KEY = "e94231991e5d42c58fbd02e0d60fe11b";
+        public static final String ABSOLUT_API_KEY = BuildConfig.ABSOLUT_API_KEY;
 
         private Keys() {
         }

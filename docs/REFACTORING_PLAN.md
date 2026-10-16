@@ -266,7 +266,7 @@ com.sorokinuladzimir.homebarassistant
 | 0. Фундамент | ✅ готово | Kotlin 2.2.0, Compose BOM 2025.06.01, Hilt 2.57.1, KSP 2.2.0-2.0.2; version catalog; тема `core/ui/theme` |
 | 1. Data + Flow | ✅ готово | `db/` и `BarDataRepository`/`BarData` на Kotlin; DAO → `Flow`/`suspend`; мост `asLiveData()`; Room compiler переведён на KSP. KSP2 отключён (`ksp.useKSP2=false`) из-за несовместимости Room 2.6.1; `AppExecutors` оставлен для адаптеров (удалим на этапе 5) |
 | 2. Hilt | ✅ готово | `@HiltAndroidApp`, модули `DatabaseModule`/`NetworkModule`/`AppModule`/`RepositoryModule`; `BarData`/`CocktailsDatabase`/`AbsolutDrinksApi`/`ImageHandler` через DI; 10 ViewModel → Kotlin `@HiltViewModel` (+`SavedStateHandle` для аргументов); фрагменты/`MainActivity` `@AndroidEntryPoint`. Убраны `BarApp.getDatabase()/getBarRepository()` и `ServiceGenerator`. `AppExecutors` оставлен статически для адаптеров (до этапа 5) |
-| 3. Сеть | ⬜ не начат | |
+| 3. Сеть | ✅ готово | DTO на Kotlin `@Serializable` (kotlinx.serialization) + `TasteDto`; Retrofit API → `suspend`; `NetworkModule` на kotlinx-конвертере; OkHttp 4.12; `NetworkUtil` → `NetworkCapabilities`; `ApiResult` + тосты в main-поток; ключ/URL → `BuildConfig`/`local.properties`. Gson оставлен только для Room-конвертера `TasteConverter` |
 | 4. Compose-фундамент | ⬜ не начат | |
 | 5. Поэкранная миграция | ⬜ не начат | |
 | 6. Compose Navigation | ⬜ не начат | |

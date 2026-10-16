@@ -3,6 +3,7 @@ package com.sorokinuladzimir.homebarassistant.db.mapper
 import com.sorokinuladzimir.homebarassistant.Constants
 import com.sorokinuladzimir.homebarassistant.db.entity.Drink
 import com.sorokinuladzimir.homebarassistant.db.entity.Glass
+import com.sorokinuladzimir.homebarassistant.db.entity.Taste
 import com.sorokinuladzimir.homebarassistant.net.entity.DrinkEntity
 
 class DrinkEntityToDrinkMapper private constructor() : Mapper<Drink, DrinkEntity>() {
@@ -12,7 +13,9 @@ class DrinkEntityToDrinkMapper private constructor() : Mapper<Drink, DrinkEntity
     override fun reverseMap(value: DrinkEntity): Drink {
         val drink = Drink()
         drink.name = value.name
-        drink.tastes = ArrayList(value.tastes ?: arrayListOf())
+        drink.tastes = ArrayList(
+            value.tastes?.map { dto -> Taste(dto.text).apply { id = dto.id } } ?: emptyList()
+        )
         drink.description = value.description
         drink.image = Constants.Uri.ABSOLUT_DRINKS_IMAGE_ROOT + value.id + ".png"
         drink.rating = value.rating

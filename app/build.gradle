@@ -2,9 +2,21 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
 }
+
+def localProperties = new Properties()
+def localPropertiesFile = rootProject.file('local.properties')
+if (localPropertiesFile.exists()) {
+    localPropertiesFile.withReader('UTF-8') { reader -> localProperties.load(reader) }
+}
+
+def absolutApiKey = localProperties.getProperty('ABSOLUT_API_KEY', 'e94231991e5d42c58fbd02e0d60fe11b')
+def absolutDrinksRoot = localProperties.getProperty('ABSOLUT_DRINKS_ROOT', 'http://addb.absolutdrinks.com')
+def absolutDrinksImageRoot = localProperties.getProperty('ABSOLUT_DRINKS_IMAGE_ROOT', 'http://assets.absolutdrinks.com/drinks/600x800/')
+def absolutIngredientsImageRoot = localProperties.getProperty('ABSOLUT_INGREDIENTS_IMAGE_ROOT', 'http://assets.absolutdrinks.com/')
 
 android {
     namespace 'com.sorokinuladzimir.homebarassistant'
@@ -17,6 +29,11 @@ android {
         versionCode 4
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        buildConfigField "String", "ABSOLUT_API_KEY", "\"${absolutApiKey}\""
+        buildConfigField "String", "ABSOLUT_DRINKS_ROOT", "\"${absolutDrinksRoot}\""
+        buildConfigField "String", "ABSOLUT_DRINKS_IMAGE_ROOT", "\"${absolutDrinksImageRoot}\""
+        buildConfigField "String", "ABSOLUT_INGREDIENTS_IMAGE_ROOT", "\"${absolutIngredientsImageRoot}\""
     }
 
     buildTypes {
@@ -86,7 +103,9 @@ dependencies {
 
     // --- Networking / serialization ---
     implementation libs.retrofit
-    implementation libs.retrofit.converter.gson
+    implementation libs.okhttp
+    implementation libs.retrofit.kotlinx.serialization
+    implementation libs.kotlinx.serialization.json
     implementation libs.gson
 
     // --- Third-party (legacy, будут удалены на этапах 5-7) ---

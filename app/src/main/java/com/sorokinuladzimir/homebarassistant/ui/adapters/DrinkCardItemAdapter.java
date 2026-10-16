@@ -83,7 +83,7 @@ public class DrinkCardItemAdapter extends RecyclerView.Adapter<DrinkCardItemAdap
                     .error(Glide.with(cardImage.getContext()).load(R.drawable.camera_placeholder))
                     .into(cardImage);
             title.setText(drinkItem.getName());
-            subtitle.setText(TastesHelper.tastesToString(drinkItem.getTastes()));
+            subtitle.setText(TastesHelper.tastesDtoToString(drinkItem.getTastes()));
             rating.setText(String.valueOf(drinkItem.getRating()));
             if (drinkItem.isCarbonated()) {
                 carbonatedIcon.setVisibility(View.VISIBLE);

@@ -1,6 +1,7 @@
 package com.sorokinuladzimir.homebarassistant.ui.utils;
 
 import com.sorokinuladzimir.homebarassistant.db.entity.Taste;
+import com.sorokinuladzimir.homebarassistant.net.entity.TasteDto;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -14,6 +15,18 @@ public class TastesHelper {
     }
 
     public static String tastesToString(List<Taste> tastes) {
+        if (tastes != null && !tastes.isEmpty()) {
+            StringBuilder tastesStr = new StringBuilder(tastes.get(0).getText());
+            for (int i = 1; i < tastes.size(); i++) {
+                tastesStr.append(", ").append(tastes.get(i).getText());
+            }
+            return tastesStr.toString();
+        }
+
+        return "";
+    }
+
+    public static String tastesDtoToString(List<TasteDto> tastes) {
         if (tastes != null && !tastes.isEmpty()) {
             StringBuilder tastesStr = new StringBuilder(tastes.get(0).getText());
             for (int i = 1; i < tastes.size(); i++) {

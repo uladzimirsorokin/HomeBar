@@ -8,7 +8,7 @@ class DrinksRequestInterceptor(private val lang: String) : Interceptor {
 
     override fun intercept(chain: Interceptor.Chain): Response {
         val original = chain.request()
-        val url = original.url().newBuilder()
+        val url = original.url.newBuilder()
             .addQueryParameter(Constants.Extra.API_KEY, Constants.Keys.ABSOLUT_API_KEY)
             .addQueryParameter(Constants.Extra.LANG, lang)
             .build()

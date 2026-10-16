@@ -31,7 +31,7 @@ class RemoteDrinkViewModel @Inject constructor(
     private var mBitmap: Bitmap? = null
 
     init {
-        mDrinkEntity?.let { repository.getRemoteDrinkIngredients(it.id) }
+        mDrinkEntity?.id?.let { repository.getRemoteDrinkIngredients(it) }
         mObservableDrink.value = mDrinkEntity?.let {
             DrinkEntityToDrinkMapper.getInstance().reverseMap(it)
         }
