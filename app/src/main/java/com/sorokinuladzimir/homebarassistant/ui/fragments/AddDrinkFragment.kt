@@ -18,12 +18,14 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.compose.ui.res.stringResource
 import androidx.core.content.ContextCompat
-import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.sorokinuladzimir.homebarassistant.Constants
 import com.sorokinuladzimir.homebarassistant.R
+import com.sorokinuladzimir.homebarassistant.core.ui.components.AddImageDialog
+import com.sorokinuladzimir.homebarassistant.core.ui.components.AddTastesDialog
 import com.sorokinuladzimir.homebarassistant.core.ui.theme.HomeBarTheme
 import com.sorokinuladzimir.homebarassistant.core.ui.theme.homeBarThemeVariant
 import com.sorokinuladzimir.homebarassistant.db.entity.Taste
@@ -37,9 +39,7 @@ import com.sorokinuladzimir.homebarassistant.viewmodel.SharedViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class AddDrinkFragment : Fragment(), BackButtonListener,
-    AddImageDialogFragment.AddImageDialogFragmentCallback,
-    AddTastesDialogFragment.AddTastesDialogFragmentCallback {
+class AddDrinkFragment : Fragment(), BackButtonListener {
 
     private val imagePathState = mutableStateOf<String?>(null)
     private val nameState = mutableStateOf("")
@@ -51,6 +51,8 @@ class AddDrinkFragment : Fragment(), BackButtonListener,
     private val carbonatedState = mutableStateOf(false)
     private val alcoholicState = mutableStateOf(false)
     private val glassIndexState = mutableIntStateOf(0)
+    private val showImageDialogState = mutableStateOf(false)
+    private val showTastesDialogState = mutableStateOf(false)
 
     private lateinit var viewModel: AddDrinkViewModel
     private lateinit var sharedViewModel: SharedViewModel
@@ -82,7 +84,7 @@ class AddDrinkFragment : Fragment(), BackButtonListener,
                     description = descriptionState.value,
                     onDescriptionChange = { descriptionState.value = it },
                     tastes = tastesState.value.joinToString(", ") { it.text.orEmpty() },
-                    onTastesClick = { showAddTastesDialog() },
+                    onTastesClick = { showTastesDialogState.value = true },
                     ingredients = ingredientsState.value,
                     unitOptions = unitOptions,
                     onAmountChange = { index, value -> updateIngredient(index) { it.amount = value } },
@@ -103,6 +105,37 @@ class AddDrinkFragment : Fragment(), BackButtonListener,
                     notes = notesState.value,
                     onNotesChange = { notesState.value = it }
                 )
+                if (showImageDialogState.value) {
+                    AddImageDialog(
+                        title = stringResource(R.string.change_photo),
+                        allowDelete = imagePathState.value != null,
+                        onTakePhoto = {
+                            showImageDialogState.value = false
+                            dispatchTakePictureIntent()
+                        },
+                        onChooseFromLibrary = {
+                            showImageDialogState.value = false
+                            dispatchChoosePictureIntent()
+                        },
+                        onRemove = {
+                            showImageDialogState.value = false
+                            viewModel.removeCurrentImage()
+                        },
+                        onDismiss = { showImageDialogState.value = false }
+                    )
+                }
+                if (showTastesDialogState.value) {
+                    AddTastesDialog(
+                        title = stringResource(R.string.title_choose_tastes),
+                        tastes = resources.getStringArray(R.array.taste_name).toList(),
+                        initialSelection = viewModel.getTastes(resources.getStringArray(R.array.taste_name)),
+                        onConfirm = { selection ->
+                            showTastesDialogState.value = false
+                            viewModel.setTastes(selection, resources.getStringArray(R.array.taste_name))
+                        },
+                        onDismiss = { showTastesDialogState.value = false }
+                    )
+                }
             }
         }
         subscribeUi()
@@ -186,7 +219,7 @@ class AddDrinkFragment : Fragment(), BackButtonListener,
                 requireContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE
             ) == PackageManager.PERMISSION_GRANTED
         ) {
-            showAddImageDialog()
+            showImageDialogState.value = true
         } else {
             requestPermissions(
                 arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
@@ -210,7 +243,7 @@ class AddDrinkFragment : Fragment(), BackButtonListener,
     ) {
         if (requestCode == REQUEST_PERMISSION_CODE) {
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                showAddImageDialog()
+                showImageDialogState.value = true
             } else {
                 Toast.makeText(context, "denied", Toast.LENGTH_SHORT).show()
             }
@@ -225,36 +258,6 @@ class AddDrinkFragment : Fragment(), BackButtonListener,
         }
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == android.app.Activity.RESULT_OK) {
             viewModel.getPhotoUri()?.let { viewModel.handleImage(it, DEFAULT_IMAGE_SIZE, true) }
-        }
-    }
-
-    private fun showAddImageDialog() {
-        val newFragment: DialogFragment = AddImageDialogFragment.newInstance(
-            getString(R.string.change_photo),
-            viewModel.getCurrentImagePath().value != null
-        )
-        newFragment.setTargetFragment(this, 911)
-        fragmentManager?.let { newFragment.show(it, Constants.Extra.DIALOG) }
-    }
-
-    private fun showAddTastesDialog() {
-        val newFragment: DialogFragment = AddTastesDialogFragment.newInstance(
-            getString(R.string.title_choose_tastes),
-            viewModel.getTastes(resources.getStringArray(R.array.taste_name))
-        )
-        newFragment.setTargetFragment(this, 911)
-        fragmentManager?.let { newFragment.show(it, Constants.Extra.DIALOG) }
-    }
-
-    override fun addTastesDialogCallback(tastes: List<Int>) {
-        viewModel.setTastes(tastes, resources.getStringArray(R.array.taste_name))
-    }
-
-    override fun addImageDialogCallback(item: Int) {
-        when (item) {
-            0 -> dispatchTakePictureIntent()
-            1 -> dispatchChoosePictureIntent()
-            2 -> viewModel.removeCurrentImage()
         }
     }
 

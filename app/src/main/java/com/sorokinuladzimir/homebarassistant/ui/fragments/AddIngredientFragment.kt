@@ -18,12 +18,13 @@ import androidx.appcompat.widget.Toolbar
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.compose.ui.res.stringResource
 import androidx.core.content.ContextCompat
-import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.sorokinuladzimir.homebarassistant.Constants
 import com.sorokinuladzimir.homebarassistant.R
+import com.sorokinuladzimir.homebarassistant.core.ui.components.AddImageDialog
 import com.sorokinuladzimir.homebarassistant.core.ui.theme.HomeBarTheme
 import com.sorokinuladzimir.homebarassistant.core.ui.theme.homeBarThemeVariant
 import com.sorokinuladzimir.homebarassistant.ui.addingredient.AddIngredientScreen
@@ -33,13 +34,13 @@ import com.sorokinuladzimir.homebarassistant.viewmodel.AddIngredientViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class AddIngredientFragment : Fragment(), BackButtonListener,
-    AddImageDialogFragment.AddImageDialogFragmentCallback {
+class AddIngredientFragment : Fragment(), BackButtonListener {
 
     private val nameState = mutableStateOf("")
     private val descriptionState = mutableStateOf("")
     private val notesState = mutableStateOf("")
     private val imagePathState = mutableStateOf<String?>(null)
+    private val showImageDialogState = mutableStateOf(false)
 
     private lateinit var viewModel: AddIngredientViewModel
 
@@ -68,6 +69,25 @@ class AddIngredientFragment : Fragment(), BackButtonListener,
                     onNotesChange = { notesState.value = it },
                     onImageClick = { onImageClicked() }
                 )
+                if (showImageDialogState.value) {
+                    AddImageDialog(
+                        title = stringResource(R.string.change_photo),
+                        allowDelete = imagePathState.value != null,
+                        onTakePhoto = {
+                            showImageDialogState.value = false
+                            dispatchTakePictureIntent()
+                        },
+                        onChooseFromLibrary = {
+                            showImageDialogState.value = false
+                            dispatchChoosePictureIntent()
+                        },
+                        onRemove = {
+                            showImageDialogState.value = false
+                            viewModel.removeCurrentImage()
+                        },
+                        onDismiss = { showImageDialogState.value = false }
+                    )
+                }
             }
         }
         subscribeUi()
@@ -110,7 +130,7 @@ class AddIngredientFragment : Fragment(), BackButtonListener,
                 requireContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE
             ) == PackageManager.PERMISSION_GRANTED
         ) {
-            showAddImageDialog()
+            showImageDialogState.value = true
         } else {
             requestPermissions(
                 arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
@@ -126,7 +146,7 @@ class AddIngredientFragment : Fragment(), BackButtonListener,
     ) {
         if (requestCode == REQUEST_PERMISSION_CODE) {
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                showAddImageDialog()
+                showImageDialogState.value = true
             } else {
                 Toast.makeText(context, "denied", Toast.LENGTH_SHORT).show()
             }
@@ -141,23 +161,6 @@ class AddIngredientFragment : Fragment(), BackButtonListener,
         }
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == android.app.Activity.RESULT_OK) {
             viewModel.getPhotoUri()?.let { viewModel.handleImage(it, DEFAULT_IMAGE_SIZE, true) }
-        }
-    }
-
-    private fun showAddImageDialog() {
-        val newFragment: DialogFragment = AddImageDialogFragment.newInstance(
-            getString(R.string.change_photo),
-            viewModel.getCurrentImagePath().value != null
-        )
-        newFragment.setTargetFragment(this, 911)
-        fragmentManager?.let { newFragment.show(it, Constants.Extra.DIALOG) }
-    }
-
-    override fun addImageDialogCallback(item: Int) {
-        when (item) {
-            0 -> dispatchTakePictureIntent()
-            1 -> dispatchChoosePictureIntent()
-            2 -> viewModel.removeCurrentImage()
         }
     }
 
