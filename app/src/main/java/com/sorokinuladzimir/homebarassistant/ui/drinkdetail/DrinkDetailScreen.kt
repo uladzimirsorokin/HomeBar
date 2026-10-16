@@ -33,6 +33,7 @@ import com.sorokinuladzimir.homebarassistant.core.ui.components.DetailCard
 import com.sorokinuladzimir.homebarassistant.core.ui.components.imageModel
 import com.sorokinuladzimir.homebarassistant.db.entity.Drink
 import com.sorokinuladzimir.homebarassistant.db.entity.WholeCocktail
+import com.sorokinuladzimir.homebarassistant.net.CocktailDbImages
 
 @Composable
 fun DrinkDetailScreen(
@@ -130,7 +131,7 @@ private fun IngredientRow(ingredient: WholeCocktail, onClick: () -> Unit) {
         verticalAlignment = Alignment.CenterVertically
     ) {
         AsyncImage(
-            model = imageModel(ingredient.image),
+            model = imageModel(ingredient.image ?: CocktailDbImages.ingredient(ingredient.ingredientName)),
             contentDescription = null,
             contentScale = ContentScale.Crop,
             modifier = Modifier

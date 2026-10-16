@@ -9,6 +9,7 @@ import androidx.compose.ui.Modifier
 import com.sorokinuladzimir.homebarassistant.core.ui.components.EmptyState
 import com.sorokinuladzimir.homebarassistant.core.ui.components.SimpleListItem
 import com.sorokinuladzimir.homebarassistant.db.entity.Ingredient
+import com.sorokinuladzimir.homebarassistant.net.CocktailDbImages
 
 @Composable
 fun IngredientsListScreen(
@@ -22,7 +23,7 @@ fun IngredientsListScreen(
         LazyColumn(modifier = Modifier.fillMaxSize()) {
             items(ingredients, key = { it.id ?: it.hashCode().toLong() }) { ingredient ->
                 SimpleListItem(
-                    image = ingredient.image,
+                    image = ingredient.image ?: CocktailDbImages.ingredient(ingredient.name),
                     title = ingredient.name.orEmpty(),
                     onClick = { onItemClick(ingredient) }
                 )

@@ -19,6 +19,7 @@ import com.sorokinuladzimir.homebarassistant.core.ui.components.SimpleListItem
 import com.sorokinuladzimir.homebarassistant.core.ui.components.imageModel
 import com.sorokinuladzimir.homebarassistant.db.entity.Drink
 import com.sorokinuladzimir.homebarassistant.db.entity.Ingredient
+import com.sorokinuladzimir.homebarassistant.net.CocktailDbImages
 
 @Composable
 fun IngredientDetailScreen(
@@ -31,7 +32,7 @@ fun IngredientDetailScreen(
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
     ) {
-        val image = imageModel(ingredient?.image)
+        val image = imageModel(ingredient?.image ?: CocktailDbImages.ingredient(ingredient?.name))
         if (image != null) {
             AsyncImage(
                 model = image,

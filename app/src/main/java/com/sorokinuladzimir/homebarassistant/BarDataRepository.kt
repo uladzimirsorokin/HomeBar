@@ -20,6 +20,7 @@ import com.sorokinuladzimir.homebarassistant.db.entity.WholeCocktail
 import com.sorokinuladzimir.homebarassistant.db.mapper.DrinkEntityToDrinkMapper
 import com.sorokinuladzimir.homebarassistant.net.ApiResult
 import com.sorokinuladzimir.homebarassistant.net.CocktailDbApi
+import com.sorokinuladzimir.homebarassistant.net.CocktailDbImages
 import com.sorokinuladzimir.homebarassistant.net.NoConnectivityException
 import com.sorokinuladzimir.homebarassistant.net.SearchConditions
 import com.sorokinuladzimir.homebarassistant.net.entity.CocktailDbDrinkMapper
@@ -237,15 +238,26 @@ class BarDataRepository @Inject constructor(
         val joinList = ArrayList<DrinkIngredientJoin>()
         for (dto in ingredients) {
             val name = dto.name ?: continue
+            val image = CocktailDbImages.ingredient(name)
             val drinkIngredientJoin = DrinkIngredientJoin()
             drinkIngredientJoin.drinkId = drinkId
             drinkIngredientJoin.amount = dto.measure
             val dbIngredient = mDatabase.getIngredientDao().getIngredientByName(name)
             val ingredientId: Long? = if (dbIngredient != null) {
-                dbIngredient.id
+                if (dbIngredient.image.isNullOrEmpty()) {
+                    dbIngredient.image = image
+                    mDatabase.getIngredientDao().insertOrReplaceIngredient(dbIngredient)
+                } else {
+                    dbIngredient.id
+                }
             } else {
                 mDatabase.getIngredientDao()
-                    .insertOrReplaceIngredient(Ingredient().apply { this.name = name })
+                    .insertOrReplaceIngredient(
+                        Ingredient().apply {
+                            this.name = name
+                            this.image = image
+                        }
+                    )
             }
             drinkIngredientJoin.ingredientId = ingredientId
             joinList.add(drinkIngredientJoin)

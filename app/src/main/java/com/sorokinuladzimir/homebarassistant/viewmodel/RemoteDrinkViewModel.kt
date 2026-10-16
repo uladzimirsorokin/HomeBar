@@ -9,6 +9,7 @@ import com.sorokinuladzimir.homebarassistant.BarDataRepository
 import com.sorokinuladzimir.homebarassistant.db.entity.Drink
 import com.sorokinuladzimir.homebarassistant.db.entity.WholeCocktail
 import com.sorokinuladzimir.homebarassistant.db.mapper.DrinkEntityToDrinkMapper
+import com.sorokinuladzimir.homebarassistant.net.CocktailDbImages
 import com.sorokinuladzimir.homebarassistant.net.entity.DrinkEntity
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
@@ -37,9 +38,7 @@ class RemoteDrinkViewModel @Inject constructor(
                     WholeCocktail().apply {
                         ingredientName = ingredient.name
                         amount = ingredient.measure
-                        image = ingredient.name?.let {
-                            INGREDIENT_IMAGE_ROOT + it.replace(" ", "%20") + ".png"
-                        }
+                        image = CocktailDbImages.ingredient(ingredient.name)
                     }
                 }
             }
@@ -60,7 +59,5 @@ class RemoteDrinkViewModel @Inject constructor(
 
     companion object {
         const val ARG_ID = "drinkId"
-        private const val INGREDIENT_IMAGE_ROOT =
-            "https://www.thecocktaildb.com/images/ingredients/"
     }
 }
