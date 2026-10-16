@@ -34,7 +34,6 @@ object Constants {
         const val COLOR = "color"
         const val COCKTAIL = "cocktail"
         const val REQUEST_CONDITIONS = "request conditions"
-        const val APP_THEME = "appTheme"
         const val API_KEY = "apiKey"
         const val LANG = "lang"
         const val AMOUNT = "amount"

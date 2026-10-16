@@ -40,6 +40,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.sorokinuladzimir.homebarassistant.BarDataRepository.QueryType
 import com.sorokinuladzimir.homebarassistant.R
 import com.sorokinuladzimir.homebarassistant.ResourcesActivity
@@ -60,7 +61,6 @@ import com.sorokinuladzimir.homebarassistant.ui.search.FoundDrinksScreen
 import com.sorokinuladzimir.homebarassistant.ui.search.SearchDrinksScreen
 import com.sorokinuladzimir.homebarassistant.ui.settings.SettingsScreen
 import com.sorokinuladzimir.homebarassistant.ui.utils.SpinnerGlassMatcher
-import com.sorokinuladzimir.homebarassistant.ui.utils.ThemeUtils
 import com.sorokinuladzimir.homebarassistant.viewmodel.AddDrinkIngredientsViewModel
 import com.sorokinuladzimir.homebarassistant.viewmodel.AddDrinkViewModel
 import com.sorokinuladzimir.homebarassistant.viewmodel.AddIngredientViewModel
@@ -71,6 +71,7 @@ import com.sorokinuladzimir.homebarassistant.viewmodel.IngredientListViewModel
 import com.sorokinuladzimir.homebarassistant.viewmodel.IngredientViewModel
 import com.sorokinuladzimir.homebarassistant.viewmodel.RemoteDrinkViewModel
 import com.sorokinuladzimir.homebarassistant.viewmodel.SharedViewModel
+import com.sorokinuladzimir.homebarassistant.viewmodel.ThemeViewModel
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
@@ -727,8 +728,9 @@ private fun AboutRoute(navController: NavController) {
 
 @Composable
 private fun SettingsRoute(navController: NavController) {
-    val activity = LocalContext.current.findActivity()
-    val currentTheme = activity?.let { ThemeUtils.currentThemeId(it) } ?: 0
+    val activity = LocalContext.current.findActivity() ?: return
+    val themeViewModel: ThemeViewModel = hiltViewModel(activity)
+    val themeId by themeViewModel.themeId.collectAsStateWithLifecycle()
     Scaffold(
         topBar = {
             HomeBarTopBar(
@@ -739,8 +741,8 @@ private fun SettingsRoute(navController: NavController) {
     ) { padding ->
         Box(Modifier.padding(padding)) {
             SettingsScreen(
-                currentThemeId = currentTheme,
-                onThemeSelected = { theme -> activity?.let { ThemeUtils.changeToTheme(it, theme) } }
+                currentThemeId = themeId,
+                onThemeSelected = themeViewModel::setTheme
             )
         }
     }
