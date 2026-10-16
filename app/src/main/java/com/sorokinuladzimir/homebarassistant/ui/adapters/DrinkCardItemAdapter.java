@@ -1,6 +1,7 @@
 package com.sorokinuladzimir.homebarassistant.ui.adapters;
 
 import androidx.recyclerview.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,11 +14,12 @@ import com.sorokinuladzimir.homebarassistant.Constants;
 import com.sorokinuladzimir.homebarassistant.R;
 import com.sorokinuladzimir.homebarassistant.net.entity.DrinkEntity;
 import com.sorokinuladzimir.homebarassistant.ui.utils.TastesHelper;
+import com.turingtechnologies.materialscrollbar.INameableAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class DrinkCardItemAdapter extends RecyclerView.Adapter<DrinkCardItemAdapter.CardViewHolder> {
+public class DrinkCardItemAdapter extends RecyclerView.Adapter<DrinkCardItemAdapter.CardViewHolder> implements INameableAdapter {
 
     private final ArrayList<DrinkEntity> mData = new ArrayList();
     private final OnItemClickListener listener;
@@ -26,6 +28,16 @@ public class DrinkCardItemAdapter extends RecyclerView.Adapter<DrinkCardItemAdap
     public DrinkCardItemAdapter(OnItemClickListener listener, LoadMoreListener loadMoreListener) {
         this.listener = listener;
         this.loadMoreListener = loadMoreListener;
+    }
+
+    @Override
+    public Character getCharacterForElement(int element) {
+        String name = mData.get(element).getName();
+        Character c = TextUtils.isEmpty(name) ? Character.MIN_VALUE : name.charAt(0);
+        if (Character.isDigit(c)) {
+            c = '#';
+        }
+        return c;
     }
 
     @Override
