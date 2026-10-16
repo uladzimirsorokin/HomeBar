@@ -267,7 +267,7 @@ com.sorokinuladzimir.homebarassistant
 | 1. Data + Flow | ✅ готово | `db/` и `BarDataRepository`/`BarData` на Kotlin; DAO → `Flow`/`suspend`; мост `asLiveData()`; Room compiler переведён на KSP. KSP2 отключён (`ksp.useKSP2=false`) из-за несовместимости Room 2.6.1; `AppExecutors` оставлен для адаптеров (удалим на этапе 5) |
 | 2. Hilt | ✅ готово | `@HiltAndroidApp`, модули `DatabaseModule`/`NetworkModule`/`AppModule`/`RepositoryModule`; `BarData`/`CocktailsDatabase`/`AbsolutDrinksApi`/`ImageHandler` через DI; 10 ViewModel → Kotlin `@HiltViewModel` (+`SavedStateHandle` для аргументов); фрагменты/`MainActivity` `@AndroidEntryPoint`. Убраны `BarApp.getDatabase()/getBarRepository()` и `ServiceGenerator`. `AppExecutors` оставлен статически для адаптеров (до этапа 5) |
 | 3. Сеть | ✅ готово | DTO на Kotlin `@Serializable` (kotlinx.serialization) + `TasteDto`; Retrofit API → `suspend`; `NetworkModule` на kotlinx-конвертере; OkHttp 4.12; `NetworkUtil` → `NetworkCapabilities`; `ApiResult` + тосты в main-поток; ключ/URL → `BuildConfig`/`local.properties`. Gson оставлен только для Room-конвертера `TasteConverter` |
-| 4. Compose-фундамент | ⬜ не начат | |
+| 4. Compose-фундамент | ✅ готово | Тема `core/ui/theme` (+ `homeBarThemeVariant()` из prefs); общий компонент `EmptyState`; Coil подключён; интероп-стратегия: `ComposeView` в контентной области фрагмента (XML-toolbar сохраняется). Пилот — `AboutFragment`/`AboutScreen` на Compose |
 | 5. Поэкранная миграция | ⬜ не начат | |
 | 6. Compose Navigation | ⬜ не начат | |
 | 7. Удаление легаси | ⬜ не начат | |
