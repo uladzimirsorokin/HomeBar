@@ -47,17 +47,20 @@ fun DrinkDetailScreen(
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
     ) {
-        AsyncImage(
-            model = imageModel(drink?.image),
-            contentDescription = null,
-            contentScale = ContentScale.Crop,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(220.dp),
-            onSuccess = { state ->
-                onImageLoaded?.invoke((state.result.drawable as? BitmapDrawable)?.bitmap)
-            }
-        )
+        val image = imageModel(drink?.image)
+        if (image != null) {
+            AsyncImage(
+                model = image,
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(220.dp),
+                onSuccess = { state ->
+                    onImageLoaded?.invoke((state.result.drawable as? BitmapDrawable)?.bitmap)
+                }
+            )
+        }
 
         Card(
             modifier = Modifier

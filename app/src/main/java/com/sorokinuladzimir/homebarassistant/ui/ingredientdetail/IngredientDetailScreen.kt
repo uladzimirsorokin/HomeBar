@@ -31,14 +31,17 @@ fun IngredientDetailScreen(
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
     ) {
-        AsyncImage(
-            model = imageModel(ingredient?.image),
-            contentDescription = null,
-            contentScale = ContentScale.Crop,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(220.dp)
-        )
+        val image = imageModel(ingredient?.image)
+        if (image != null) {
+            AsyncImage(
+                model = image,
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(220.dp)
+            )
+        }
         if (!ingredient?.description.isNullOrEmpty()) {
             DetailCard(title = stringResource(R.string.ingredient_description_title)) {
                 Text(ingredient.description.orEmpty())

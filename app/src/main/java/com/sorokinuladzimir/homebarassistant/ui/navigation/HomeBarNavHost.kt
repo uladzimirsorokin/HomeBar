@@ -13,6 +13,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -29,7 +30,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavBackStackEntry
@@ -173,7 +173,7 @@ private fun FoundDrinksRoute(navController: NavController, entry: NavBackStackEn
         },
         floatingActionButton = {
             FloatingActionButton(onClick = { navController.navigate(Routes.SEARCH_FILTER) }) {
-                Icon(painterResource(R.drawable.ic_search), contentDescription = null)
+                Icon(Icons.Filled.Search, contentDescription = null)
             }
         }
     ) { padding ->
