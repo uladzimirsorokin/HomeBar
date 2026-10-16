@@ -6,13 +6,13 @@ import java.io.Serializable as JavaSerializable
 
 @Serializable
 class DrinkEntity(
-    val id: String? = null,
-    val name: String? = null,
+    @SerialName("id") val id: String? = null,
+    @SerialName("name") val name: String? = null,
     @SerialName("descriptionPlain") val description: String? = null,
-    val color: String? = null,
-    val rating: Int = 0,
-    val isAlcoholic: Boolean = false,
-    val isCarbonated: Boolean = false,
-    val servedIn: Glass? = null,
-    val tastes: List<TasteDto>? = null
+    @SerialName("color") val color: String? = null,
+    @SerialName("rating") val rating: Int = 0,
+    @SerialName("isAlcoholic") val isAlcoholic: Boolean = false,
+    @SerialName("isCarbonated") val isCarbonated: Boolean = false,
+    @SerialName("servedIn") val servedIn: Glass? = null,
+    @SerialName("tastes") val tastes: List<TasteDto>? = null
 ) : JavaSerializable

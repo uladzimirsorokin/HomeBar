@@ -1,21 +1,49 @@
-# Add project specific ProGuard rules here.
-# You can control the set of applied configuration files using the
-# proguardFiles setting in build.gradle.
-#
-# For more details, see
-#   http://developer.android.com/guide/developing/tools/proguard.html
+# HomeBar ProGuard/R8 rules.
+# Keep line numbers for readable crash reports.
+-keepattributes SourceFile,LineNumberTable
+-renamesourcefileattribute SourceFile
 
-# If your project uses WebView with JS, uncomment the following
-# and specify the fully qualified class name to the JavaScript interface
-# class:
-#-keepclassmembers class fqcn.of.javascript.interface.for.webview {
-#   public *;
-#}
+# --- kotlinx.serialization ---
+# The runtime ships consumer rules, but these keep rules make reflection-based
+# serializer lookup (serializer()/companion) safe under full R8 mode.
+-keepattributes *Annotation*, InnerClasses
+-dontnote kotlinx.serialization.**
+-keepclassmembers class **$$serializer {
+    *** descriptor;
+}
+-keepclasseswithmembers class ** {
+    public static ** Companion;
+    kotlinx.serialization.KSerializer serializer(...);
+}
+-keep,includedescriptorclasses class com.sorokinuladzimir.homebarassistant.net.entity.**$$serializer { *; }
+-keep,includedescriptorclasses class com.sorokinuladzimir.homebarassistant.net.entity.**$Companion { *; }
+-keep,includedescriptorclasses class com.sorokinuladzimir.homebarassistant.net.AbsolutDrinksResult$$serializer { *; }
+-keep,includedescriptorclasses class com.sorokinuladzimir.homebarassistant.net.AbsolutDrinksResult$Companion { *; }
+-keep,includedescriptorclasses class com.sorokinuladzimir.homebarassistant.db.entity.Taste$$serializer { *; }
+-keep,includedescriptorclasses class com.sorokinuladzimir.homebarassistant.db.entity.Taste$Companion { *; }
 
-# Uncomment this to preserve the line number information for
-# debugging stack traces.
-#-keepattributes SourceFile,LineNumberTable
+# --- Retrofit ---
+-keepattributes Signature, InnerClasses, EnclosingMethod
+-keepattributes RuntimeVisibleAnnotations, RuntimeVisibleParameterAnnotations
+-keepclassmembers,allowshrinking,allowobfuscation interface * {
+    @retrofit2.http.* <methods>;
+}
+-dontwarn javax.annotation.**
+-dontwarn kotlin.Unit
+-dontwarn retrofit2.KotlinExtensions
+-dontwarn retrofit2.KotlinExtensions$*
+-if interface * { @retrofit2.http.* <methods>; }
+-keep,allowobfuscation interface <1>
 
-# If you keep the line number information, uncomment this to
-# hide the original source file name.
-#-renamesourcefileattribute SourceFile
+# --- OkHttp ---
+-dontwarn okhttp3.**
+-dontwarn okio.**
+-dontwarn org.conscrypt.**
+-dontwarn org.bouncycastle.**
+-dontwarn org.openjsse.**
+
+# --- Hilt / Dagger (mostly covered by consumer rules) ---
+-dontwarn dagger.hilt.**
+
+# --- Room ---
+-keep class * extends androidx.room.RoomDatabase { <init>(); }

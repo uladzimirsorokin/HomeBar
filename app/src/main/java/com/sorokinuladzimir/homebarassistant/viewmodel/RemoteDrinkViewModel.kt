@@ -24,7 +24,7 @@ class RemoteDrinkViewModel @Inject constructor(
     private val mDrinkEntity: DrinkEntity? =
         savedStateHandle.get<String>(ARG_ENTITY)
             ?.takeIf { it.isNotBlank() }
-            ?.let { Json { ignoreUnknownKeys = true }.decodeFromString<DrinkEntity>(it) }
+            ?.let { json.decodeFromString<DrinkEntity>(it) }
 
     private val mObservableDrink = MediatorLiveData<Drink?>()
     private val mDrinkIngredients = MediatorLiveData<List<WholeCocktail>>()
@@ -55,5 +55,6 @@ class RemoteDrinkViewModel @Inject constructor(
 
     companion object {
         const val ARG_ENTITY = "entity"
+        private val json = Json { ignoreUnknownKeys = true }
     }
 }
