@@ -278,12 +278,13 @@ private fun LocalDrinkRoute(navController: NavController, entry: NavBackStackEnt
     val drink by viewModel.getDrink().observeAsState()
     val ingredients by viewModel.getIngredients().observeAsState()
 
-    Scaffold(
-        topBar = {
-            HomeBarTopBar(
-                title = drink?.name.orEmpty(),
-                onBack = { navController.popBackStack() }
-            )
+    DrinkDetailScreen(
+        drink = drink,
+        ingredients = ingredients.orEmpty(),
+        showNotes = true,
+        onBack = { navController.popBackStack() },
+        onIngredientClick = {
+            navController.navigate(Routes.localIngredient(it.ingredientId ?: -1L, false))
         },
         floatingActionButton = {
             if (editable) {
@@ -292,18 +293,7 @@ private fun LocalDrinkRoute(navController: NavController, entry: NavBackStackEnt
                 }
             }
         }
-    ) { padding ->
-        Box(Modifier.padding(padding)) {
-            DrinkDetailScreen(
-                drink = drink,
-                ingredients = ingredients.orEmpty(),
-                showNotes = true,
-                onIngredientClick = {
-                    navController.navigate(Routes.localIngredient(it.ingredientId ?: -1L, false))
-                }
-            )
-        }
-    }
+    )
 }
 
 @Composable
@@ -314,13 +304,11 @@ private fun IngredientDetailRoute(navController: NavController, entry: NavBackSt
     val ingredient by viewModel.getIngredient().observeAsState()
     val relatedDrinks by viewModel.getRelatedDrinks().observeAsState()
 
-    Scaffold(
-        topBar = {
-            HomeBarTopBar(
-                title = ingredient?.name.orEmpty(),
-                onBack = { navController.popBackStack() }
-            )
-        },
+    IngredientDetailScreen(
+        ingredient = ingredient,
+        relatedDrinks = relatedDrinks.orEmpty(),
+        onBack = { navController.popBackStack() },
+        onDrinkClick = { navController.navigate(Routes.localDrink(it.id ?: -1L, false)) },
         floatingActionButton = {
             if (editable) {
                 FloatingActionButton(onClick = { navController.navigate(Routes.addIngredient(id)) }) {
@@ -328,15 +316,7 @@ private fun IngredientDetailRoute(navController: NavController, entry: NavBackSt
                 }
             }
         }
-    ) { padding ->
-        Box(Modifier.padding(padding)) {
-            IngredientDetailScreen(
-                ingredient = ingredient,
-                relatedDrinks = relatedDrinks.orEmpty(),
-                onDrinkClick = { navController.navigate(Routes.localDrink(it.id ?: -1L, false)) }
-            )
-        }
-    }
+    )
 }
 
 @Composable
@@ -345,13 +325,13 @@ private fun RemoteDrinkRoute(navController: NavController) {
     val drink by viewModel.getDrink().observeAsState()
     val ingredients by viewModel.getDrinkIngredients().observeAsState()
 
-    Scaffold(
-        topBar = {
-            HomeBarTopBar(
-                title = drink?.name.orEmpty(),
-                onBack = { navController.popBackStack() }
-            )
-        },
+    DrinkDetailScreen(
+        drink = drink,
+        ingredients = ingredients.orEmpty(),
+        showNotes = false,
+        onBack = { navController.popBackStack() },
+        onIngredientClick = {},
+        onImageLoaded = { viewModel.setBitmap(it) },
         floatingActionButton = {
             FloatingActionButton(onClick = {
                 viewModel.saveDrink()
@@ -360,17 +340,7 @@ private fun RemoteDrinkRoute(navController: NavController) {
                 Icon(Icons.Filled.Add, contentDescription = null)
             }
         }
-    ) { padding ->
-        Box(Modifier.padding(padding)) {
-            DrinkDetailScreen(
-                drink = drink,
-                ingredients = ingredients.orEmpty(),
-                showNotes = false,
-                onIngredientClick = {},
-                onImageLoaded = { viewModel.setBitmap(it) }
-            )
-        }
-    }
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

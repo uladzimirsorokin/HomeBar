@@ -1,19 +1,11 @@
 package com.sorokinuladzimir.homebarassistant.ui.ingredientdetail
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
-import coil.compose.AsyncImage
 import com.sorokinuladzimir.homebarassistant.R
+import com.sorokinuladzimir.homebarassistant.core.ui.components.CollapsingDetailScaffold
 import com.sorokinuladzimir.homebarassistant.core.ui.components.DetailCard
 import com.sorokinuladzimir.homebarassistant.core.ui.components.SimpleListItem
 import com.sorokinuladzimir.homebarassistant.core.ui.components.imageModel
@@ -25,24 +17,16 @@ import com.sorokinuladzimir.homebarassistant.net.CocktailDbImages
 fun IngredientDetailScreen(
     ingredient: Ingredient?,
     relatedDrinks: List<Drink>,
+    onBack: () -> Unit,
     onDrinkClick: (Drink) -> Unit,
+    floatingActionButton: @Composable () -> Unit = {},
 ) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
+    CollapsingDetailScaffold(
+        title = ingredient?.name.orEmpty(),
+        image = imageModel(ingredient?.image ?: CocktailDbImages.ingredient(ingredient?.name)),
+        onBack = onBack,
+        floatingActionButton = floatingActionButton
     ) {
-        val image = imageModel(ingredient?.image ?: CocktailDbImages.ingredient(ingredient?.name))
-        if (image != null) {
-            AsyncImage(
-                model = image,
-                contentDescription = null,
-                contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(220.dp)
-            )
-        }
         if (!ingredient?.description.isNullOrEmpty()) {
             DetailCard(title = stringResource(R.string.ingredient_description_title)) {
                 Text(ingredient.description.orEmpty())
