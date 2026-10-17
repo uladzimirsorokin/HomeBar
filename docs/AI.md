@@ -46,13 +46,19 @@ ollama pull gpt-oss:20b
 SearchDrinksScreen (описание + текущие фильтры)
   → AiSearchViewModel
   → AiSearchPlanner → AiClient → LLM
-  → JSON-план → SearchConditions
-  → found_drinks → TheCocktailDB
+  → JSON с 1–3 запросами → SearchRequest
+  → found_drinks → TheCocktailDB (несколько запросов, объединение)
 ```
 
+Так как TheCocktailDB допускает **один фильтр за запрос**, AI возвращает **1–3
+комплементарных запроса**. Репозиторий выполняет их по очереди и объединяет результаты,
+удаляя дубликаты по `idDrink` (порядок: сначала результаты самого релевантного запроса).
+Например «strong green with ice» → `[{"name":"Green"}, {"alcoholic":true}]`.
+
 Промпт (адаптирован из [AGENTS.md](https://www.thecocktaildb.com/AGENTS.md) и
-[SKILL.md](https://www.thecocktaildb.com/SKILL.md)) требует выбрать **один** наиболее
-подходящий фильтр TheCocktailDB в порядке приоритета:
+[SKILL.md](https://www.thecocktaildb.com/SKILL.md)) требует, чтобы **каждый запрос задавал
+ровно один фильтр**; при необходимости нескольких ограничений возвращается несколько
+запросов. Ориентиры:
 
 1. явный запрос «безалкогольный/моктейль» → `alcoholic=false`;
 2. упомянутые ингредиенты → `ingredient` (самый определяющий, обычно спирт);
@@ -62,11 +68,11 @@ SearchDrinksScreen (описание + текущие фильтры)
 6. иначе — наиболее релевантный UI-фильтр.
 
 Неподдерживаемые API параметры (`taste`, `color`, `skill`, `carbonated`) передаются в
-промпт как подсказки: AI может «додумать» по ним `name`/`category`. Прямая кнопка
-«ИСКАТЬ» по-прежнему использует детерминированное построение запроса без AI.
+промпт как подсказки. Прямая кнопка «ИСКАТЬ» по-прежнему использует одно
+детерминированное условие без AI.
 
-Ответ модели валидируется: если план пуст или не разобрался, используется исходный
-`SearchConditions`. При недоступности сервера показывается ошибка (Toast), приложение
+Ответ модели валидируется: если запросов нет или JSON не разобрался, используется
+исходное условие. При недоступности сервера показывается ошибка (Toast), приложение
 продолжает работать.
 
 ## Пост-обработка рецепта
@@ -125,7 +131,8 @@ adb logcat -s HomeBar-CocktailDB:V HomeBar-AI:V
 | `ai/AiClient.kt` | вызов chat/completions, обработка ошибок |
 | `ai/AiPrompts.kt` | системные промпты поиска и перевода |
 | `ai/AiJson.kt` | извлечение/парсинг JSON из ответа модели |
-| `ai/AiSearchPlanner.kt` | план поиска → `SearchConditions` |
+| `ai/AiSearchPlanner.kt` | план поиска → `SearchRequest` (1–3 условия) |
+| `net/SearchRequest.kt` | набор условий поиска (объединяется в репозитории) |
 | `ai/AiTranslator.kt` | перевод инструкций |
 | `core/util/MeasureParser.kt` | разбор количества/единиц |
 | `core/util/HttpLogging.kt` | debug-логирование HTTP |

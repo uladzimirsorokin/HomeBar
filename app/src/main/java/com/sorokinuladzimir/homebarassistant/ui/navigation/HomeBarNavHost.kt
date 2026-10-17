@@ -193,7 +193,7 @@ private fun SearchFilterRoute(navController: NavController) {
         when (val state = aiState) {
             is AiSearchUiState.Success -> {
                 aiViewModel.consume()
-                navController.navigate(Routes.foundDrinks(state.conditions.toJson())) {
+                navController.navigate(Routes.foundDrinks(state.request.toJson())) {
                     popUpTo(Routes.FOUND_DRINKS) { inclusive = true }
                 }
             }

@@ -1,62 +1,91 @@
 package com.sorokinuladzimir.homebarassistant.ai
 
 import com.sorokinuladzimir.homebarassistant.net.SearchConditions
+import com.sorokinuladzimir.homebarassistant.net.SearchRequest
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNull
 import org.junit.Test
 
 class AiSearchPlanTest {
 
-    private fun plan(json: String) = AiJson.decode(json, AiSearchPlan.serializer())
+    private fun request(json: String): SearchRequest =
+        AiJson.decode(json, AiSearchPlan.serializer()).toRequest()
 
     @Test
-    fun `ingredient plan maps to conditions`() {
-        val conditions = plan("""{"ingredient":"Gin","reason":"gin request"}""").toConditions()
+    fun `ingredient query maps to single condition`() {
+        val queries = request("""{"queries":[{"ingredient":"Gin"}]}""").queries
 
-        assertEquals(SearchConditions(ingredient = "Gin"), conditions)
+        assertEquals(listOf(SearchConditions(ingredient = "Gin")), queries)
     }
 
     @Test
-    fun `category spaces become underscores`() {
-        val conditions = plan("""{"category":"Ordinary Drink"}""").toConditions()
+    fun `keeps multiple complementary queries in order`() {
+        val queries = request(
+            """{"queries":[{"name":"Green"},{"alcoholic":true}]}"""
+        ).queries
 
-        assertEquals(SearchConditions(category = "Ordinary_Drink"), conditions)
+        assertEquals(
+            listOf(SearchConditions(name = "Green"), SearchConditions(alcoholic = true)),
+            queries
+        )
     }
 
     @Test
-    fun `glass spaces become underscores`() {
-        val conditions = plan("""{"glass":"Cocktail glass"}""").toConditions()
+    fun `expands a query with several fields into separate conditions`() {
+        val queries = request(
+            """{"queries":[{"name":"Green","alcoholic":true}]}"""
+        ).queries
 
-        assertEquals(SearchConditions(glass = "Cocktail_glass"), conditions)
+        assertEquals(
+            listOf(SearchConditions(name = "Green"), SearchConditions(alcoholic = true)),
+            queries
+        )
     }
 
     @Test
-    fun `alcoholic plan maps to boolean`() {
-        val conditions = plan("""{"alcoholic":false}""").toConditions()
+    fun `deduplicates and caps at three queries`() {
+        val queries = request(
+            """{"queries":[{"name":"Green"},{"name":"Green"},{"alcoholic":true},{"ingredient":"Gin"},{"glass":"Cocktail_glass"}]}"""
+        ).queries
 
-        assertEquals(SearchConditions(alcoholic = false), conditions)
+        assertEquals(3, queries.size)
+        assertEquals(SearchConditions(name = "Green"), queries[0])
+        assertEquals(SearchConditions(alcoholic = true), queries[1])
+        assertEquals(SearchConditions(ingredient = "Gin"), queries[2])
     }
 
     @Test
-    fun `name has priority when several fields are set`() {
-        val conditions = plan(
-            """{"name":"Fruity","ingredient":"Gin","alcoholic":true}"""
-        ).toConditions()
+    fun `category and glass spaces become underscores`() {
+        val queries = request(
+            """{"queries":[{"category":"Ordinary Drink"},{"glass":"Cocktail glass"}]}"""
+        ).queries
 
-        assertEquals(SearchConditions(name = "Fruity"), conditions)
+        assertEquals(
+            listOf(
+                SearchConditions(category = "Ordinary_Drink"),
+                SearchConditions(glass = "Cocktail_glass")
+            ),
+            queries
+        )
     }
 
     @Test
-    fun `empty plan yields null and callers fall back`() {
-        assertNull(plan("""{"reason":"nothing"}""").toConditions())
+    fun `legacy single-query shape is supported`() {
+        val queries = request("""{"ingredient":"Vodka","reason":"legacy"}""").queries
+
+        assertEquals(listOf(SearchConditions(ingredient = "Vodka")), queries)
+    }
+
+    @Test
+    fun `empty plan yields no queries and callers fall back`() {
+        assertEquals(emptyList<SearchConditions>(), request("""{"reason":"nothing"}""").queries)
     }
 
     @Test
     fun `markdown fences and prose are stripped`() {
-        val conditions = plan(
-            "Here is the plan:\n```json\n{\"ingredient\":\"Vodka\"}\n```\nDone."
-        ).toConditions()
+        val queries = request(
+            "Here is the plan:\n```json\n{\"queries\":[{\"ingredient\":\"Vodka\"}]}\n```\nDone."
+        ).queries
 
-        assertEquals(SearchConditions(ingredient = "Vodka"), conditions)
+        assertEquals(listOf(SearchConditions(ingredient = "Vodka")), queries)
     }
 }

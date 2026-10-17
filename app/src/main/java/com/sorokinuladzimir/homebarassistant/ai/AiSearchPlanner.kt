@@ -5,6 +5,7 @@ import android.util.Log
 import com.sorokinuladzimir.homebarassistant.R
 import com.sorokinuladzimir.homebarassistant.net.ApiResult
 import com.sorokinuladzimir.homebarassistant.net.SearchConditions
+import com.sorokinuladzimir.homebarassistant.net.SearchRequest
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -13,8 +14,8 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 /**
- * Turns a natural-language request plus the current UI filters into a single
- * TheCocktailDB query using the local LLM.
+ * Turns a natural-language request plus the current UI filters into a small set of
+ * TheCocktailDB queries using the local LLM.
  */
 @Singleton
 class AiSearchPlanner @Inject constructor(
@@ -25,7 +26,7 @@ class AiSearchPlanner @Inject constructor(
     suspend fun plan(
         description: String,
         current: SearchConditions
-    ): ApiResult<SearchConditions> {
+    ): ApiResult<SearchRequest> {
         val userPrompt = buildUserPrompt(description, current)
         Log.d(TAG, "AI search request:\n$userPrompt")
         return when (val result = aiClient.complete(AiPrompts.SearchPlanner, userPrompt)) {
@@ -34,9 +35,11 @@ class AiSearchPlanner @Inject constructor(
                 val plan = runCatching {
                     AiJson.decode(result.data, AiSearchPlan.serializer())
                 }.getOrNull()
-                val conditions = plan?.toConditions() ?: current
-                Log.d(TAG, "AI search conditions: $conditions")
-                ApiResult.Success(conditions)
+                val request = plan?.toRequest()
+                    ?.takeIf { it.queries.isNotEmpty() }
+                    ?: SearchRequest.single(current)
+                Log.d(TAG, "AI search queries: ${request.queries}")
+                ApiResult.Success(request)
             }
             is ApiResult.Error -> {
                 Log.w(TAG, "AI search failed: ${result.message}")
@@ -87,6 +90,8 @@ class AiSearchPlanner @Inject constructor(
 
 @Serializable
 internal data class AiSearchPlan(
+    @SerialName("queries") val queries: List<AiSearchQuery>? = null,
+    // Legacy single-query shape support.
     @SerialName("name") val name: String? = null,
     @SerialName("ingredient") val ingredient: String? = null,
     @SerialName("glass") val glass: String? = null,
@@ -95,12 +100,39 @@ internal data class AiSearchPlan(
     @SerialName("reason") val reason: String? = null
 ) {
 
-    fun toConditions(): SearchConditions? = when {
-        !name.isNullOrBlank() -> SearchConditions(name = name.trim())
-        !ingredient.isNullOrBlank() -> SearchConditions(ingredient = ingredient.trim())
-        !glass.isNullOrBlank() -> SearchConditions(glass = glass.trim().replace(" ", "_"))
-        !category.isNullOrBlank() -> SearchConditions(category = category.trim().replace(" ", "_"))
-        alcoholic != null -> SearchConditions(alcoholic = alcoholic)
-        else -> null
+    fun toRequest(): SearchRequest {
+        val fromQueries = queries.orEmpty().flatMap { it.toConditions() }
+        val legacy = AiSearchQuery(name, ingredient, glass, category, alcoholic).toConditions()
+        val merged = (fromQueries + legacy).distinct().take(MAX_QUERIES)
+        return SearchRequest(merged)
+    }
+}
+
+private const val MAX_QUERIES = 3
+
+@Serializable
+internal data class AiSearchQuery(
+    @SerialName("name") val name: String? = null,
+    @SerialName("ingredient") val ingredient: String? = null,
+    @SerialName("glass") val glass: String? = null,
+    @SerialName("category") val category: String? = null,
+    @SerialName("alcoholic") val alcoholic: Boolean? = null,
+    @SerialName("reason") val reason: String? = null
+) {
+
+    /**
+     * One single-filter condition per non-null field. The model is asked to set exactly one
+     * field, but if it returns several they are expanded into separate queries defensively.
+     */
+    fun toConditions(): List<SearchConditions> = buildList {
+        name?.takeIf { it.isNotBlank() }?.let { add(SearchConditions(name = it.trim())) }
+        ingredient?.takeIf { it.isNotBlank() }?.let { add(SearchConditions(ingredient = it.trim())) }
+        glass?.takeIf { it.isNotBlank() }?.let {
+            add(SearchConditions(glass = it.trim().replace(" ", "_")))
+        }
+        category?.takeIf { it.isNotBlank() }?.let {
+            add(SearchConditions(category = it.trim().replace(" ", "_")))
+        }
+        alcoholic?.let { add(SearchConditions(alcoholic = it)) }
     }
 }

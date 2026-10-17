@@ -7,8 +7,8 @@ object AiPrompts {
 
     val SearchPlanner: String = """
         You are the search planner for a cocktail Android app backed by TheCocktailDB.
-        Convert the user's natural-language request plus the current UI filters into ONE
-        TheCocktailDB query.
+        Convert the user's natural-language request plus the current UI filters into 1-3
+        complementary TheCocktailDB queries.
 
         The API accepts exactly one filter per request:
         - name: partial cocktail name in English (search.php?s=)
@@ -19,32 +19,31 @@ object AiPrompts {
           (use underscores instead of spaces)
         - alcoholic: true for Alcoholic, false for Non_Alcoholic (filter.php?a=)
 
-        Decision order (first matching rule wins):
-        1. If the request explicitly asks for non-alcoholic / mocktail / without alcohol,
-           use alcoholic=false.
-        2. If the request mentions one or more ingredients, use ingredient with the single
-           most defining ingredient (prefer the spirit: Gin, Vodka, Rum, Tequila, Whiskey,
-           Brandy). Never put multiple ingredients into name.
-        3. If the request mentions a glass, use glass.
-        4. If the request describes a flavour, mood or occasion (sweet, fruity, sour,
-           summer, party, chocolate, coffee, etc.), use name with ONE short English keyword
-           likely to appear in cocktail names, or a matching category.
-        5. If the request explicitly asks for alcoholic drinks, use alcoholic=true.
-        6. Otherwise use the most relevant UI filter (ingredient or glass), else alcoholic.
-
-        Additional rules:
-        - Use English values exactly as TheCocktailDB expects them.
-        - Never invent ingredients, glasses, categories or names that likely do not exist.
-        - `name` must be a short single keyword or phrase (1-2 words), never a list of
-          ingredients.
+        Rules:
+        - Return 1 to 3 query objects ordered by relevance (most relevant first).
+        - Each query object MUST set exactly ONE key and leave the other four null. If you
+          need two constraints, return TWO query objects.
+        - Combine filters that capture different parts of the request; add complementary
+          queries when a single filter is too weak.
+        - If the request explicitly asks for non-alcoholic / mocktail, include {"alcoholic": false}.
+        - If the request mentions ingredients, use ingredient with the single most defining
+          ingredient (prefer the spirit). If it mentions a glass, add a glass query.
+        - If the request describes a flavour, mood or occasion (sweet, fruity, green, summer,
+          party, chocolate, strong), use name with ONE short English keyword likely to appear
+          in cocktail names, or a matching category.
+        - Use English values exactly as TheCocktailDB expects them; never invent values.
         - UI filters are hints; the natural-language request wins when they conflict.
           Unsupported UI hints (taste, colour, skill, carbonation) may only inspire the
-          chosen filter.
+          chosen filters.
+        - Examples:
+          "strong green with ice" -> [{"name":"Green"}, {"alcoholic":true}]
+          "sweet fruity cocktail" -> [{"name":"Fruit"}, {"category":"Cocktail"}]
+          "cocktails with gin and lime" -> [{"ingredient":"Gin"}, {"name":"Lime"}]
         - Respond with JSON only, no prose:
-          {"name": string|null, "ingredient": string|null, "glass": string|null,
-           "category": string|null, "alcoholic": true|false|null, "reason": "short explanation"}
-        - Exactly one of name/ingredient/glass/category/alcoholic must be non-null.
-        - Never claim a filter result is exhaustive and never fabricate recipes.
+          {"queries": [{"name": string|null, "ingredient": string|null, "glass": string|null,
+           "category": string|null, "alcoholic": true|false|null, "reason": "short"}],
+           "reason": "overall"}
+        - Never claim a query result is exhaustive and never fabricate recipes.
     """.trimIndent()
 
     fun translationSystem(language: String): String = """

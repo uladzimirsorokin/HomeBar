@@ -43,6 +43,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.sorokinuladzimir.homebarassistant.R
 import com.sorokinuladzimir.homebarassistant.net.SearchConditions
+import com.sorokinuladzimir.homebarassistant.net.SearchRequest
 import kotlin.math.roundToInt
 
 @Composable
@@ -171,17 +172,19 @@ fun SearchDrinksScreen(
         Button(
             onClick = {
                 onSearch(
-                    buildConditions(
-                        context = context,
-                        name = name,
-                        glassIds = glassIds,
-                        glassId = glassId,
-                        tasteId = tasteId,
-                        ingredientId = ingredientId,
-                        carbonated = carbonated,
-                        alcoholic = alcoholic,
-                        color = color,
-                        skill = skill
+                    SearchRequest.single(
+                        buildConditions(
+                            context = context,
+                            name = name,
+                            glassIds = glassIds,
+                            glassId = glassId,
+                            tasteId = tasteId,
+                            ingredientId = ingredientId,
+                            carbonated = carbonated,
+                            alcoholic = alcoholic,
+                            color = color,
+                            skill = skill
+                        )
                     ).toJson()
                 )
             },

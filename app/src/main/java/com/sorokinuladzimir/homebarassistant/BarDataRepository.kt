@@ -25,6 +25,7 @@ import com.sorokinuladzimir.homebarassistant.net.CocktailDbApi
 import com.sorokinuladzimir.homebarassistant.net.CocktailDbImages
 import com.sorokinuladzimir.homebarassistant.net.NoConnectivityException
 import com.sorokinuladzimir.homebarassistant.net.SearchConditions
+import com.sorokinuladzimir.homebarassistant.net.SearchRequest
 import com.sorokinuladzimir.homebarassistant.net.entity.CocktailDbDrinkMapper
 import com.sorokinuladzimir.homebarassistant.net.entity.DrinkEntity
 import com.sorokinuladzimir.homebarassistant.net.entity.IngredientDto
@@ -172,20 +173,36 @@ class BarDataRepository @Inject constructor(
 
     override fun getObservableIngredientImagePath(): LiveData<String?> = mObservableIngredientImagePath
 
-    override fun getRemoteDrinks(conditionsJson: String?) {
+    override fun getRemoteDrinks(requestJson: String?) {
         mScope.launch {
-            val conditions = SearchConditions.fromJson(conditionsJson)
-            Log.d(TAG, "Remote search conditions: $conditions")
-            when (val result = safeApiCall { requestDrinks(conditions) }) {
-                is ApiResult.Success -> {
-                    Log.d(TAG, "Remote search returned ${result.data.size} drinks")
-                    mObservableRemoteDrinks.postValue(result.data)
+            val request = SearchRequest.fromJson(requestJson)
+            val queries = request.queries
+            Log.d(TAG, "Remote search queries: $queries")
+            if (queries.isEmpty()) {
+                mObservableRemoteDrinks.postValue(emptyList())
+                return@launch
+            }
+            val merged = LinkedHashMap<String, DrinkEntity>()
+            var lastError: String? = null
+            for (query in queries) {
+                when (val result = safeApiCall { requestDrinks(query) }) {
+                    is ApiResult.Success -> result.data.forEach { drink ->
+                        drink.id?.let { merged.putIfAbsent(it, drink) }
+                    }
+                    is ApiResult.Error -> lastError = result.message
                 }
-                is ApiResult.Error -> {
-                    Log.w(TAG, "Remote search failed: ${result.message}")
+            }
+            when {
+                merged.isNotEmpty() -> {
+                    Log.d(TAG, "Remote search returned ${merged.size} drinks")
+                    mObservableRemoteDrinks.postValue(merged.values.toList())
+                }
+                lastError != null -> {
+                    Log.w(TAG, "Remote search failed: $lastError")
                     mObservableRemoteDrinks.postValue(emptyList())
-                    showToast(result.message)
+                    showToast(lastError)
                 }
+                else -> mObservableRemoteDrinks.postValue(emptyList())
             }
         }
     }

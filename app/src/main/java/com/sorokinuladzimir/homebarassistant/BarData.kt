@@ -13,7 +13,7 @@ interface BarData {
 
     fun getLocalDrinks(): LiveData<List<Drink>>
 
-    fun getRemoteDrinks(conditionsJson: String?)
+    fun getRemoteDrinks(requestJson: String?)
 
     fun getDrink(drinkId: Long?): LiveData<Drink?>
 

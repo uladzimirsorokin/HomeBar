@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.sorokinuladzimir.homebarassistant.ai.AiSearchPlanner
 import com.sorokinuladzimir.homebarassistant.net.ApiResult
 import com.sorokinuladzimir.homebarassistant.net.SearchConditions
+import com.sorokinuladzimir.homebarassistant.net.SearchRequest
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -14,7 +15,7 @@ import javax.inject.Inject
 sealed interface AiSearchUiState {
     data object Idle : AiSearchUiState
     data object Loading : AiSearchUiState
-    data class Success(val conditions: SearchConditions) : AiSearchUiState
+    data class Success(val request: SearchRequest) : AiSearchUiState
     data class Error(val message: String) : AiSearchUiState
 }
 
