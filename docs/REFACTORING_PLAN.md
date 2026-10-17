@@ -306,5 +306,8 @@ com.sorokinuladzimir.homebarassistant
   деталей; `MeasureParser` разделяет количество и единицу по `R.array.ingredient_unit`
   (дроби, синонимы, конверсии shot/cup/tbsp) — и при отображении, и при сохранении;
 - конфигурация — `AI_BASE_URL`/`AI_MODEL`/`AI_API_KEY` в `local.properties`;
+- **AI-сканер меню**: фото → vision-модель (`AI_VISION_MODEL`, `qwen2.5vl:7b`) →
+  распознанные название/состав; при слабом распознавании рецепт подтягивается из
+  TheCocktailDB; фото сохраняется как изображение коктейля;
 - промпты адаптированы из `AGENTS.md`/`SKILL.md` TheCocktailDB;
 - при недоступности AI-сервера показывается ошибка, прямой поиск продолжает работать.

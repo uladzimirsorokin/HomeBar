@@ -22,6 +22,7 @@ object AiModule {
     private val json = Json {
         ignoreUnknownKeys = true
         encodeDefaults = true
+        explicitNulls = false
     }
 
     @Provides

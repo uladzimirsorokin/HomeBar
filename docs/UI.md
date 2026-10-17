@@ -29,6 +29,7 @@ UI полностью на **Jetpack Compose (Material 3)**. Навигация 
 | `add_ingredient/{extra_id}` | `AddIngredientScreen` | `AddIngredientViewModel` |
 | `about` | `AboutScreen` | — |
 | `settings` | `SettingsScreen` | `ThemeViewModel` (activity-scope) |
+| `ai_scan` | `AiScanScreen` | `AiScanViewModel` (AI-сканер меню) |
 
 Стартовый маршрут — `drinks_list`.
 
@@ -57,7 +58,10 @@ UI полностью на **Jetpack Compose (Material 3)**. Навигация 
   коктейля и кнопка «Найти с AI» (локальный LLM строит запрос, см. [AI.md](AI.md)).
   TheCocktailDB поддерживает только имя, ингредиент, бокал и алкогольность; остальные
   параметры учитываются AI как подсказки (см. [NETWORKING.md](NETWORKING.md)).
-- **`DrinksListScreen`** — список локальных коктейлей с поиском и FAB создания.
+- **`DrinksListScreen`** — список локальных коктейлей с поиском и FAB создания. В тулбаре —
+  иконка камеры (переход в AI-сканер меню).
+- **`AiScanScreen`** — AI-сканер: фото меню → распознавание названия и ингредиентов →
+  создание локального коктейля (см. [AI.md](AI.md)).
 - **`IngredientsListScreen`** — список локальных ингредиентов с поиском и FAB создания.
 
 ### Детали

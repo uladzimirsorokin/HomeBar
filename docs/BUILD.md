@@ -23,6 +23,7 @@ COCKTAILDB_ROOT=https://www.thecocktaildb.com/api/json/v1/
 # опционально — локальный AI (OpenAI-совместимый сервер)
 AI_BASE_URL=http://10.0.2.2:11434/v1/
 AI_MODEL=gpt-oss:20b
+AI_VISION_MODEL=qwen2.5vl:7b
 AI_API_KEY=
 ```
 

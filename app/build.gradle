@@ -17,6 +17,7 @@ def cocktailDbApiKey = localProperties.getProperty('COCKTAILDB_API_KEY', '1')
 def cocktailDbRoot = localProperties.getProperty('COCKTAILDB_ROOT', 'https://www.thecocktaildb.com/api/json/v1/')
 def aiBaseUrl = localProperties.getProperty('AI_BASE_URL', 'http://10.0.2.2:11434/v1/')
 def aiModel = localProperties.getProperty('AI_MODEL', 'gpt-oss:20b')
+def aiVisionModel = localProperties.getProperty('AI_VISION_MODEL', 'qwen2.5vl:7b')
 def aiApiKey = localProperties.getProperty('AI_API_KEY', '')
 
 android {
@@ -35,6 +36,7 @@ android {
         buildConfigField "String", "COCKTAILDB_ROOT", "\"${cocktailDbRoot}\""
         buildConfigField "String", "AI_BASE_URL", "\"${aiBaseUrl}\""
         buildConfigField "String", "AI_MODEL", "\"${aiModel}\""
+        buildConfigField "String", "AI_VISION_MODEL", "\"${aiVisionModel}\""
         buildConfigField "String", "AI_API_KEY", "\"${aiApiKey}\""
     }
 

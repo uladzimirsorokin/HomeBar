@@ -235,6 +235,13 @@ class BarDataRepository @Inject constructor(
 
     fun getObservableRemoteDrinks(): LiveData<List<DrinkEntity>> = mObservableRemoteDrinks
 
+    suspend fun findRemoteDrink(name: String): DrinkEntity? = try {
+        mApi.searchByName(name).drinks?.firstOrNull()?.let(CocktailDbDrinkMapper::map)
+    } catch (e: Exception) {
+        Log.w(TAG, "Remote match by name failed: ${e.message}")
+        null
+    }
+
     override fun saveRemoteDrink(drinkEntity: DrinkEntity, bitmap: Bitmap?) {
         mScope.launch {
             val drink = DrinkEntityToDrinkMapper.getInstance().reverseMap(drinkEntity)

@@ -31,6 +31,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavBackStackEntry
@@ -58,6 +59,7 @@ import com.sorokinuladzimir.homebarassistant.ui.ingredientdetail.IngredientDetai
 import com.sorokinuladzimir.homebarassistant.ui.ingredients.IngredientsListScreen
 import com.sorokinuladzimir.homebarassistant.ui.search.FoundDrinksScreen
 import com.sorokinuladzimir.homebarassistant.ui.search.SearchDrinksScreen
+import com.sorokinuladzimir.homebarassistant.ui.scan.AiScanScreen
 import com.sorokinuladzimir.homebarassistant.ui.settings.SettingsScreen
 import com.sorokinuladzimir.homebarassistant.ui.utils.SpinnerGlassMatcher
 import com.sorokinuladzimir.homebarassistant.viewmodel.AddDrinkIngredientsViewModel
@@ -65,6 +67,8 @@ import com.sorokinuladzimir.homebarassistant.viewmodel.AddDrinkViewModel
 import com.sorokinuladzimir.homebarassistant.viewmodel.AddIngredientViewModel
 import com.sorokinuladzimir.homebarassistant.viewmodel.AiSearchUiState
 import com.sorokinuladzimir.homebarassistant.viewmodel.AiSearchViewModel
+import com.sorokinuladzimir.homebarassistant.viewmodel.AiScanUiState
+import com.sorokinuladzimir.homebarassistant.viewmodel.AiScanViewModel
 import com.sorokinuladzimir.homebarassistant.viewmodel.DrinkListViewModel
 import com.sorokinuladzimir.homebarassistant.viewmodel.DrinkViewModel
 import com.sorokinuladzimir.homebarassistant.viewmodel.FoundDrinksViewModel
@@ -133,6 +137,8 @@ fun NavGraphBuilder.homeBarGraph(navController: NavController) {
     composable(Routes.ABOUT) { AboutRoute(navController) }
 
     composable(Routes.SETTINGS) { SettingsRoute(navController) }
+
+    composable(Routes.AI_SCAN) { AiScanRoute(navController) }
 }
 
 @Composable
@@ -241,7 +247,15 @@ private fun DrinksListRoute(navController: NavController) {
         topBar = {
             HomeBarTopBar(
                 title = stringResource(R.string.drinks_list_fragment_title),
-                actions = { AboutSettingsMenu(navController) }
+                actions = {
+                    IconButton(onClick = { navController.navigate(Routes.AI_SCAN) }) {
+                        Icon(
+                            painter = painterResource(R.drawable.camera_placeholder),
+                            contentDescription = stringResource(R.string.scan_title)
+                        )
+                    }
+                    AboutSettingsMenu(navController)
+                }
             )
         },
         floatingActionButton = {
@@ -733,6 +747,54 @@ private fun SettingsRoute(navController: NavController) {
                 onThemeSelected = themeViewModel::setTheme
             )
         }
+    }
+}
+
+@Composable
+private fun AiScanRoute(navController: NavController) {
+    val viewModel: AiScanViewModel = hiltViewModel()
+    val state by viewModel.state.observeAsState(AiScanUiState.Idle)
+    val context = LocalContext.current
+    var showImageDialog by remember { mutableStateOf(false) }
+
+    val imagePicker = rememberImagePicker(
+        onPicked = { uri, _ -> viewModel.onImagePicked(uri) },
+        createPhotoUri = { viewModel.createPhotoFile() }
+    )
+
+    LaunchedEffect(state) {
+        if (state is AiScanUiState.Saved) {
+            Toast.makeText(context, context.getString(R.string.scan_saved), Toast.LENGTH_SHORT).show()
+            navController.popBackStack()
+        }
+    }
+
+    Scaffold(
+        topBar = {
+            HomeBarTopBar(
+                title = stringResource(R.string.scan_title),
+                onBack = { navController.popBackStack() }
+            )
+        }
+    ) { padding ->
+        AiScanScreen(
+            state = state,
+            onPickPhoto = { showImageDialog = true },
+            onRecognize = viewModel::recognize,
+            onSave = viewModel::save,
+            modifier = Modifier.padding(padding)
+        )
+    }
+
+    if (showImageDialog) {
+        AddImageDialog(
+            title = stringResource(R.string.change_photo),
+            allowDelete = false,
+            onTakePhoto = { showImageDialog = false; imagePicker.takePhoto() },
+            onChooseFromLibrary = { showImageDialog = false; imagePicker.chooseFromLibrary() },
+            onRemove = {},
+            onDismiss = { showImageDialog = false }
+        )
     }
 }
 

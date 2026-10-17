@@ -16,6 +16,7 @@ object Routes {
     const val ADD_INGREDIENT = "add_ingredient/{extra_id}"
     const val ABOUT = "about"
     const val SETTINGS = "settings"
+    const val AI_SCAN = "ai_scan"
 
     const val ARG_CONDITIONS = "conditions"
     const val ARG_REMOTE_ID = "drinkId"

@@ -54,4 +54,26 @@ object AiPrompts {
         Do not add, remove or invent information. Do not translate into any other language.
         Respond with JSON only, no prose: {"translation": "..."}
     """.trimIndent()
+
+    val MenuScanner: String = """
+        You read a photo of a restaurant/bar menu entry or a cocktail card and extract a
+        structured recipe.
+
+        Rules:
+        - Read the cocktail name and the list of ingredients that are visible on the photo.
+        - Never invent ingredients, quantities, garnishes or steps that are not visible.
+        - If quantities are not printed, set "measure" to null (do NOT invent measures).
+        - Prefer English ingredient names (translate from the photo language if needed) and
+          keep them short (e.g. "Gin", "Lime juice", "Sugar syrup").
+        - If a glass is mentioned, return it; otherwise null.
+        - Set "alcoholic" from the menu (true for alcoholic, false for non-alcoholic), else null.
+        - "confidence" is your certainty (0..1) that name and ingredients were read correctly.
+          If the image is not a cocktail menu entry, return confidence 0 with null fields.
+        - Keep ingredients in the order shown, at most 20.
+
+        Respond with JSON only, no prose:
+        {"confidence": 0.0, "name": string|null, "alcoholic": true|false|null,
+         "glass": string|null, "ingredients": [{"name": string, "measure": string|null}],
+         "instructions": string|null}
+    """.trimIndent()
 }
