@@ -1,6 +1,7 @@
 package com.sorokinuladzimir.homebarassistant.ai
 
 import android.content.Context
+import android.util.Log
 import com.sorokinuladzimir.homebarassistant.R
 import com.sorokinuladzimir.homebarassistant.net.ApiResult
 import com.sorokinuladzimir.homebarassistant.net.SearchConditions
@@ -26,14 +27,21 @@ class AiSearchPlanner @Inject constructor(
         current: SearchConditions
     ): ApiResult<SearchConditions> {
         val userPrompt = buildUserPrompt(description, current)
+        Log.d(TAG, "AI search request:\n$userPrompt")
         return when (val result = aiClient.complete(AiPrompts.SearchPlanner, userPrompt)) {
             is ApiResult.Success -> {
+                Log.d(TAG, "AI search plan: ${result.data}")
                 val plan = runCatching {
                     AiJson.decode(result.data, AiSearchPlan.serializer())
                 }.getOrNull()
-                ApiResult.Success(plan?.toConditions() ?: current)
+                val conditions = plan?.toConditions() ?: current
+                Log.d(TAG, "AI search conditions: $conditions")
+                ApiResult.Success(conditions)
             }
-            is ApiResult.Error -> result
+            is ApiResult.Error -> {
+                Log.w(TAG, "AI search failed: ${result.message}")
+                result
+            }
         }
     }
 
@@ -70,6 +78,10 @@ class AiSearchPlanner @Inject constructor(
             appendLine("Known spirit ingredients: $spirits")
             appendLine("Target app language: $language")
         }
+    }
+
+    private companion object {
+        private const val TAG = "HomeBar-AI"
     }
 }
 

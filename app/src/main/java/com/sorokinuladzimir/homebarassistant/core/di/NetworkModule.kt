@@ -3,6 +3,7 @@ package com.sorokinuladzimir.homebarassistant.core.di
 import android.content.Context
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import com.sorokinuladzimir.homebarassistant.BuildConfig
+import com.sorokinuladzimir.homebarassistant.core.util.debugLoggingInterceptor
 import com.sorokinuladzimir.homebarassistant.net.CocktailDbApi
 import com.sorokinuladzimir.homebarassistant.net.ConnectivityInterceptor
 import dagger.Module
@@ -30,6 +31,11 @@ object NetworkModule {
     fun provideCocktailDbApi(@ApplicationContext context: Context): CocktailDbApi {
         val client = OkHttpClient.Builder()
             .addInterceptor(ConnectivityInterceptor(context))
+            .apply {
+                if (BuildConfig.DEBUG) {
+                    addInterceptor(debugLoggingInterceptor("HomeBar-CocktailDB"))
+                }
+            }
             .build()
 
         return Retrofit.Builder()

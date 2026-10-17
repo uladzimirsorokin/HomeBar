@@ -99,6 +99,23 @@ TheCocktailDB отдаёт меру строкой (`"1 1/2 oz"`, `"4 oz frozen"
 - переведённый текст сохраняется вместе с напитком;
 - названия ингредиентов, количества и единицы не переводятся (сохраняются как есть).
 
+## Логи
+
+В debug-сборке логируются и HTTP-запросы, и решения AI (Logcat):
+
+| Тег | Что пишет |
+|-----|-----------|
+| `HomeBar-CocktailDB` | запросы/ответы TheCocktailDB и условия поиска (`Remote search conditions`, `returned N drinks`) |
+| `HomeBar-AI` | HTTP к AI-серверу, промпт (`AI search request`), ответ модели (`AI search plan`), итоговые условия (`AI search conditions`) |
+
+```bash
+# всё сразу
+adb logcat -s HomeBar-CocktailDB:V HomeBar-AI:V
+```
+
+Логи включаются только в debug (`BuildConfig.DEBUG`); заголовок `Authorization`
+редактируется (`redactHeader`). В release-сборке логи выключены.
+
 ## Файлы
 
 | Компонент | Назначение |
@@ -111,6 +128,7 @@ TheCocktailDB отдаёт меру строкой (`"1 1/2 oz"`, `"4 oz frozen"
 | `ai/AiSearchPlanner.kt` | план поиска → `SearchConditions` |
 | `ai/AiTranslator.kt` | перевод инструкций |
 | `core/util/MeasureParser.kt` | разбор количества/единиц |
+| `core/util/HttpLogging.kt` | debug-логирование HTTP |
 | `viewmodel/AiSearchViewModel.kt` | состояние AI-поиска (Idle/Loading/Success/Error) |
 
 ## Ограничения и безопасность

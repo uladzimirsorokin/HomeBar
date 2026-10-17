@@ -2,6 +2,7 @@ package com.sorokinuladzimir.homebarassistant.core.di
 
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import com.sorokinuladzimir.homebarassistant.BuildConfig
+import com.sorokinuladzimir.homebarassistant.core.util.debugLoggingInterceptor
 import com.sorokinuladzimir.homebarassistant.net.ai.AiApi
 import dagger.Module
 import dagger.Provides
@@ -40,6 +41,11 @@ object AiModule {
                     chain.request()
                 }
                 chain.proceed(request)
+            }
+            .apply {
+                if (BuildConfig.DEBUG) {
+                    addInterceptor(debugLoggingInterceptor("HomeBar-AI"))
+                }
             }
             .build()
 

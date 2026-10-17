@@ -94,7 +94,7 @@ COCKTAILDB_API_KEY=1
 - `description = strInstructions`;
 - `isAlcoholic = strAlcoholic == "Alcoholic"`;
 - `servedIn = Glass(text = strGlass)`;
-- `tastes = strTags` (разбитые по запятой);
+- `tastes = strTags` (разбитые по запятой; мусорные/код-подобные теги отфильтровываются);
 - `imageUrl = strDrinkThumb`;
 - `ingredients = ingredientLines()`;
 - `color = null`, `rating = 0`, `isCarbonated = false` (нет в источнике).

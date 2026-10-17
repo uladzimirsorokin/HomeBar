@@ -57,4 +57,23 @@ class CocktailDbDrinkMapperTest {
         assertEquals(1, entity.ingredients?.size)
         assertNull(entity.servedIn)
     }
+
+    @Test
+    fun `drops spam and code-like tags`() {
+        val dto = CocktailDbDrink(
+            id = "2",
+            name = "Spam",
+            tags = "8rabyu,print(1589601882+2604639836);print(75+67),IBA,sweet"
+        )
+
+        val entity = CocktailDbDrinkMapper.map(dto)
+
+        assertEquals(listOf("IBA", "sweet"), entity.tastes?.map { it.text })
+    }
+
+    @Test
+    fun `blank tags yield no tastes`() {
+        assertNull(CocktailDbDrinkMapper.map(CocktailDbDrink(tags = "  ")).tastes)
+        assertNull(CocktailDbDrinkMapper.map(CocktailDbDrink(tags = null)).tastes)
+    }
 }

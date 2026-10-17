@@ -6,6 +6,7 @@ import android.net.Uri
 import android.os.Handler
 import android.os.Looper
 import android.os.Process
+import android.util.Log
 import android.widget.Toast
 import androidx.core.content.FileProvider
 import androidx.lifecycle.LiveData
@@ -174,9 +175,14 @@ class BarDataRepository @Inject constructor(
     override fun getRemoteDrinks(conditionsJson: String?) {
         mScope.launch {
             val conditions = SearchConditions.fromJson(conditionsJson)
+            Log.d(TAG, "Remote search conditions: $conditions")
             when (val result = safeApiCall { requestDrinks(conditions) }) {
-                is ApiResult.Success -> mObservableRemoteDrinks.postValue(result.data)
+                is ApiResult.Success -> {
+                    Log.d(TAG, "Remote search returned ${result.data.size} drinks")
+                    mObservableRemoteDrinks.postValue(result.data)
+                }
                 is ApiResult.Error -> {
+                    Log.w(TAG, "Remote search failed: ${result.message}")
                     mObservableRemoteDrinks.postValue(emptyList())
                     showToast(result.message)
                 }
@@ -284,5 +290,9 @@ class BarDataRepository @Inject constructor(
         Handler(Looper.getMainLooper()).post {
             Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
         }
+    }
+
+    private companion object {
+        private const val TAG = "HomeBar-CocktailDB"
     }
 }
