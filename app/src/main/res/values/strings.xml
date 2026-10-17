@@ -24,6 +24,11 @@
     <string name="menu_settings">Настройки</string>
     <string name="menu_resources">Ресурсы</string>
     <string name="menu_search">ИСКАТЬ</string>
+    <string name="ai_search_title">AI-поиск</string>
+    <string name="ai_search_hint">Опишите, какой коктейль хотите найти</string>
+    <string name="ai_search_button">Найти с AI</string>
+    <string name="ai_search_loading">AI подбирает запрос…</string>
+    <string name="ai_search_empty">Опишите коктейль для AI-поиска</string>
     <string name="title_new_cocktail">Новый коктейль</string>
     <string name="title_edit_cocktail">Редактирование</string>
     <string name="title_choose_tastes">Choose tastes</string>

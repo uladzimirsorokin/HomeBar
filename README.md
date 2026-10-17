@@ -10,6 +10,10 @@ Android-приложение для поиска, создания и веден
 - **Поиск коктейлей** — по названию, ингредиенту, бокалу и алкогольности (источник —
   TheCocktailDB). Фильтры «вкус/цвет/навык/газированность» пока сохраняются в запросе, но
   игнорируются источником.
+- **AI-поиск** — опишите коктейль словами, локальный LLM (`gpt-oss:20b`) превратит
+  описание в запрос к TheCocktailDB и учтёт выбранные фильтры.
+- **Умная пост-обработка** — инструкции переводятся на язык приложения, а количество и
+  единицы измерения разделяются по допустимым единицам.
 - **Локальная коллекция** — сохранение найденных рецептов на устройство (работает офлайн).
 - **Свои рецепты** — создание и редактирование коктейлей и ингредиентов, загрузка фото
   из галереи или камеры.
@@ -29,6 +33,7 @@ Android-приложение для поиска, создания и веден
 | DI | Hilt 2.57.1 |
 | Локальная БД | Room 2.6.1 (Kotlin, Flow, KSP) |
 | Сеть | Retrofit 2.9.0 + OkHttp 4.12 + kotlinx.serialization (TheCocktailDB) |
+| AI | локальный OpenAI-совместимый сервер (Ollama, `gpt-oss:20b`) |
 | Изображения | Coil 2.7.0 |
 | Настройки | DataStore (Preferences) |
 | Сборка | Gradle 8.14.3 + AGP 8.13.2, R8 |
@@ -69,6 +74,10 @@ API-ключ и URL TheCocktailDB можно переопределить в `lo
 ```properties
 COCKTAILDB_API_KEY=1
 COCKTAILDB_ROOT=https://www.thecocktaildb.com/api/json/v1/
+# локальный AI (OpenAI-совместимый сервер)
+AI_BASE_URL=http://10.0.2.2:11434/v1/
+AI_MODEL=gpt-oss:20b
+AI_API_KEY=
 ```
 
 Подробности по настройке окружения — в [docs/BUILD.md](docs/BUILD.md).
@@ -85,14 +94,15 @@ HomeBar/
 │       │   │   ├── MainActivity.kt       # Compose-хост с NavHost
 │       │   │   ├── SplashActivity.kt     # launcher
 │       │   │   ├── ResourcesActivity.kt  # экран «Ресурсы»
+│       │   │   ├── ai/                   # AI-клиент, промпты, планировщик, перевод
 │       │   │   ├── BarData.kt            # контракт репозитория
 │       │   │   ├── BarDataRepository.kt  # реализация (Room + Retrofit)
 │       │   │   ├── Constants.kt          # FileProvider authority и константы
 │       │   │   ├── core/
 │       │   │   │   ├── data/             # DataStore (ThemePreferences)
-│       │   │   │   ├── di/               # Hilt-модули
+│       │   │   │   ├── di/               # Hilt-модули (в т.ч. AiModule)
 │       │   │   │   ├── ui/               # компоненты и тема Compose
-│       │   │   │   └── util/
+│       │   │   │   └── util/             # MeasureParser и пр.
 │       │   │   ├── db/                   # Room: entity, dao, mapper, converter
 │       │   │   ├── net/                  # Retrofit: CocktailDbApi, dto, mapper, SearchConditions
 │       │   │   ├── viewmodel/            # ViewModel-классы
@@ -110,8 +120,8 @@ HomeBar/
 ## Тестирование и CI
 
 - **Unit-тесты** (`src/test`): мапперы (`DrinkEntityToDrinkMapper`, `CocktailDbDrinkMapper`),
-  `TasteConverter`, `TastesHelper`, `SearchConditions`, `SpinnerGlassMatcher`, `SharedViewModel`,
-  `DrinkListViewModel`.
+  `TasteConverter`, `TastesHelper`, `SearchConditions`, `AiSearchPlan`, `MeasureParser`,
+  `SpinnerGlassMatcher`, `SharedViewModel`, `DrinkListViewModel`.
 - **Compose UI-тесты** (`src/androidTest`): `EmptyState`, `DetailCard`, `AboutScreen`,
   `HomeBarBottomBar`.
 - **CI** (`.github/workflows/ci.yml`): `assembleDebug` + `testDebugUnitTest` + `lintDebug`
@@ -123,11 +133,13 @@ HomeBar/
 - [Сборка и окружение](docs/BUILD.md) — требования, команды, R8, troubleshooting.
 - [База данных](docs/DATABASE.md) — схема Room, сущности, DAO, конвертеры.
 - [Сеть](docs/NETWORKING.md) — TheCocktailDB API, эндпоинты, модели, условия поиска.
+- [AI](docs/AI.md) — локальный LLM, AI-поиск, перевод, разбор единиц.
 - [UI и навигация](docs/UI.md) — экраны, маршруты, темы, компоненты.
 - [План рефакторинга](docs/REFACTORING_PLAN.md) — история перехода на Kotlin + Compose + Hilt.
 - [ADR](docs/adr/) — ключевые архитектурные решения.
   - [0001. Kotlin + Compose + Hilt](docs/adr/0001-compose-modern-stack.md)
   - [0002. Смена источника данных на TheCocktailDB](docs/adr/0002-cocktaildb-provider.md)
+  - [0003. Локальный AI для поиска и пост-обработки](docs/adr/0003-local-ai.md)
 
 ## Лицензия и источники данных
 

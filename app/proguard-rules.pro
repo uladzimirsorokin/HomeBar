@@ -17,6 +17,8 @@
 }
 -keep,includedescriptorclasses class com.sorokinuladzimir.homebarassistant.net.**$$serializer { *; }
 -keep,includedescriptorclasses class com.sorokinuladzimir.homebarassistant.net.**$Companion { *; }
+-keep,includedescriptorclasses class com.sorokinuladzimir.homebarassistant.ai.**$$serializer { *; }
+-keep,includedescriptorclasses class com.sorokinuladzimir.homebarassistant.ai.**$Companion { *; }
 -keep,includedescriptorclasses class com.sorokinuladzimir.homebarassistant.db.entity.**$$serializer { *; }
 -keep,includedescriptorclasses class com.sorokinuladzimir.homebarassistant.db.entity.**$Companion { *; }
 

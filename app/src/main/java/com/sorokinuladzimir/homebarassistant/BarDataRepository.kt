@@ -12,6 +12,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.asLiveData
+import com.sorokinuladzimir.homebarassistant.core.util.MeasureParser
 import com.sorokinuladzimir.homebarassistant.db.CocktailsDatabase
 import com.sorokinuladzimir.homebarassistant.db.entity.Drink
 import com.sorokinuladzimir.homebarassistant.db.entity.DrinkIngredientJoin
@@ -235,13 +236,16 @@ class BarDataRepository @Inject constructor(
         ingredients: List<IngredientDto>,
         drinkId: Long
     ): List<DrinkIngredientJoin> {
+        val allowedUnits = context.resources.getStringArray(R.array.ingredient_unit).toList()
         val joinList = ArrayList<DrinkIngredientJoin>()
         for (dto in ingredients) {
             val name = dto.name ?: continue
             val image = CocktailDbImages.ingredient(name)
+            val parsedMeasure = MeasureParser.parse(dto.measure, allowedUnits)
             val drinkIngredientJoin = DrinkIngredientJoin()
             drinkIngredientJoin.drinkId = drinkId
-            drinkIngredientJoin.amount = dto.measure
+            drinkIngredientJoin.amount = parsedMeasure.amount
+            drinkIngredientJoin.unit = parsedMeasure.unit
             val dbIngredient = mDatabase.getIngredientDao().getIngredientByName(name)
             val ingredientId: Long? = if (dbIngredient != null) {
                 if (dbIngredient.image.isNullOrEmpty()) {

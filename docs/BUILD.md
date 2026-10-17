@@ -20,6 +20,10 @@ sdk.dir=/path/to/Android/sdk
 # опционально — переопределение доступа к TheCocktailDB
 COCKTAILDB_API_KEY=1
 COCKTAILDB_ROOT=https://www.thecocktaildb.com/api/json/v1/
+# опционально — локальный AI (OpenAI-совместимый сервер)
+AI_BASE_URL=http://10.0.2.2:11434/v1/
+AI_MODEL=gpt-oss:20b
+AI_API_KEY=
 ```
 
 ## Команды

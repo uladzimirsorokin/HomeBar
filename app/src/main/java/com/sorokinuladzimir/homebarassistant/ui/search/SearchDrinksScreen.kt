@@ -13,12 +13,15 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
@@ -43,7 +46,11 @@ import com.sorokinuladzimir.homebarassistant.net.SearchConditions
 import kotlin.math.roundToInt
 
 @Composable
-fun SearchDrinksScreen(onSearch: (String) -> Unit) {
+fun SearchDrinksScreen(
+    onSearch: (String) -> Unit,
+    onAiSearch: (String, SearchConditions) -> Unit = { _, _ -> },
+    aiLoading: Boolean = false,
+) {
     val context = LocalContext.current
     val glassIds = context.resources.getStringArray(R.array.glass_id).toList()
     val glassNames = context.resources.getStringArray(R.array.glass_name).toList()
@@ -52,6 +59,7 @@ fun SearchDrinksScreen(onSearch: (String) -> Unit) {
     val colors = context.resources.getIntArray(R.array.colors)
 
     var name by rememberSaveable { mutableStateOf("") }
+    var aiQuery by rememberSaveable { mutableStateOf("") }
     var glassId by rememberSaveable { mutableIntStateOf(0) }
     var tasteId by rememberSaveable { mutableIntStateOf(0) }
     var ingredientId by rememberSaveable { mutableIntStateOf(0) }
@@ -67,6 +75,51 @@ fun SearchDrinksScreen(onSearch: (String) -> Unit) {
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
+        Text(stringResource(R.string.ai_search_title), style = MaterialTheme.typography.titleMedium)
+        OutlinedTextField(
+            value = aiQuery,
+            onValueChange = { aiQuery = it },
+            label = { Text(stringResource(R.string.ai_search_hint)) },
+            minLines = 2,
+            modifier = Modifier.fillMaxWidth()
+        )
+        Button(
+            onClick = {
+                onAiSearch(
+                    aiQuery,
+                    buildConditions(
+                        context = context,
+                        name = name,
+                        glassIds = glassIds,
+                        glassId = glassId,
+                        tasteId = tasteId,
+                        ingredientId = ingredientId,
+                        carbonated = carbonated,
+                        alcoholic = alcoholic,
+                        color = color,
+                        skill = skill
+                    )
+                )
+            },
+            enabled = !aiLoading && aiQuery.isNotBlank(),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            if (aiLoading) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(18.dp),
+                    strokeWidth = 2.dp,
+                    color = MaterialTheme.colorScheme.onPrimary
+                )
+                Spacer(Modifier.width(8.dp))
+            }
+            Text(
+                stringResource(
+                    if (aiLoading) R.string.ai_search_loading else R.string.ai_search_button
+                )
+            )
+        }
+        HorizontalDivider()
+
         OutlinedTextField(
             value = name,
             onValueChange = { name = it },

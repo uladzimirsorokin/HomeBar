@@ -24,6 +24,11 @@
     <string name="menu_settings">Settings</string>
     <string name="menu_resources">Resources</string>
     <string name="menu_search">SEARCH</string>
+    <string name="ai_search_title">AI search</string>
+    <string name="ai_search_hint">Describe the cocktail you are looking for</string>
+    <string name="ai_search_button">Search with AI</string>
+    <string name="ai_search_loading">AI is planning the query…</string>
+    <string name="ai_search_empty">Describe a cocktail for AI search</string>
     <string name="title_new_cocktail">New cocktail</string>
     <string name="title_edit_cocktail">Edit</string>
     <string name="title_choose_tastes">Choose tastes</string>

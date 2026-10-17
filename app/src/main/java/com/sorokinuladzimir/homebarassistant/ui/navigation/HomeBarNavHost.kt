@@ -3,6 +3,7 @@ package com.sorokinuladzimir.homebarassistant.ui.navigation
 import android.content.Context
 import android.content.ContextWrapper
 import android.content.Intent
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -62,6 +63,8 @@ import com.sorokinuladzimir.homebarassistant.ui.utils.SpinnerGlassMatcher
 import com.sorokinuladzimir.homebarassistant.viewmodel.AddDrinkIngredientsViewModel
 import com.sorokinuladzimir.homebarassistant.viewmodel.AddDrinkViewModel
 import com.sorokinuladzimir.homebarassistant.viewmodel.AddIngredientViewModel
+import com.sorokinuladzimir.homebarassistant.viewmodel.AiSearchUiState
+import com.sorokinuladzimir.homebarassistant.viewmodel.AiSearchViewModel
 import com.sorokinuladzimir.homebarassistant.viewmodel.DrinkListViewModel
 import com.sorokinuladzimir.homebarassistant.viewmodel.DrinkViewModel
 import com.sorokinuladzimir.homebarassistant.viewmodel.FoundDrinksViewModel
@@ -182,6 +185,26 @@ private fun FoundDrinksRoute(navController: NavController, entry: NavBackStackEn
 
 @Composable
 private fun SearchFilterRoute(navController: NavController) {
+    val aiViewModel: AiSearchViewModel = hiltViewModel()
+    val aiState by aiViewModel.state.observeAsState(AiSearchUiState.Idle)
+    val context = LocalContext.current
+
+    LaunchedEffect(aiState) {
+        when (val state = aiState) {
+            is AiSearchUiState.Success -> {
+                aiViewModel.consume()
+                navController.navigate(Routes.foundDrinks(state.conditions.toJson())) {
+                    popUpTo(Routes.FOUND_DRINKS) { inclusive = true }
+                }
+            }
+            is AiSearchUiState.Error -> {
+                aiViewModel.consume()
+                Toast.makeText(context, state.message, Toast.LENGTH_LONG).show()
+            }
+            else -> Unit
+        }
+    }
+
     Scaffold(
         topBar = {
             HomeBarTopBar(
@@ -196,7 +219,11 @@ private fun SearchFilterRoute(navController: NavController) {
                     navController.navigate(Routes.foundDrinks(path)) {
                         popUpTo(Routes.FOUND_DRINKS) { inclusive = true }
                     }
-                }
+                },
+                onAiSearch = { description, conditions ->
+                    aiViewModel.plan(description, conditions)
+                },
+                aiLoading = aiState is AiSearchUiState.Loading
             )
         }
     }

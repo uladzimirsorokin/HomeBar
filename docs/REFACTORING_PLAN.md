@@ -291,3 +291,19 @@ com.sorokinuladzimir.homebarassistant
   игнорируются (задел под AI-пост-обработку);
 - `DrinksPathManager` удалён; тесты обновлены (добавлены `CocktailDbDrinkMapperTest`,
   `SearchConditionsTest`).
+
+---
+
+## Дополнение. AI-интеграция (локальный LLM)
+
+Добавлен локальный AI (OpenAI-совместимый сервер, `gpt-oss:20b`), см.
+[AI.md](AI.md) и [ADR 0003](adr/0003-local-ai.md):
+
+- **AI-поиск**: описание + UI-фильтры → `AiSearchPlanner` → JSON-план → один запрос
+  TheCocktailDB; неподдерживаемые API параметры используются как подсказки;
+- **пост-обработка**: `AiTranslator` переводит инструкции на язык приложения при открытии
+  деталей; `MeasureParser` разделяет количество и единицу по `R.array.ingredient_unit`
+  (дроби, синонимы, конверсии shot/cup/tbsp) — и при отображении, и при сохранении;
+- конфигурация — `AI_BASE_URL`/`AI_MODEL`/`AI_API_KEY` в `local.properties`;
+- промпты адаптированы из `AGENTS.md`/`SKILL.md` TheCocktailDB;
+- при недоступности AI-сервера показывается ошибка, прямой поиск продолжает работать.
