@@ -1,82 +1,126 @@
-buildscript {
-    repositories {
-        maven { url 'https://maven.fabric.io/public' }
-    }
-
-    dependencies {
-        classpath 'io.fabric.tools:gradle:1.+'
-    }
-}
-apply plugin: 'com.android.application'
-
-repositories {
-    maven { url 'https://maven.fabric.io/public' }
+plugins {
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.hilt)
 }
 
-apply plugin: 'com.google.gms.oss.licenses.plugin'
-apply plugin: 'io.fabric'
+def localProperties = new Properties()
+def localPropertiesFile = rootProject.file('local.properties')
+if (localPropertiesFile.exists()) {
+    localPropertiesFile.withReader('UTF-8') { reader -> localProperties.load(reader) }
+}
+
+def cocktailDbApiKey = localProperties.getProperty('COCKTAILDB_API_KEY', '1')
+def cocktailDbRoot = localProperties.getProperty('COCKTAILDB_ROOT', 'https://www.thecocktaildb.com/api/json/v1/')
+def aiBaseUrl = localProperties.getProperty('AI_BASE_URL', 'http://10.0.2.2:11434/v1/')
+def aiModel = localProperties.getProperty('AI_MODEL', 'gpt-oss:20b')
+def aiVisionModel = localProperties.getProperty('AI_VISION_MODEL', 'qwen2.5vl:7b')
+def aiApiKey = localProperties.getProperty('AI_API_KEY', '')
 
 android {
-    compileSdkVersion 27
+    namespace 'com.sorokinuladzimir.homebarassistant'
+    compileSdk 35
+
     defaultConfig {
         applicationId "com.sorokinuladzimir.homebarassistant"
         minSdkVersion 21
-        targetSdkVersion 27
+        targetSdkVersion 35
         versionCode 4
         versionName "1.0"
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        buildConfigField "String", "COCKTAILDB_API_KEY", "\"${cocktailDbApiKey}\""
+        buildConfigField "String", "COCKTAILDB_ROOT", "\"${cocktailDbRoot}\""
+        buildConfigField "String", "AI_BASE_URL", "\"${aiBaseUrl}\""
+        buildConfigField "String", "AI_MODEL", "\"${aiModel}\""
+        buildConfigField "String", "AI_VISION_MODEL", "\"${aiVisionModel}\""
+        buildConfigField "String", "AI_API_KEY", "\"${aiApiKey}\""
     }
+
     buildTypes {
         release {
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
 
-        }
+    buildFeatures {
+        buildConfig true
+        compose true
     }
-    buildToolsVersion '27.0.3'
+
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
-    android {
-        lintOptions {
-            abortOnError false
-            checkAllWarnings false
-            checkReleaseBuilds false
-            ignoreWarnings true
-            quiet true
-        }
+
+    lint {
+        abortOnError false
+        checkReleaseBuilds false
+        ignoreWarnings true
+    }
+}
+
+kotlin {
+    compilerOptions {
+        jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
     }
 }
 
 dependencies {
-    implementation fileTree(include: ['*.jar'], dir: 'libs')
-    implementation "com.android.support:appcompat-v7:$support_version"
-    implementation "com.android.support:recyclerview-v7:$support_version"
-    implementation "com.android.support:design:$support_version"
-    implementation "com.android.support:cardview-v7:$support_version"
-    implementation 'com.android.support.constraint:constraint-layout:1.1.0'
-    implementation 'android.arch.persistence.room:runtime:1.1.0'
-    annotationProcessor "android.arch.persistence.room:compiler:1.1.0"
-    implementation 'android.arch.lifecycle:extensions:1.1.1'
-    annotationProcessor "android.arch.lifecycle:compiler:1.1.1"
-    implementation 'com.aurelhubert:ahbottomnavigation:2.1.0'
-    implementation 'ru.terrakok.cicerone:cicerone:2.1.0'
-    implementation 'com.github.bumptech.glide:glide:4.5.0'
-    annotationProcessor 'com.github.bumptech.glide:compiler:4.3.1'
-    implementation 'com.google.code.gson:gson:2.8.0'
-    implementation 'com.squareup.retrofit2:retrofit:2.3.0'
-    implementation 'com.squareup.retrofit2:converter-gson:2.3.0'
-    implementation('com.thebluealliance:spectrum:0.7.1') {
-        exclude module: 'preference-v7'
-    }
-    implementation 'com.tbruyelle.rxpermissions2:rxpermissions:0.9.5@aar'
-    implementation "io.reactivex.rxjava2:rxjava:2.1.10"
-    implementation 'com.github.turing-tech:MaterialScrollBar:12.+'
-    implementation 'com.google.android.gms:play-services-oss-licenses:15.0.1'
-    implementation('com.appyvet:materialrangebar:1.4.1') {
-        exclude module: 'support-compat'
-    }
-    implementation 'com.google.firebase:firebase-core:15.0.2'
-    implementation 'com.crashlytics.sdk.android:crashlytics:2.9.2'
-}
+    // --- Jetpack Compose ---
+    implementation platform(libs.androidx.compose.bom)
+    implementation libs.androidx.compose.ui
+    implementation libs.androidx.compose.ui.graphics
+    implementation libs.androidx.compose.ui.tooling.preview
+    implementation libs.androidx.compose.material3
+    implementation libs.androidx.compose.material.icons.core
+    implementation libs.androidx.activity.compose
+    implementation libs.androidx.lifecycle.viewmodel.compose
+    implementation libs.androidx.lifecycle.runtime.compose
+    implementation libs.androidx.navigation.compose
+    implementation libs.androidx.hilt.navigation.compose
+    implementation libs.androidx.compose.runtime.livedata
+    implementation libs.androidx.core.ktx
+    implementation libs.androidx.datastore.preferences
+    implementation libs.coil.compose
+    debugImplementation libs.androidx.compose.ui.tooling
 
-apply plugin: 'com.google.gms.google-services'
+    // --- Dependency Injection ---
+    implementation libs.hilt.android
+    ksp libs.hilt.compiler
+
+    // --- Room ---
+    implementation libs.androidx.room.runtime
+    implementation libs.androidx.room.ktx
+    ksp libs.androidx.room.compiler
+
+    // --- Coroutines / lifecycle ktx ---
+    implementation libs.kotlinx.coroutines.android
+    implementation libs.androidx.lifecycle.livedata.ktx
+    implementation libs.androidx.lifecycle.runtime.ktx
+
+    // --- Networking / serialization ---
+    implementation libs.retrofit
+    implementation libs.okhttp
+    implementation libs.okhttp.logging
+    implementation libs.retrofit.kotlinx.serialization
+    implementation libs.kotlinx.serialization.json
+
+    // --- Unit tests ---
+    testImplementation libs.junit
+    testImplementation libs.mockk
+    testImplementation libs.turbine
+    testImplementation libs.kotlinx.coroutines.test
+    testImplementation libs.androidx.arch.core.testing
+
+    // --- Instrumented / Compose UI tests ---
+    androidTestImplementation platform(libs.androidx.compose.bom)
+    androidTestImplementation libs.androidx.test.ext.junit
+    androidTestImplementation libs.androidx.compose.ui.test.junit4
+    debugImplementation libs.androidx.compose.ui.test.manifest
+}
