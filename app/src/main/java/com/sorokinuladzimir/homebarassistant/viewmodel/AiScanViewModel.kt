@@ -10,6 +10,7 @@ import androidx.lifecycle.viewModelScope
 import com.sorokinuladzimir.homebarassistant.BarDataRepository
 import com.sorokinuladzimir.homebarassistant.ai.AiMenuScanner
 import com.sorokinuladzimir.homebarassistant.ai.ScannedCocktail
+import com.sorokinuladzimir.homebarassistant.core.util.cropToImageBox
 import com.sorokinuladzimir.homebarassistant.net.ApiResult
 import com.sorokinuladzimir.homebarassistant.net.entity.DrinkEntity
 import com.sorokinuladzimir.homebarassistant.net.entity.Glass
@@ -24,7 +25,11 @@ sealed interface AiScanUiState {
     data object Idle : AiScanUiState
     data class Picked(val uri: Uri) : AiScanUiState
     data object Loading : AiScanUiState
-    data class Scanned(val cocktail: ScannedCocktail, val fromDatabase: Boolean) : AiScanUiState
+    data class Scanned(
+        val cocktail: ScannedCocktail,
+        val fromDatabase: Boolean,
+        val preview: Bitmap?
+    ) : AiScanUiState
     data class Error(val message: String) : AiScanUiState
     data object Saved : AiScanUiState
 }
@@ -77,7 +82,10 @@ class AiScanViewModel @Inject constructor(
                             fromDatabase = true
                         }
                     }
-                    _state.value = AiScanUiState.Scanned(cocktail, fromDatabase)
+                    // Prefer the drink picture cropped from the photo over the whole menu.
+                    val cropped = image.cropToImageBox(cocktail.imageBox)
+                    bitmap = cropped ?: image
+                    _state.value = AiScanUiState.Scanned(cocktail, fromDatabase, bitmap)
                 }
                 is ApiResult.Error -> _state.value = AiScanUiState.Error(result.message)
             }

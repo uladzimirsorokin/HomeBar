@@ -60,4 +60,36 @@ class AiMenuScannerTest {
         assertTrue(cocktail.ingredients.isEmpty())
         assertFalse(cocktail.isGoodRecognition())
     }
+
+    @Test
+    fun `literal null strings are cleaned to null`() {
+        val cocktail = scan(
+            """{"confidence":0.8,"name":"Boulevardier","glass":"null","instructions":"null",
+                "ingredients":[{"name":"Rye whiskey","measure":"null"}]}"""
+        )
+
+        assertEquals("Boulevardier", cocktail.name)
+        assertNull(cocktail.glass)
+        assertNull(cocktail.instructions)
+        assertNull(cocktail.ingredients[0].measure)
+    }
+
+    @Test
+    fun `parses drink picture bounding box`() {
+        val cocktail = scan(
+            """{"confidence":0.9,"name":"X","ingredients":[{"name":"Gin"}],
+                "imageBox":[62,120,367,505]}"""
+        )
+
+        assertEquals(listOf(62, 120, 367, 505), cocktail.imageBox)
+    }
+
+    @Test
+    fun `invalid bounding box is dropped`() {
+        val cocktail = scan(
+            """{"confidence":0.9,"name":"X","ingredients":[{"name":"Gin"}],"imageBox":[1,2,3]}"""
+        )
+
+        assertNull(cocktail.imageBox)
+    }
 }

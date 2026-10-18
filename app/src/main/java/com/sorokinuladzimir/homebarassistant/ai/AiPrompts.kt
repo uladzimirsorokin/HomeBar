@@ -56,24 +56,23 @@ object AiPrompts {
     """.trimIndent()
 
     val MenuScanner: String = """
-        You read a photo of a restaurant/bar menu entry or a cocktail card and extract a
-        structured recipe.
-
-        Rules:
-        - Read the cocktail name and the list of ingredients that are visible on the photo.
-        - Never invent ingredients, quantities, garnishes or steps that are not visible.
-        - If quantities are not printed, set "measure" to null (do NOT invent measures).
-        - Prefer English ingredient names (translate from the photo language if needed) and
-          keep them short (e.g. "Gin", "Lime juice", "Sugar syrup").
-        - If a glass is mentioned, return it; otherwise null.
-        - Set "alcoholic" from the menu (true for alcoholic, false for non-alcoholic), else null.
-        - "confidence" is your certainty (0..1) that name and ingredients were read correctly.
-          If the image is not a cocktail menu entry, return confidence 0 with null fields.
-        - Keep ingredients in the order shown, at most 20.
-
-        Respond with JSON only, no prose:
+        You extract structured data from a photo of a restaurant/bar menu entry or a cocktail card.
+        Return JSON only:
         {"confidence": 0.0, "name": string|null, "alcoholic": true|false|null,
          "glass": string|null, "ingredients": [{"name": string, "measure": string|null}],
-         "instructions": string|null}
+         "instructions": string|null, "imageBox": [x1,y1,x2,y2]|null}
+
+        Rules:
+        - Ingredients and text: read ONLY what is printed. Never invent ingredients, quantities
+          or steps. If a quantity is not printed, measure MUST be JSON null. If preparation steps
+          are not printed, instructions MUST be JSON null. Do not infer a typical recipe.
+        - imageBox is a DETECTION task (not invention): if the photo contains a picture of the
+          drink, return its tight bounding box as integers in a 0-1000 scale
+          (x1,y1 = top-left, x2,y2 = bottom-right). This is expected even when no text describes
+          it. Use null only if there is no drink picture.
+        - Prefer English ingredient names; keep them short (e.g. "Gin", "Lime juice").
+        - glass only if printed, else null. alcoholic true/false, else null.
+        - confidence is your certainty (0..1) that name and ingredients were read correctly.
+        - Use JSON null, never the text "null". At most 20 ingredients, in order shown.
     """.trimIndent()
 }

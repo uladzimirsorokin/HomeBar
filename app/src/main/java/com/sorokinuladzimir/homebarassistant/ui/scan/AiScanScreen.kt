@@ -96,6 +96,17 @@ fun AiScanScreen(
 
             is AiScanUiState.Scanned -> {
                 val cocktail = state.cocktail
+                state.preview?.let { preview ->
+                    AsyncImage(
+                        model = preview,
+                        contentDescription = null,
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(220.dp)
+                            .clip(RoundedCornerShape(12.dp))
+                    )
+                }
                 Text(
                     text = stringResource(
                         if (state.fromDatabase) R.string.scan_source_db else R.string.scan_source_ai

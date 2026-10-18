@@ -12,6 +12,8 @@ import javax.inject.Singleton
 
 /**
  * A cocktail recognised from a menu photo.
+ *
+ * [imageBox] is a drink-picture bounding box in a 0-1000 scale, or null when not detected.
  */
 data class ScannedCocktail(
     val name: String?,
@@ -19,7 +21,8 @@ data class ScannedCocktail(
     val instructions: String?,
     val glass: String?,
     val alcoholic: Boolean?,
-    val confidence: Double
+    val confidence: Double,
+    val imageBox: List<Int>? = null
 ) {
     fun isGoodRecognition(): Boolean =
         !name.isNullOrBlank() && ingredients.isNotEmpty() && confidence >= GOOD_CONFIDENCE
@@ -73,20 +76,22 @@ internal data class AiScannedDrink(
     @SerialName("alcoholic") val alcoholic: Boolean? = null,
     @SerialName("glass") val glass: String? = null,
     @SerialName("instructions") val instructions: String? = null,
-    @SerialName("ingredients") val ingredients: List<AiScannedIngredient>? = null
+    @SerialName("ingredients") val ingredients: List<AiScannedIngredient>? = null,
+    @SerialName("imageBox") val imageBox: List<Int>? = null
 ) {
 
     fun toCocktail(): ScannedCocktail = ScannedCocktail(
-        name = name?.trim()?.takeIf { it.isNotEmpty() },
+        name = name.clean(),
         ingredients = ingredients.orEmpty().mapNotNull { ingredient ->
-            ingredient.name?.trim()?.takeIf { it.isNotEmpty() }?.let {
-                IngredientDto(name = it, measure = ingredient.measure?.trim())
+            ingredient.name.clean()?.let {
+                IngredientDto(name = it, measure = ingredient.measure.clean())
             }
         },
-        instructions = instructions?.trim()?.takeIf { it.isNotEmpty() },
-        glass = glass?.trim()?.takeIf { it.isNotEmpty() },
+        instructions = instructions.clean(),
+        glass = glass.clean(),
         alcoholic = alcoholic,
-        confidence = confidence.coerceIn(0.0, 1.0)
+        confidence = confidence.coerceIn(0.0, 1.0),
+        imageBox = imageBox?.takeIf { it.size == 4 }
     )
 }
 
@@ -95,3 +100,14 @@ internal data class AiScannedIngredient(
     @SerialName("name") val name: String? = null,
     @SerialName("measure") val measure: String? = null
 )
+
+/**
+ * Vision models sometimes emit the literal string "null"/"none" instead of JSON null.
+ */
+private fun String?.clean(): String? =
+    this?.trim()?.takeIf {
+        it.isNotEmpty() &&
+            !it.equals("null", ignoreCase = true) &&
+            !it.equals("none", ignoreCase = true) &&
+            it != "-"
+    }
