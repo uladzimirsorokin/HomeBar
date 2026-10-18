@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
@@ -64,10 +65,10 @@ fun AiScanScreen(
                 AsyncImage(
                     model = state.uri,
                     contentDescription = null,
-                    contentScale = ContentScale.Crop,
+                    contentScale = ContentScale.Fit,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(240.dp)
+                        .heightIn(min = 200.dp, max = 420.dp)
                         .clip(RoundedCornerShape(12.dp))
                 )
                 Button(onClick = onRecognize, modifier = Modifier.fillMaxWidth()) {
@@ -100,10 +101,10 @@ fun AiScanScreen(
                     AsyncImage(
                         model = preview,
                         contentDescription = null,
-                        contentScale = ContentScale.Crop,
+                        contentScale = ContentScale.Fit,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(220.dp)
+                            .heightIn(min = 200.dp, max = 420.dp)
                             .clip(RoundedCornerShape(12.dp))
                     )
                 }
